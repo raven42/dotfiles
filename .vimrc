@@ -509,15 +509,12 @@ vmap <Leader>cy <plug>NERDCommenterYank
 " Add your own custom formats or override the defaults
 let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
 
-if exists('devpanel#DevPanelOpen()')
-	autocmd VimEnter *.c,*.cpp,*.h,*.py call devpanel#DevPanelOpen()
-	autocmd VimResized * call devpanel#DevPanelSizeUpdate()
-	nnoremap <leader>d :call devpanel#DevPanelToggle()<CR>
-endif
+autocmd VimEnter *.c,*.cpp,*.h,*.py DevPanel
+nnoremap <leader>d DevPanelToggle
 
 autocmd BufEnter * call UpdateTitle()
 
-nnoremap <leader>x :NERDTreeToggle <CR> 
+nnoremap <leader>x :NERDTreeToggle <CR>
 nnoremap <leader>t :TagbarToggle <CR>
 
 augroup quickfixclose
