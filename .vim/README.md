@@ -36,16 +36,16 @@ Lines that have been modified will be highlighted on the left side of the file w
 Lines that have been deleted will be highlighted on the left side of the file window with two red right arrows (note: the highlight will occur on the line prior to the deletion).
 
 The following plugins are included in this configuration:
-> <https://github.com/raven42/devpanel-vim>
-> <https://github.com/raven42/indentpython.vim>
-> <https://github.com/itchyny/lightline.vim>
-> <https://github.com/mengelbrecht/lightline-bufferline>
-> <https://github.com/preservim/nerdtree>
-> <https://github.com/preservim/nerdcommenter>
-> <https://github.com/raven42/tagbar>
-> <https://github.com/vim-scripts/searchfold.vim>
-> <https://github.com/nvie/vim-flake8>
-> <https://github.com/tpope/vim-fugitive>
-> <https://github.com/airblade/vim-gitgutter>
-> <https://github.com/roxma/vim-paste-easy>
-> <https://github.com/Chiel92/vim-autoformat>
+> <https://github.com/raven42/devpanel-vim>  
+> <https://github.com/raven42/indentpython.vim>  
+> <https://github.com/itchyny/lightline.vim>  
+> <https://github.com/mengelbrecht/lightline-bufferline>  
+> <https://github.com/preservim/nerdtree>  
+> <https://github.com/preservim/nerdcommenter>  
+> <https://github.com/raven42/tagbar>  
+> <https://github.com/vim-scripts/searchfold.vim>  
+> <https://github.com/nvie/vim-flake8>  
+> <https://github.com/tpope/vim-fugitive>  
+> <https://github.com/airblade/vim-gitgutter>  
+> <https://github.com/roxma/vim-paste-easy>  
+> <https://github.com/Chiel92/vim-autoformat>  
