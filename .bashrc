@@ -77,12 +77,11 @@ if ! shopt -q login_shell ; then # We're not a login shell
 	done
 	unset i
 fi
-if [[ -f ~/.dirclors ]]; then
-	eval `dircolors -b ~/.dir_colors`
+if [[ -f ~/.dircolors ]]; then
+	eval `dircolors -b ~/.dircolors`
 elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
 fi
-eval `dircolors -b $HOME/.dirc`
 alias ls="ls -F -T 0 --color=auto"
 
 # 030m - Black
