@@ -4,15 +4,15 @@ VIM resource and configuration directory.
 This directory sets up and configures vim using various plugins. It integrates them all together.
 
 # Basic usage
-Basic usage and navigation uses the standard vim movement keys and also uses the mouse to move between windows, select text in visual mode, and move the cursor. There are also some useful key mappings to move between windows.
-> <Ctrl-Up> - Move to the window above the current one.
-> <Ctrl-Down> - Move to the window below the current one.
-> <Ctrl-Left> - Move to the window to the left of the current one.
-> <Ctrl-Right> - Move to the window to the right of the current one.
-> <Leader># - Move to the open buffer as signified by `#`.
-> <Leader>g - Activate the GitGutter fold method to fold all text around the current changes in the open file.
-> <Leader>cc - Toggle a comment block around the currently selected code in visual mode.
->> Note: All these <Leader> commands are done using the `\` key. Example `\1` will jump to the first open buffer.
+Basic usage and navigation uses the standard vim movement keys and also uses the mouse to move between windows, select text in visual mode, and move the cursor. There are also some useful key mappings to move between windows.  
+> `<Ctrl-Up>` - Move to the window above the current one.  
+> `<Ctrl-Down>` - Move to the window below the current one.  
+> `<Ctrl-Left>` - Move to the window to the left of the current one.  
+> `<Ctrl-Right>` - Move to the window to the right of the current one.  
+> `<Leader>#` - Move to the open buffer as signified by `#`.  
+> `<Leader>g` - Activate the GitGutter fold method to fold all text around the current changes in the open file.  
+> `<Leader>cc` - Toggle a comment block around the currently selected code in visual mode.  
+>> Note: All these <Leader> commands are done using the `\` key. Example `\1` will jump to the first open buffer.  
 
 ## NERDTree
 The NERDTree plugin provides a file browser for any files. Double-click on any file to open it in a new buffer. Single-click on any directory to expand / collapse it.
