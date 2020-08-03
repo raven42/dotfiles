@@ -14,9 +14,11 @@ Setup git to not show untracked files in the status output
 `githome config --local status.showUntrackedFiles no`  
 
 Once cloned, it may be necessary to initialize / update any submodules for any git repositories that are embedded in the environment.  
-`githome clone <url-to-repo-with-submodules>`  
-`githome submodule init`  
-`githome submodule update`  
+`
+githome clone <url-to-repo-with-submodules>  
+githome submodule init  
+githome submodule update  
+`  
 
 To update submodules if they are updated:  
 `githome submodule update`  
