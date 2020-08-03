@@ -380,7 +380,11 @@ endfunction
 
 function! UpdateTitle()
 	let &titlestring = 'VIM - ' . expand("%:t")
-	let branch = fugitive#head()
+	if exists('fugitive#head()')
+		let branch = fugitive#head()
+	else
+		let branch = ''
+	endif
 	if branch !=# ''
 		let icon = "\ue0a0"
 		let &titlestring = 'VIM - ' . icon . branch . ' - ' . expand("%:t")
@@ -465,8 +469,9 @@ nmap <Leader>g :call GitGutterFoldToggle()<CR>
 "autocmd bufenter * if (winnr("$") == 2 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | q | endif
 
 " AnyFold Configuration
-autocmd Filetype c,cpp,python AnyFoldActivate
-set foldlevel=99						" Open all folds
+if exists('AnyFoldActivate')
+	autocmd Filetype c,cpp,python AnyFoldActivate
+endif
 let g:anyfold_fold_comments=1
 let g:anyfold_fold_display=1
 "hi Folded term=underline cterm=underline
@@ -477,7 +482,9 @@ let g:flake8_show_in_file = 0
 let g:flake8_quickfix_height = 10
 let g:flake8_always_visible = 1
 
-autocmd BufWritePost *.py call flake8#Flake8()
+if exists('flake8#Flake8()')
+	autocmd BufWritePost *.py call flake8#Flake8()
+endif
 
 let g:NERDSpaceDelims = 1			" --- add space after delimiter
 let g:NERDCompactSexyComs = 1		" --- use compact syntax for multi-line
@@ -502,9 +509,11 @@ vmap <Leader>cy <plug>NERDCommenterYank
 " Add your own custom formats or override the defaults
 let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
 
-autocmd VimEnter *.c,*.cpp,*.h,*.py call devpanel#DevPanelOpen()
-autocmd VimResized * call devpanel#DevPanelSizeUpdate()
-nnoremap <leader>d :call devpanel#DevPanelToggle()<CR>
+if exists('devpanel#DevPanelOpen()')
+	autocmd VimEnter *.c,*.cpp,*.h,*.py call devpanel#DevPanelOpen()
+	autocmd VimResized * call devpanel#DevPanelSizeUpdate()
+	nnoremap <leader>d :call devpanel#DevPanelToggle()<CR>
+endif
 
 autocmd BufEnter * call UpdateTitle()
 
