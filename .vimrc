@@ -187,9 +187,6 @@ autocmd BufWinEnter *.py set fileformat=unix
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugin Configurations
 
-" --- https://github.com/powerline/fonts    no actual plugin... just fonts
-let g:have_powerline = 1
-
 " Note on powerline fonts: The fonts must be installed separately. The .vimrc
 " will only use the unicode characters for the various fonts. It is not
 " actually a plugin for vim like the others. Enter as double-quoted string
@@ -213,216 +210,180 @@ let g:have_powerline = 1
 " E0BE	Top-right angle solid
 " E0BF	Top-right angle line
 
-execute pathogen#infect('plugins/{}')
-
 " --- https://github.com/majutsushi/tagbar
-let g:have_tagbar = &runtimepath =~ 'tagbar' ? 1 : 0
 " --- https://github.com/preservim/nerdtree
-let g:have_nerdtree = &runtimepath =~ 'nerdtree' ? 1 : 0
 " --- https://github.com/tpope/vim-fugitive
-let g:have_fugitive = &runtimepath =~ 'fugitive' ? 1 : 0
 " --- https://github.com/airblade/vim-gitgutter
-let g:have_gitgutter = &runtimepath =~ 'gitgutter' ? 1 : 0
 " --- https://github.com/arecarn/vim-fold-cycle
-let g:have_foldcycle = &runtimepath =~ 'fold-cycle' ? 1 : 0
-"--- https://github.com/Chiel92/vim-autoformat
-let g:have_autoformat = &runtimepath =~ 'autoformat' ? 1 : 0
+" --- https://github.com/Chiel92/vim-autoformat
 " --- https://github.com/pseewald/vim-anyfold
-let g:have_anyfold = &runtimepath =~ 'anyfold' ? 1 : 0
 " --- https://github.com/itchyny/lightline.vim
-let g:have_lightline = &runtimepath =~ 'lightline' ? 1 : 0
 " --- https://github.com/vim-airline/vim-airline
-let g:have_airline = &runtimepath =~ 'airline' ? 1 : 0
 " --- https://github.com/nvie/vim-flake8
-let g:have_flake8 = &runtimepath =~ 'flake8' ? 1 : 0
 " --- https://github.com/preservim/nerdcommenter.git
-let g:have_nerdcommenter = &runtimepath =~ 'nerdcommenter' ? 1 : 0
-" --- devpanel
-let g:have_devpanel = &runtimepath =~ 'devpanel' ? 1 : 0
-
-if g:have_airline
-	let g:airline#extensions#tabline#enabled = 1
-endif
+" --- https://github.com/raven42/devpanel-vim.git
 
 "----- Lightline Plugin Configuration
-if g:have_lightline
-	let g:lightline = {
-		\ 'active': {
-		\	'left': [['mode', 'paste', 'modified'], ['readonly', 'filename'], ['tagbar']],
-		\	'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
-		\   },
-		\ 'inactive': {
-		\   'left': [['mode'], ['filename', 'modified']],
-		\   'right': [['lineinfo'], ['percent']]
-		\ },
-		\ 'tabline': {
-		\	'left': [ ['buffers'] ],
-		\	'right': [ ['hunksummary'], ['branch'] ]
-		\ },
-		\ 'tab': {
-		\	'active': ['filename', 'modified'],
-		\	'inactive': ['filename', 'modified'],
-		\ },
-		\ 'component': {
-		\	'lineinfo': "\ue0a3" . '%3l:%-2v',
-		\ },
-		\ 'component_expand': {
-		\	'buffers': 'lightline#bufferline#buffers'
-		\ },
-		\ 'component_type': {
-		\	'buffers': 'tabsel'
-		\ },
-		\ 'component_function': {
-		\	'branch': 'LightlineFugitive',
-		\	'fileencoding': 'LightlineFileEncoding',
-		\	'fileformat': 'LightlineFileFormat',
-		\	'filename': 'LightlineFilename',
-		\	'filetype': 'LightlineFileType',
-		\	'hunksummary': 'LightlineGitgutterHunks',
-		\	'mode' : 'LightlineMode',
-		\	'modified' : 'LightlineModified',
-		\   'readonly': 'LightlineReadonly',
-		\	'tagbar': 'LightlineTagbar',
-		\ },
-		\ 'tab_component_function': {
-		\	'filename': 'LightlineTabname',
-		\	'closebuffer': 'LightlineCloseBuffer',
-		\ },
-		\ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
-		\ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
-		\ }
+let g:lightline = {
+			\ 'active': {
+			\	'left': [['mode', 'paste', 'modified'], ['readonly', 'filename'], ['tagbar']],
+			\	'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
+			\   },
+			\ 'inactive': {
+			\   'left': [['mode'], ['filename', 'modified']],
+			\   'right': [['lineinfo'], ['percent']]
+			\ },
+			\ 'tabline': {
+			\	'left': [ ['buffers'] ],
+			\	'right': [ ['hunksummary'], ['branch'] ]
+			\ },
+			\ 'tab': {
+			\	'active': ['filename', 'modified'],
+			\	'inactive': ['filename', 'modified'],
+			\ },
+			\ 'component': {
+			\	'lineinfo': "\ue0a3" . '%3l:%-2v',
+			\ },
+			\ 'component_expand': {
+			\	'buffers': 'lightline#bufferline#buffers'
+			\ },
+			\ 'component_type': {
+			\	'buffers': 'tabsel'
+			\ },
+			\ 'component_function': {
+			\	'branch': 'LightlineFugitive',
+			\	'fileencoding': 'LightlineFileEncoding',
+			\	'fileformat': 'LightlineFileFormat',
+			\	'filename': 'LightlineFilename',
+			\	'filetype': 'LightlineFileType',
+			\	'hunksummary': 'LightlineGitgutterHunks',
+			\	'mode' : 'LightlineMode',
+			\	'modified' : 'LightlineModified',
+			\   'readonly': 'LightlineReadonly',
+			\	'tagbar': 'LightlineTagbar',
+			\ },
+			\ 'tab_component_function': {
+			\	'filename': 'LightlineTabname',
+			\	'closebuffer': 'LightlineCloseBuffer',
+			\ },
+			\ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
+			\ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
+			\ }
 
-	let g:short_mode_map = {
-		\ 'n': 'NORM',
-		\ 'i' : 'INS',
-        \ 'R' : 'REPL',
-        \ 'v' : 'VIS',
-        \ 'V' : 'VISL',
-        \ "\<C-v>": 'VB',
-        \ 'c' : 'CMD',
-        \ 's' : 'S',
-        \ 'S' : 'SL',
-        \ "\<C-s>": 'SB',
-        \ 't': 'T',
-        \ }
+let g:short_mode_map = {
+			\ 'n': 'NORM',
+			\ 'i' : 'INS',
+			\ 'R' : 'REPL',
+			\ 'v' : 'VIS',
+			\ 'V' : 'VISL',
+			\ "\<C-v>": 'VB',
+			\ 'c' : 'CMD',
+			\ 's' : 'S',
+			\ 'S' : 'SL',
+			\ "\<C-s>": 'SB',
+			\ 't': 'T',
+			\ }
 
-	function! LightlineFileEncoding()
-		return &filetype ==# 'nerdtree' ? '' :
-					\ &filetype ==# 'tagbar' ? '' :
-					\ &fenc !=# '' ? &fenc : &enc
-	endfunction
+function! LightlineFileEncoding()
+	return &filetype ==# 'nerdtree' ? '' :
+				\ &filetype ==# 'tagbar' ? '' :
+				\ &fenc !=# '' ? &fenc : &enc
+endfunction
 
-	function! LightlineFileFormat()
-		return winwidth(0) < 90 ? '' :
-					\ &filetype ==# 'nerdtree' ? '' :
-					\ &filetype ==# 'tagbar' ? '' :
-					\ &fileformat
-	endfunction
+function! LightlineFileFormat()
+	return winwidth(0) < 90 ? '' :
+				\ &filetype ==# 'nerdtree' ? '' :
+				\ &filetype ==# 'tagbar' ? '' :
+				\ &fileformat
+endfunction
 
-	function! LightlineFilename()
-		return &filetype ==# 'nerdtree' ? '' :
-					\ &filetype ==# 'tagbar' ? '' :
-					\ &filetype ==# 'qf' ? '' :
-					\ expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
-	endfunction
+function! LightlineFilename()
+	return &filetype ==# 'nerdtree' ? '' :
+				\ &filetype ==# 'tagbar' ? '' :
+				\ &filetype ==# 'qf' ? '' :
+				\ expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
+endfunction
 
-	function! LightlineFileType()
-		return &filetype !~# '\v(help|nerdtree|tagbar)' ? &filetype : ''
-	endfunction
+function! LightlineFileType()
+	return &filetype !~# '\v(help|nerdtree|tagbar)' ? &filetype : ''
+endfunction
 
-	function! LightlineGitgutterHunks()
-		if g:have_gitgutter
-			let [a, m, r] = GitGutterGetHunkSummary()
-			return printf('+%d ~%d -%d', a, m, r)
-		else
-			return ''
-		endif
-	endfunction
+function! LightlineGitgutterHunks()
+	let [a, m, r] = GitGutterGetHunkSummary()
+	return printf('+%d ~%d -%d', a, m, r)
+endfunction
 
-	function! LightlineMode()
-		return &filetype ==# 'nerdtree' ? 'File Explorer' :
-					\ &filetype ==# 'tagbar' ? 'Tags' :
-					\ exists('w:flake8_window') ? 'Python Errors/Warnings' :
-					\ winwidth(0) < 90 ? get(g:short_mode_map, mode(), '') :
-					\ lightline#mode()
-	endfunction
+function! LightlineMode()
+	return &filetype ==# 'nerdtree' ? 'File Explorer' :
+				\ &filetype ==# 'tagbar' ? 'Tags' :
+				\ exists('w:flake8_window') ? 'Python Errors/Warnings' :
+				\ winwidth(0) < 90 ? get(g:short_mode_map, mode(), '') :
+				\ lightline#mode()
+endfunction
 
-	function! LightlineModified()
-		return &modified &&
+function! LightlineModified()
+	return &modified &&
 				\ &filetype !~# '\v(help|nerdtree|tagbar)' ? '+' :
 				\ ''
-	endfunction
+endfunction
 
-	function! LightlineReadonly()
-		if g:have_powerline
-			return &readonly &&
-					\ &filetype !~# '\v(help|nerdtree|tagbar)' ? "\ue0a2" :
-					\ ''
-		else
-			return &readonly &&
-					\ &filetype !~# '\v(help|nerdtree|tagbar)' ? 'RO' :
-					\ ''
+function! LightlineReadonly()
+	return &readonly &&
+				\ &filetype !~# '\v(help|nerdtree|tagbar)' ? "\ue0a2" :
+				\ ''
+endfunction
+
+function! LightlineTabname(n) abort
+	let s = ''
+	let winnr = tabpagewinnr(a:n)
+	let buflist = tabpagebuflist(a:n)
+	let bufignore = ['nerdtree', 'tagbar', 'help']
+	for b in buflist
+		let buftype = getbufvar(b, "&filetype")
+		if index(bufignore, buftype)==-1 "index returns -1 if the item is not contained in the list
+			let bufnr = b
+			break
+		elseif b==buflist[-1]
+			let bufnr = b
 		endif
-	endfunction
+	endfor
+	let bufname = bufname(bufnr)
+	let s = (bufname != '' ? bufname : 'No Name')
 
-	function! LightlineTabname(n) abort
-		let s = ''
-		let winnr = tabpagewinnr(a:n)
-		let buflist = tabpagebuflist(a:n)
-		let bufignore = ['nerdtree', 'tagbar', 'help']
-		for b in buflist
-			let buftype = getbufvar(b, "&filetype")
-			if index(bufignore, buftype)==-1 "index returns -1 if the item is not contained in the list
-				let bufnr = b
-				break
-			elseif b==buflist[-1]
-				let bufnr = b
-			endif
-		endfor
-		let bufname = bufname(bufnr)
-		let s = (bufname != '' ? bufname : 'No Name')
+	return s
+endfunction
 
-		return s
-	endfunction
-
-	function! LightlineFugitive()
-		if &ft !~? 'vimfiler' && exists('*FugitiveHead')
-			if &filetype =~# '\v(help|tagbar|nerdtree)'
-				return ''
-			endif
-			let branch = fugitive#head()
-			if g:have_powerline
-				let branch_icon = "\ue0a0"
-			else
-				let branch_icon = ''
-			endif
-			return branch !=# '' ? ' '. branch_icon . branch : ''	
+function! LightlineFugitive()
+	if &ft !~? 'vimfiler' && exists('*FugitiveHead')
+		if &filetype =~# '\v(help|tagbar|nerdtree)'
+			return ''
 		endif
-		return ''
-	endfunction
+		let branch = fugitive#head()
+		let branch_icon = "\ue0a0"
+		return branch !=# '' ? ' '. branch_icon . branch : ''
+	endif
+	return ''
+endfunction
 
-	function! LightlineTagbar()
-		" This isn't working right.... it is causing odd characters to show up
-		" on the screen. For now, just return an empty string.
-		if exists('*tagbar#currenttag')
-			return &filetype !~# '\v(help|tagbar|nerdtree)' ? tagbar#currenttag("%s", "", 'p') : ''
-		endif
-		return ''
-	endfunction
+function! LightlineTagbar()
+	" This isn't working right.... it is causing odd characters to show up
+	" on the screen. For now, just return an empty string.
+	if exists('*tagbar#currenttag')
+		return &filetype !~# '\v(help|tagbar|nerdtree)' ? tagbar#currenttag("%s", "", 'p') : ''
+	endif
+	return ''
+endfunction
 
-	function! LightlineCloseBuffer()
-		echom 'Closing buffer ' . % . '...'
-	endfunction
-endif
+function! LightlineCloseBuffer()
+	echom 'Closing buffer ' . % . '...'
+endfunction
 
 function! UpdateTitle()
 	let &titlestring = 'VIM - ' . expand("%:t")
-	if g:have_fugitive
-		let branch = fugitive#head()
-		if branch !=# ''
-			let icon = "\ue0a0"
-			let &titlestring = 'VIM - ' . icon . branch . ' - ' . expand("%:t")
-		endif
+	let branch = fugitive#head()
+	if branch !=# ''
+		let icon = "\ue0a0"
+		let &titlestring = 'VIM - ' . icon . branch . ' - ' . expand("%:t")
 	endif
 endfunction
 
@@ -431,7 +392,7 @@ let NERDTreeMouseMode = 2		" --- Open/Close directories on single mouse click
 let NERDTreeNaturalSort = 1		" --- Sort order of numbered files more natural
 
 "let g:tablineclosebutton = 1
-let g:tagbar_position = g:have_nerdtree ? 'bottom' : 'left'
+let g:tagbar_position = 'bottom'
 let g:tagbar_height = winheight(0) / 2
 let g:tagbar_width = winwidth(0) > 150 ? 50 : winwidth(0) / 3
 let g:tagbar_previewwin_pos = 'botright'
@@ -440,47 +401,37 @@ let g:tagbar_previewwin_pos = 'botright'
 
 autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
 
-if g:have_lightline
-	" If we have lightline, don't use the tagbar status line
-	let g:tagbar_no_status_line = 1
+" If we have lightline, don't use the tagbar status line
+let g:tagbar_no_status_line = 1
 
-	nmap <Leader>1 <Plug>lightline#bufferline#go(1)
-	nmap <Leader>2 <Plug>lightline#bufferline#go(2)
-	nmap <Leader>3 <Plug>lightline#bufferline#go(3)
-	nmap <Leader>4 <Plug>lightline#bufferline#go(4)
-	nmap <Leader>5 <Plug>lightline#bufferline#go(5)
-	nmap <Leader>6 <Plug>lightline#bufferline#go(6)
-	nmap <Leader>7 <Plug>lightline#bufferline#go(7)
-	nmap <Leader>8 <Plug>lightline#bufferline#go(8)
-	nmap <Leader>9 <Plug>lightline#bufferline#go(9)
-	nmap <Leader>0 <Plug>lightline#bufferline#go(10)
-endif
+nmap <Leader>1 <Plug>lightline#bufferline#go(1)
+nmap <Leader>2 <Plug>lightline#bufferline#go(2)
+nmap <Leader>3 <Plug>lightline#bufferline#go(3)
+nmap <Leader>4 <Plug>lightline#bufferline#go(4)
+nmap <Leader>5 <Plug>lightline#bufferline#go(5)
+nmap <Leader>6 <Plug>lightline#bufferline#go(6)
+nmap <Leader>7 <Plug>lightline#bufferline#go(7)
+nmap <Leader>8 <Plug>lightline#bufferline#go(8)
+nmap <Leader>9 <Plug>lightline#bufferline#go(9)
+nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-if g:have_gitgutter
-	let g:gitgutter_highlight_lines = 1
-	if g:have_powerline
-		let g:gitgutter_sign_added = "\ue0b0\ue0b0"
-		let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-		let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-		let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
-	else
-		let g:gitgutter_sign_added = '>'
-		let g:gitgutter_sign_modified = '='
-		let g:gitgutter_sign_removed = '<'
-	endif
+let g:gitgutter_highlight_lines = 1
+let g:gitgutter_sign_added = "\ue0b0\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
 
-	highlight GitGutterAdd			ctermfg=Green
-	highlight GitGutterAddLine		ctermbg=17
-	highlight GitGutterChange		ctermfg=Blue
-	highlight GitGutterChangeLine	ctermbg=235
-	highlight GitGutterDelete		ctermfg=Red
-	highlight GitGutterDeleteLine	ctermbg=52
-endif
+highlight GitGutterAdd			ctermfg=Green
+highlight GitGutterAddLine		ctermbg=17
+highlight GitGutterChange		ctermfg=Blue
+highlight GitGutterChangeLine	ctermbg=235
+highlight GitGutterDelete		ctermfg=Red
+highlight GitGutterDeleteLine	ctermbg=52
 
 function! CurrentFunction()
 	let name = getline(search("^[^ \t#/]\\{2}.*[^:]\s*$", 'bW'))
@@ -488,25 +439,23 @@ function! CurrentFunction()
 	let lines_fmt = lines . ' lines'
 	let separator = repeat('-', winwidth(0) - strdisplaywidth(name) - strdisplaywidth(lines_fmt) - 5)
 
-    return name . ' ' . separator . lines_fmt
+	return name . ' ' . separator . lines_fmt
 endfunction
 
 function! GitGutterFoldToggle()
-	if g:have_gitgutter
-		if !exists('t:gitgutter_fold')
-			let t:gitgutter_fold = 0
-		endif
-		if t:gitgutter_fold == 0
-			GitGutterFold
-			let t:gitgutter_fold = 1
-			set foldtext=gitgutter#fold#foldtext()
-			"set foldtext=CurrentFunction()
-			set foldlevel=1
-		else
-			GitGutterFold
-			let t:gitgutter_fold = 0
-			set foldlevel=99
-		endif
+	if !exists('t:gitgutter_fold')
+		let t:gitgutter_fold = 0
+	endif
+	if t:gitgutter_fold == 0
+		GitGutterFold
+		let t:gitgutter_fold = 1
+		set foldtext=gitgutter#fold#foldtext()
+		"set foldtext=CurrentFunction()
+		set foldlevel=1
+	else
+		GitGutterFold
+		let t:gitgutter_fold = 0
+		set foldlevel=99
 	endif
 endfunction
 nmap <Leader>g :call GitGutterFoldToggle()<CR>
@@ -516,87 +465,55 @@ nmap <Leader>g :call GitGutterFoldToggle()<CR>
 "autocmd bufenter * if (winnr("$") == 2 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | q | endif
 
 " AnyFold Configuration
-if g:have_anyfold
-	autocmd Filetype c,cpp,python AnyFoldActivate
-	set foldlevel=99						" Open all folds
-	let g:anyfold_fold_comments=1
-	let g:anyfold_fold_display=1
-	"hi Folded term=underline cterm=underline
-endif
+autocmd Filetype c,cpp,python AnyFoldActivate
+set foldlevel=99						" Open all folds
+let g:anyfold_fold_comments=1
+let g:anyfold_fold_display=1
+"hi Folded term=underline cterm=underline
 
-if g:have_foldcycle
-	" Fold Cycling configuration
-	let g:fold_cycle_default_mapping = 0 "disable default mappings
-	nmap <Tab><Tab> <Plug>(fold-cycle-open)
-	nmap <S-Tab><S-Tab> <Plug>(fold-cycle-close)
+let g:flake8_show_quickfix = 1
+let g:flake8_show_in_gutter = 1
+let g:flake8_show_in_file = 0
+let g:flake8_quickfix_height = 10
+let g:flake8_always_visible = 1
 
-	" Won't close when max fold is opened
-	let g:fold_cycle_toggle_max_open  = 0
-	" Won't open when max fold is closed
-	let g:fold_cycle_toggle_max_close = 0
-endif
+autocmd BufWritePost *.py call flake8#Flake8()
 
-if g:have_autoformat
-	noremap <F3> :Autoformat<CR>
-endif
+let g:NERDSpaceDelims = 1			" --- add space after delimiter
+let g:NERDCompactSexyComs = 1		" --- use compact syntax for multi-line
+let g:NERDDefaultAlign = 'left'		" --- align line-wise comments to left
+let g:NERDAltDelims_java = 1		" --- set language to use alternate delims
+let g:NERDCommentEmptyLines = 1		" --- allow empty lines to be commented
+let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
+let g:NERDToggleCheckAllLines = 1	" --- check all lines for comment or not
+let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
 
-if g:have_flake8
-	let g:flake8_show_quickfix = 1
-	let g:flake8_show_in_gutter = 1
-	let g:flake8_show_in_file = 0
-	let g:flake8_quickfix_height = 10
-	let g:flake8_always_visible = 1
+" Override the default '<Leader>cc' mapping to toggle instead of comment
+let g:NERDCreateDefaultMappings = 0
+nmap <Leader>cc <plug>NERDCommenterToggle
+vmap <Leader>cc <plug>NERDCommenterToggle
+nmap <Leader>cm <plug>NERDCommenterMinimal
+vmap <Leader>cm <plug>NERDCommenterMinimal
+nmap <Leader>ci <plug>NERDCommenterInvert
+vmap <Leader>ci <plug>NERDCommenterInvert
+nmap <Leader>cy <plug>NERDCommenterYank
+vmap <Leader>cy <plug>NERDCommenterYank
 
-	autocmd BufWritePost *.py call flake8#Flake8()
-endif
+" Add your own custom formats or override the defaults
+let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
 
-if g:have_nerdcommenter
-	let g:NERDSpaceDelims = 1			" --- add space after delimiter
-	let g:NERDCompactSexyComs = 1		" --- use compact syntax for multi-line
-	let g:NERDDefaultAlign = 'left'		" --- align line-wise comments to left
-	let g:NERDAltDelims_java = 1		" --- set language to use alternate delims
-	let g:NERDCommentEmptyLines = 1		" --- allow empty lines to be commented
-	let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
-	let g:NERDToggleCheckAllLines = 1	" --- check all lines for comment or not
-	let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
-
-	" Override the default '<Leader>cc' mapping to toggle instead of comment
-	let g:NERDCreateDefaultMappings = 0
-	nmap <Leader>cc <plug>NERDCommenterToggle
-	vmap <Leader>cc <plug>NERDCommenterToggle
-	nmap <Leader>cm <plug>NERDCommenterMinimal
-	vmap <Leader>cm <plug>NERDCommenterMinimal
-	nmap <Leader>ci <plug>NERDCommenterInvert
-	vmap <Leader>ci <plug>NERDCommenterInvert
-	nmap <Leader>cy <plug>NERDCommenterYank
-	vmap <Leader>cy <plug>NERDCommenterYank
-
-	" Add your own custom formats or override the defaults
-	let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
-endif
-
-if g:have_devpanel
-	autocmd VimEnter *.c,*.cpp,*.h,*.py call devpanel#DevPanelOpen()
-	autocmd VimResized * call devpanel#DevPanelSizeUpdate()
-	nnoremap <leader>d :call devpanel#DevPanelToggle()<CR>
-endif
+autocmd VimEnter *.c,*.cpp,*.h,*.py call devpanel#DevPanelOpen()
+autocmd VimResized * call devpanel#DevPanelSizeUpdate()
+nnoremap <leader>d :call devpanel#DevPanelToggle()<CR>
 
 autocmd BufEnter * call UpdateTitle()
 
-if g:have_nerdtree
-	nnoremap <leader>x :NERDTreeToggle <CR> 
-else
-	nnoremap <leader>x :echom 'NERDTree Plugin not loaded'<CR>
-endif
-if g:have_tagbar
-	nnoremap <leader>t :TagbarToggle <CR>
-else
-	nnoremap <leader>t :silent echom 'Tagbar Plugin not loaded'
-endif
+nnoremap <leader>x :NERDTreeToggle <CR> 
+nnoremap <leader>t :TagbarToggle <CR>
 
 augroup quickfixclose
-  autocmd!
-  autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+	autocmd!
+	autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
 augroup END
 
 " End Plugin Configurations
