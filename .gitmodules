@@ -37,3 +37,6 @@
 [submodule ".vim/plugins/tagbar"]
 	path = .vim/plugins/tagbar
 	url = https://github.com/raven42/tagbar.git
+[submodule ".vim/plugins/devpanel-vim"]
+	path = .vim/plugins/devpanel-vim
+	url = https://github.com/raven42/devpanel-vim.git
