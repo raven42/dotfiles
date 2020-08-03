@@ -1,0 +1,39 @@
+[submodule ".vim/plugins/anyfold"]
+	path = .vim/plugins/anyfold
+	url = https://github.com/pseewald/vim-anyfold.git
+[submodule ".vim/plugins/vim-autoformat"]
+	path = .vim/plugins/vim-autoformat
+	url = https://github.com/Chiel92/vim-autoformat.git
+[submodule ".vim/plugins/vim-flake8"]
+	path = .vim/plugins/vim-flake8
+	url = https://github.com/nvie/vim-flake8.git
+[submodule ".vim/plugins/vim-fugitive"]
+	path = .vim/plugins/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
+[submodule ".vim/plugins/vim-gitgutter"]
+	path = .vim/plugins/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter.git
+[submodule ".vim/plugins/indentpython.vim"]
+	path = .vim/plugins/indentpython.vim
+	url = https://github.com/raven42/indentpython.vim.git
+[submodule ".vim/plugins/lightline.vim"]
+	path = .vim/plugins/lightline.vim
+	url = https://github.com/itchyny/lightline.vim.git
+[submodule ".vim/plugins/lightline-bufferline"]
+	path = .vim/plugins/lightline-bufferline
+	url = https://github.com/mengelbrecht/lightline-bufferline.git
+[submodule ".vim/plugins/nerdcommenter"]
+	path = .vim/plugins/nerdcommenter
+	url = https://github.com/preservim/nerdcommenter.git
+[submodule ".vim/plugins/nerdtree"]
+	path = .vim/plugins/nerdtree
+	url = https://github.com/preservim/nerdtree.git
+[submodule ".vim/plugins/vim-paste-easy"]
+	path = .vim/plugins/vim-paste-easy
+	url = https://github.com/roxma/vim-paste-easy
+[submodule ".vim/plugins/searchfold.vim"]
+	path = .vim/plugins/searchfold.vim
+	url = https://github.com/vim-scripts/searchfold.vim.git
+[submodule ".vim/plugins/tagbar"]
+	path = .vim/plugins/tagbar
+	url = https://github.com/raven42/tagbar.git
