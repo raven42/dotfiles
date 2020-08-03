@@ -1,0 +1,98 @@
+# Default resource file
+if [ $CLEARCASE_ROOT ]; then
+	ROOT_PATH=
+	TAGDIR=${HOME}/.latest
+elif [ $GIT_ROOT ]; then
+	ROOT_PATH=${GIT_ROOT}
+	if [ -d ${GIT_ROOT}/.rc/tags ]; then
+		TAGDIR=${GIT_ROOT}/.rc/tags
+	elif [ -d ${HOME}/.git_default_rc/tags ]; then
+		TAGDIR=${HOME}/.git_default_rc/tags
+	elif [ -d /zzz/work05/dh404494/fos01/.rc/tags ]; then
+		TAGDIR=/zzz/work05/dh404494/fos01/.rc/tags
+	else
+		TAGDIR=${HOME}/.latest
+	fi
+else
+	TAGDIR=${HOME}/.latest
+fi
+export TAGDIR
+
+TAGFILES=${TAGDIR}/tags_fabos_src,${TAGDIR}/tags_fabos_bfos,${TAGDIR}/tags_fabos_dfos,${TAGDIR}/tags_fabos_bccb,${TAGDIR}/tags_fabos_cntcp,${TAGDIR}/tags_fabos_tps,${TAGDIR}/tags_fabos_linux,${HOME}/tags_fabos_presto,${HOME}/tags_common,${HOME}/tags_zebos,${TAGDIR}/tags_sql
+export TAGFILES
+
+# Directory defines
+VPS=/vobs/projects/springboard
+
+# Directory shortcuts
+alias bccb='cd ${ROOT_PATH}${VPS}/fabos/bccb'
+alias bfos='cd ${ROOT_PATH}${VPS}/fabos/bfos'
+alias build='cd ${ROOT_PATH}${VPS}/build/'
+alias cfos='cd ${ROOT_PATH}${VPS}/fabos/cfos'
+alias dist='cd ${ROOT_PATH}${VPS}/dist'
+alias root='cd ${ROOT_PATH}/'
+alias fabos='cd ${ROOT_PATH}${VPS}/fabos'
+alias linux='cd ${ROOT_PATH}${VPS}/linux26/'
+alias makedir='cd ${ROOT_PATH}${VPS}/make'
+alias tps='cd ${ROOT_PATH}${VPS}/tps'
+alias cvm='cd ${ROOT_PATH}${VPS}/tps/cavium/cn72xx'
+
+# CP
+alias asic='cd ${ROOT_PATH}${VPS}/fabos/src/sys/dev/asic'
+alias butils='cd ${ROOT_PATH}${VPS}/fabos/bccb/lib/utils'
+alias esm='cd ${ROOT_PATH}${VPS}/fabos/src/esm'
+alias esmb='cd ${ROOT_PATH}${VPS}/fabos/bccb/esm'
+alias esmbi='cd ${ROOT_PATH}${VPS}/fabos/bccb/include/esm_common'
+alias esmi='cd ${ROOT_PATH}${VPS}/fabos/src/include/esm'
+alias esmdp='cd ${ROOT_PATH}${VPS}/fabos/dfos/skybolt/esm'
+alias esmse='cd ${ROOT_PATH}${VPS}/fabos/dfos/se/common/esm'
+alias esmsim='cd ${ROOT_PATH}${VPS}/fabos/src/esm/simulator'
+alias libesm='cd ${ROOT_PATH}${VPS}/fabos/src/lib/esmd'
+alias ips='cd ${ROOT_PATH}${VPS}/fabos/src/ips'
+alias ipsi='cd ${ROOT_PATH}${VPS}/fabos/src/include/ips'
+alias ipsb='cd ${ROOT_PATH}${VPS}/fabos/bccb/include/ipsport'
+alias lib='cd ${ROOT_PATH}${VPS}/fabos/src/lib'
+alias libcal='cd ${ROOT_PATH}${VPS}/fabos/src/lib/cal'
+alias libips='cd ${ROOT_PATH}${VPS}/fabos/src/lib/ips'
+alias libutils='cd ${ROOT_PATH}${VPS}/fabos/src/lib/utils'
+alias md='cd ${ROOT_PATH}${VPS}/fabos/src/md'
+alias portcmds='cd ${ROOT_PATH}${VPS}/fabos/src/utils/port'
+alias preinst='cd ${ROOT_PATH}${VPS}/fabos/src/utils/firmware'
+alias ras='cd ${ROOT_PATH}${VPS}/fabos/src/sys/dev/raslog/xml'
+alias rbac='cd ${ROOT_PATH}${VPS}/fabos/src/lib/rbac/sql'
+alias svc='cd ${ROOT_PATH}${VPS}/fabos/src/setup/service'
+alias utils='cd ${ROOT_PATH}${VPS}/fabos/src/utils'
+
+# DP
+alias api='cd ${ROOT_PATH}${VPS}/fabos/dfos/se/fcip/tcpip/api'
+alias clib='cd ${ROOT_PATH}${VPS}/fabos/dfos/se/common/lib/clib'
+alias comp='cd ${ROOT_PATH}${VPS}/fabos/dfos/starlifter/se/ipext/tcpip/cvm_net/components'
+alias dfos='cd ${ROOT_PATH}${VPS}/fabos/dfos/'
+alias fps='cd ${ROOT_PATH}${VPS}/fabos/dfos/se/common/lib/fps'
+alias ftnl='cd ${ROOT_PATH}${VPS}/fabos/dfos/se/common/ftnl'
+alias sdk='cd /usr/local/Cavium_Networks/OCTEON-SDK'
+alias se='cd ${ROOT_PATH}${VPS}/fabos/dfos/se'
+alias um='cd ${ROOT_PATH}${VPS}/tps/cavium/cn72xx/make'
+
+# Build
+alias emake='emake_wrapper'
+alias bd42='cd ${ROOT_PATH}${VPS}/build/swbd42/'
+alias bd36='cd ${ROOT_PATH}${VPS}/build/swbd36/'
+alias bd55='cd ${ROOT_PATH}${VPS}/build/swbd55/'
+alias bd62='cd ${ROOT_PATH}${VPS}/build/swbd62/'
+alias bd71='cd ${ROOT_PATH}${VPS}/build/swbd71/'
+alias bd81='cd ${ROOT_PATH}${VPS}/build/swbd81/'
+alias bd85='cd ${ROOT_PATH}${VPS}/build/swbd85/'
+alias bd122='cd ${ROOT_PATH}${VPS}/build/swbd122/'
+alias bd127='cd ${ROOT_PATH}${VPS}/build/swbd127/'
+alias bd148='cd ${ROOT_PATH}${VPS}/build/swbd148/'
+alias bd165='cd ${ROOT_PATH}${VPS}/build/swbd165/'
+alias bd171='cd ${ROOT_PATH}${VPS}/build/swbd171/'
+alias bd178='cd ${ROOT_PATH}${VPS}/build/swbd178/'
+alias bd188='cd ${ROOT_PATH}${VPS}/build/swbd188/'
+alias builds='cd /buildsjc/sre/SQA/fos'
+
+# DCM/Confd Shortcuts
+alias yang='cd ${ROOT_PATH}${VPS}/fabos/src/yang'
+alias confd='cd ${ROOT_PATH}${VPS}/fabos/src/vcs/dcm/source/ConfdGateway'
+
