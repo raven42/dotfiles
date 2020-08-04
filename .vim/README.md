@@ -12,7 +12,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 > `<Leader><#>` - Move to the open buffer as signified by `#`. (Example: `\2`)  
 > `<Leader>g` - Activate the GitGutter fold method to fold all text around the current changes in the open file.  
 > `<Leader>cc` - Toggle a comment block around the currently selected code in visual mode.  
-<p class="callout info">Note: All these <Leader> commands are done using the `\` key. Example `\1` will jump to the first open buffer.</p>
+Note: All these <Leader> commands are done using the `\` key. Example `\1` will jump to the first open buffer.
 
 ## NERDTree
 The NERDTree plugin provides a file browser for any files. Double-click on any file to open it in a new buffer. Single-click on any directory to expand / collapse it.
