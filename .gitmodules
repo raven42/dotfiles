@@ -1,9 +1,6 @@
 [submodule ".vim/pack/plugins/start/vim-autoformat"]
 	path = .vim/pack/plugins/start/vim-autoformat
 	url = https://github.com/Chiel92/vim-autoformat.git
-[submodule ".vim/pack/plugins/start/vim-flake8"]
-	path = .vim/pack/plugins/start/vim-flake8
-	url = https://github.com/nvie/vim-flake8.git
 [submodule ".vim/pack/plugins/start/vim-fugitive"]
 	path = .vim/pack/plugins/start/vim-fugitive
 	url = https://github.com/tpope/vim-fugitive.git
@@ -37,3 +34,6 @@
 [submodule ".vim/pack/plugins/start/devpanel-vim"]
 	path = .vim/pack/plugins/start/devpanel-vim
 	url = https://github.com/raven42/devpanel-vim.git
+[submodule ".vim/pack/plugins/start/auto-pairs"]
+	path = .vim/pack/plugins/start/auto-pairs
+	url = https://github.com/jiangmiao/auto-pairs.git

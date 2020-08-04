@@ -99,6 +99,12 @@ highlight Error			ctermfg=White guifg=White ctermbg=Red guibg=Red
 highlight ErrorMsg		ctermfg=Yellow guifg=Yellow
 highlight FoldColumn	ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
 highlight Folded		ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
+highlight GitGutterAdd			ctermfg=Green
+highlight GitGutterAddLine		ctermbg=17
+highlight GitGutterChange		ctermfg=Blue
+highlight GitGutterChangeLine	ctermbg=235
+highlight GitGutterDelete		ctermfg=Red
+highlight GitGutterDeleteLine	ctermbg=52
 highlight Identifier	ctermfg=DarkBlue guifg=DarkBlue
 highlight Ignore		ctermfg=Gray guifg=bg
 highlight IncSearch		cterm=reverse gui=reverse
@@ -131,13 +137,13 @@ highlight Whitespace	ctermbg=DarkRed guibg=DarkRed
 highlight WildMenu		ctermfg=Black ctermbg=Yellow guifg=Black guibg=Yellow
 highlight lCursor		guifg=bg guibg=fg
 
-"GNU Coding Standards
-"setlocal cindent
-"setlocal cinoptions=>4,n-2,{2,^-2,:2,=2,g0,h2,p5,t0,+2,(0,u0,w1,m1
-"setlocal shiftwidth=2
-"setlocal softtabstop=2
-"setlocal textwidth=79
-"setlocal fo-=ro fo+=cql
+" --- GNU Coding Standards
+" setlocal cindent
+" setlocal cinoptions=>4,n-2,{2,^-2,:2,=2,g0,h2,p5,t0,+2,(0,u0,w1,m1
+" setlocal shiftwidth=2
+" setlocal softtabstop=2
+" setlocal textwidth=79
+" setlocal fo-=ro fo+=cql
 
 set nocompatible			" ---- Use Vim defaults (much better!)
 set bs=indent,eol,start		" ---- allow backspacing over everything in insert mode
@@ -145,12 +151,12 @@ set viminfo='20,\"50		" ---- read/write a .viminfo file, don't store more
 							" ---- than 50 lines of registers
 set history=50				" ---- keep 50 lines of command line history
 set ruler					" ---- show the cursor position all the time
-set confirm
+set confirm					" ---- Ask to continue when necessary
 set noinsertmode			" ---- don't don't out in insert mode
 set backspace=2				" ---- allow us to backspace before an insert
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
+set tabstop=4				" ---- set tabs to 4 spaces
+set shiftwidth=4			" ---- set shift width to 4 spaces
+set softtabstop=4			" ---- set tabs to 4 spaces when using softtabs
 set noexpandtab				" ---- use real tab characters
 set ttymouse=xterm2			" ---- turn on the mouse in the xterm
 set mouse=a					" ---- enable mouse for all VIM options
@@ -172,27 +178,20 @@ filetype plugin on
 filetype indent on
 
 " ---- :help cinoptions-values
-"autocmd FileType *.c,*.cpp,*.h
+" NOTE: additional formatting options specified in .vim/after/ftplugin.vim
 autocmd FileType c,cpp setlocal cinoptions=>4,t0,#0,:0,l1,t0,p2,+2s,c0,(0,m1,)50,J1,#N
 autocmd FileType python,sh setlocal cinoptions=>4,t0,#s
-
-match Whitespace /\s\+$/
-autocmd BufWinEnter * match Whitespace /\s\+$/
-autocmd InsertEnter * match Whitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match Whitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
+autocmd BufWinEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
+autocmd InsertEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+\%#\@<!$/
+autocmd InsertLeave *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
 autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
 autocmd BufWinEnter *.py set fileformat=unix
+autocmd BufWinLeave * call clearmatches()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugin Configurations
 
-" Note on powerline fonts: The fonts must be installed separately. The .vimrc
-" will only use the unicode characters for the various fonts. It is not
-" actually a plugin for vim like the others. Enter as double-quoted string
-" in the format "\uXXXX"
-"
-" Here are a couple unicode characters
+" Here are a couple unicode characters used for any formatted output
 " E0A0	Branch
 " E0A1	Line number
 " E0A2	Padlock (read-only)
@@ -218,7 +217,6 @@ autocmd BufWinEnter *.py set fileformat=unix
 " --- https://github.com/Chiel92/vim-autoformat
 " --- https://github.com/pseewald/vim-anyfold
 " --- https://github.com/itchyny/lightline.vim
-" --- https://github.com/vim-airline/vim-airline
 " --- https://github.com/nvie/vim-flake8
 " --- https://github.com/preservim/nerdcommenter.git
 " --- https://github.com/raven42/devpanel-vim.git
@@ -378,6 +376,22 @@ function! LightlineCloseBuffer()
 	echom 'Closing buffer ' . % . '...'
 endfunction
 
+function! GitGutterFoldToggle()
+	if !exists('t:gitgutter_fold')
+		let t:gitgutter_fold = 0
+	endif
+	if t:gitgutter_fold == 0
+		GitGutterFold
+		let t:gitgutter_fold = 1
+		set foldtext=gitgutter#fold#foldtext()
+		set foldlevel=1
+	else
+		GitGutterFold
+		let t:gitgutter_fold = 0
+		set foldlevel=99
+	endif
+endfunction
+
 function! UpdateTitle()
 	let &titlestring = 'VIM - ' . expand("%:t")
 	if exists('fugitive#head()')
@@ -391,22 +405,62 @@ function! UpdateTitle()
 	endif
 endfunction
 
-"let NERDTreeCreatePrefix='silent keepalt keepjumps'
+" --- NERDTree Configuration
 let NERDTreeMouseMode = 2		" --- Open/Close directories on single mouse click
 let NERDTreeNaturalSort = 1		" --- Sort order of numbered files more natural
 
-"let g:tablineclosebutton = 1
+" --- NERDCommenter Configuration
+let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
+let g:NERDSpaceDelims = 1				" --- add space after delimiter
+let g:NERDCompactSexyComs = 1			" --- use compact syntax for multi-line
+let g:NERDDefaultAlign = 'left'			" --- align line-wise comments to left
+let g:NERDAltDelims_java = 1			" --- set language to use alternate delims
+let g:NERDCommentEmptyLines = 1			" --- allow empty lines to be commented
+let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
+let g:NERDToggleCheckAllLines = 1		" --- check all lines for comment or not
+let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
+let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
+
+" --- Tagbar Configuration
 let g:tagbar_position = 'bottom'
 let g:tagbar_height = winheight(0) / 2
 let g:tagbar_width = winwidth(0) > 150 ? 50 : winwidth(0) / 3
 let g:tagbar_previewwin_pos = 'botright'
-"let g:tagbar_left = 1			" --- old deprecated value
-"let g:tagbar_vertical = 30		" --- old deprecated value
-
-autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
-
-" If we have lightline, don't use the tagbar status line
 let g:tagbar_no_status_line = 1
+
+" --- Syntastic Configuration
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" --- GitGutter Configuration
+let g:gitgutter_highlight_lines = 1
+let g:gitgutter_sign_added = "\ue0b0\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
+
+" --- AnyFold Configuration
+let g:anyfold_fold_comments=1
+let g:anyfold_fold_display=1
+
+" --- Flake8 Configuration
+let g:flake8_show_quickfix = 1
+let g:flake8_show_in_gutter = 1
+let g:flake8_show_in_file = 0
+let g:flake8_quickfix_height = 10
+let g:flake8_always_visible = 1
+
+" --- Key Mappings for all plugins
+nmap <Leader>cc <plug>NERDCommenterToggle
+vmap <Leader>cc <plug>NERDCommenterToggle
+nmap <Leader>cm <plug>NERDCommenterMinimal
+vmap <Leader>cm <plug>NERDCommenterMinimal
+nmap <Leader>ci <plug>NERDCommenterInvert
+vmap <Leader>ci <plug>NERDCommenterInvert
+nmap <Leader>cy <plug>NERDCommenterYank
+vmap <Leader>cy <plug>NERDCommenterYank
 
 nmap <Leader>1 <Plug>lightline#bufferline#go(1)
 nmap <Leader>2 <Plug>lightline#bufferline#go(2)
@@ -419,103 +473,17 @@ nmap <Leader>8 <Plug>lightline#bufferline#go(8)
 nmap <Leader>9 <Plug>lightline#bufferline#go(9)
 nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
-let g:gitgutter_highlight_lines = 1
-let g:gitgutter_sign_added = "\ue0b0\ue0b0"
-let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
-
-highlight GitGutterAdd			ctermfg=Green
-highlight GitGutterAddLine		ctermbg=17
-highlight GitGutterChange		ctermfg=Blue
-highlight GitGutterChangeLine	ctermbg=235
-highlight GitGutterDelete		ctermfg=Red
-highlight GitGutterDeleteLine	ctermbg=52
-
-function! CurrentFunction()
-	let name = getline(search("^[^ \t#/]\\{2}.*[^:]\s*$", 'bW'))
-	let lines = v:foldend - v:foldstart + 1
-	let lines_fmt = lines . ' lines'
-	let separator = repeat('-', winwidth(0) - strdisplaywidth(name) - strdisplaywidth(lines_fmt) - 5)
-
-	return name . ' ' . separator . lines_fmt
-endfunction
-
-function! GitGutterFoldToggle()
-	if !exists('t:gitgutter_fold')
-		let t:gitgutter_fold = 0
-	endif
-	if t:gitgutter_fold == 0
-		GitGutterFold
-		let t:gitgutter_fold = 1
-		set foldtext=gitgutter#fold#foldtext()
-		"set foldtext=CurrentFunction()
-		set foldlevel=1
-	else
-		GitGutterFold
-		let t:gitgutter_fold = 0
-		set foldlevel=99
-	endif
-endfunction
-nmap <Leader>g :call GitGutterFoldToggle()<CR>
-
-" Automatically open / close NERDTree when vim starts / exits
-"autocmd vimenter * NERDTree
-"autocmd bufenter * if (winnr("$") == 2 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | q | endif
-
-" AnyFold Configuration
-if exists('AnyFoldActivate')
-	autocmd Filetype c,cpp,python AnyFoldActivate
-endif
-let g:anyfold_fold_comments=1
-let g:anyfold_fold_display=1
-"hi Folded term=underline cterm=underline
-
-let g:flake8_show_quickfix = 1
-let g:flake8_show_in_gutter = 1
-let g:flake8_show_in_file = 0
-let g:flake8_quickfix_height = 10
-let g:flake8_always_visible = 1
-
-if exists('flake8#Flake8()')
-	autocmd BufWritePost *.py call flake8#Flake8()
-endif
-
-let g:NERDSpaceDelims = 1			" --- add space after delimiter
-let g:NERDCompactSexyComs = 1		" --- use compact syntax for multi-line
-let g:NERDDefaultAlign = 'left'		" --- align line-wise comments to left
-let g:NERDAltDelims_java = 1		" --- set language to use alternate delims
-let g:NERDCommentEmptyLines = 1		" --- allow empty lines to be commented
-let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
-let g:NERDToggleCheckAllLines = 1	" --- check all lines for comment or not
-let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
-
-" Override the default '<Leader>cc' mapping to toggle instead of comment
-let g:NERDCreateDefaultMappings = 0
-nmap <Leader>cc <plug>NERDCommenterToggle
-vmap <Leader>cc <plug>NERDCommenterToggle
-nmap <Leader>cm <plug>NERDCommenterMinimal
-vmap <Leader>cm <plug>NERDCommenterMinimal
-nmap <Leader>ci <plug>NERDCommenterInvert
-vmap <Leader>ci <plug>NERDCommenterInvert
-nmap <Leader>cy <plug>NERDCommenterYank
-vmap <Leader>cy <plug>NERDCommenterYank
-
-" Add your own custom formats or override the defaults
-let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
-
-autocmd VimEnter *.c,*.cpp,*.h,*.py DevPanel
-nnoremap <leader>d DevPanelToggle
-
-autocmd BufEnter * call UpdateTitle()
-
 nnoremap <leader>x :NERDTreeToggle <CR>
 nnoremap <leader>t :TagbarToggle <CR>
+nnoremap <leader>d DevPanelToggle
+nmap <Leader>g :call GitGutterFoldToggle()<CR>
+
+" --- Autocmds for all plugins
+autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
+autocmd VimEnter *.c,*.cpp,*.h,*.py DevPanel
+autocmd BufEnter * call UpdateTitle()
+"autocmd Filetype c,cpp,python AnyFoldActivate
+autocmd BufWritePost *.py call flake8#Flake8()
 
 augroup quickfixclose
 	autocmd!
