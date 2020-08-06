@@ -27,6 +27,28 @@ To update submodules if they are updated:
 githome submodule update
 ```
 
+## Personal Copy
+To create your own private personal copy, you can fork this repository and use that fork to clone your own variant of this repo.
+
+---
+
+# Bash Configuration
+The [.bashrc](.bashrc) file is a generic resource file which defines some basics which should be compatible for any user. This script will reference the following user specific files.
+| File | Purpose |
+| --- | --- |
+| .default/common_rc | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
+| ${GIT_ROOT}/.rc/rc | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
+| ${GIT_ROOT}/.rc/swbd | This file is used to define a specific platform to set for the current command shell. See SWBD platform discussion below |
+| .default/post_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
+
+## SWBD Platform
+The `${GIT_ROOT}/.rc/swbd` file is sourced after every command as part of the PROMPT_COMMAND function call. This can be used to set a current `$SWBD` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable.
+
+Example:
+`alias cp-img=cp ${GIT_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>`
+
+---
+
 # VIM Configuration
 See the [.vim/README.md](.vim/README.md) file for more information on the VIM setup and configuration.
 
