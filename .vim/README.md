@@ -21,7 +21,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>=` | Resize the current window making it 5 characters more in height |
 | `<Leader>_` | Resize the current window making it 5 character less in width |
 | `<Leader>+` | Resize the current window making it 5 character more in width |
-| `<Leader>q` | Close the current buffer :construction: |
+| `<Leader>q` | Close the current buffer :construction: (Not yet fully funcitonal) |
 | `<Leader>g` | Activate the GitGutter fold method to fold all text around the current changes in the open file. |
 | `z,` | Decrease current foldlevel by one reducing the amount of context around a fold |
 | `z.` | Increase current foldlevel by one increasing the amount of context around a fold |
