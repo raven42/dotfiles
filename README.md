@@ -13,7 +13,9 @@ git clone --bare <dotfiles-repo.git> $HOME/.cfg
 ```
 
 Setup git to not show untracked files in the status output
-```githome config --local status.showUntrackedFiles no```
+```
+githome config --local status.showUntrackedFiles no
+```
 
 Once cloned, it may be necessary to initialize / update any submodules for any git repositories that are embedded in the environment.
 ```
