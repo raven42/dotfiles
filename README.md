@@ -43,6 +43,11 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 ## SWBD Platform
 The `${GIT_ROOT}/.rc/swbd` file is sourced after every command as part of the PROMPT_COMMAND function call. This can be used to set a current `$SWBD` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable.
 
+This file should contain as little as possible. Ideally only exporting the $SWBD environment variable.
+```
+export SWBD=swbd165
+```
+
 Example:
 `alias cp-img='cp ${GIT_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>'`
 
