@@ -191,6 +191,8 @@ autocmd BufWinLeave * call clearmatches()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugin Configurations
 
+packloadall
+
 " Here are a couple unicode characters used for any formatted output
 " E0A0	Branch
 " E0A1	Line number
@@ -210,21 +212,32 @@ autocmd BufWinLeave * call clearmatches()
 " E0BF	Top-right angle line
 
 " --- https://github.com/majutsushi/tagbar
+let g:have_tagbar = &runtimepath =~# 'tagbar' ? 1 : 0
 " --- https://github.com/preservim/nerdtree
+let g:have_nerdtree = &runtimepath =~# 'nerdtree' ? 1 : 0
 " --- https://github.com/tpope/vim-fugitive
+let g:have_fugitive = &runtimepath =~# 'fugitive' ? 1 : 0
 " --- https://github.com/airblade/vim-gitgutter
+let g:have_gitgutter = &runtimepath =~# 'gitgutter' ? 1 : 0
 " --- https://github.com/arecarn/vim-fold-cycle
+let g:have_foldcycle = &runtimepath =~# 'foldcycle' ? 1 : 0
 " --- https://github.com/Chiel92/vim-autoformat
+let g:have_autoformat = &runtimepath =~# 'autoformat' ? 1 : 0
 " --- https://github.com/pseewald/vim-anyfold
+let g:have_anyfold = &runtimepath =~# 'anyfold' ? 1 : 0
 " --- https://github.com/itchyny/lightline.vim
+let g:have_lightline = &runtimepath =~# 'lightline' ? 1 : 0
 " --- https://github.com/nvie/vim-flake8
+let g:have_flake8 = &runtimepath =~# 'flake8' ? 1 : 0
 " --- https://github.com/preservim/nerdcommenter.git
+let g:have_nerdcommenter = &runtimepath =~# 'nerdcommenter' ? 1 : 0
 " --- https://github.com/raven42/devpanel-vim.git
+let g:have_devpanel = &runtimepath =~# 'devpanel' ? 1 : 0
 
 "----- Lightline Plugin Configuration
 let g:lightline = {
 			\ 'active': {
-			\	'left': [['mode', 'paste', 'modified'], ['readonly', 'filename'], ['tagbar']],
+			\	'left': [['mode', 'paste', 'modified'], ['readonly', 'filename'], ['functionName']],
 			\	'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
 			\   },
 			\ 'inactive': {
@@ -249,7 +262,7 @@ let g:lightline = {
 			\	'buffers': 'tabsel'
 			\ },
 			\ 'component_function': {
-			\	'branch': 'LightlineFugitive',
+			\	'branch': 'LightlineBranchInfo',
 			\	'fileencoding': 'LightlineFileEncoding',
 			\	'fileformat': 'LightlineFileFormat',
 			\	'filename': 'LightlineFilename',
@@ -258,11 +271,7 @@ let g:lightline = {
 			\	'mode' : 'LightlineMode',
 			\	'modified' : 'LightlineModified',
 			\   'readonly': 'LightlineReadonly',
-			\	'tagbar': 'LightlineTagbar',
-			\ },
-			\ 'tab_component_function': {
-			\	'filename': 'LightlineTabname',
-			\	'closebuffer': 'LightlineCloseBuffer',
+			\	'functionName': 'LightlineFunctionName',
 			\ },
 			\ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
 			\ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
@@ -282,28 +291,27 @@ let g:short_mode_map = {
 			\ 't': 'T',
 			\ }
 
+let g:ignored_windows = '\v(help|nerdtree|tagbar|qf)'
+let g:lightline#bufferline#read_only = "\ue0a2"
+
 function! LightlineFileEncoding()
-	return &filetype ==# 'nerdtree' ? '' :
-				\ &filetype ==# 'tagbar' ? '' :
+	return &filetype =~# g:ignored_windows ? '' :
 				\ &fenc !=# '' ? &fenc : &enc
 endfunction
 
 function! LightlineFileFormat()
 	return winwidth(0) < 90 ? '' :
-				\ &filetype ==# 'nerdtree' ? '' :
-				\ &filetype ==# 'tagbar' ? '' :
+				\ &filetype =~# g:ignored_windows ? '' :
 				\ &fileformat
 endfunction
 
 function! LightlineFilename()
-	return &filetype ==# 'nerdtree' ? '' :
-				\ &filetype ==# 'tagbar' ? '' :
-				\ &filetype ==# 'qf' ? '' :
+	return &filetype =~# g:ignored_windows ? '' :
 				\ expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
 endfunction
 
 function! LightlineFileType()
-	return &filetype !~# '\v(help|nerdtree|tagbar)' ? &filetype : ''
+	return &filetype !~# g:ignored_windows ? &filetype : ''
 endfunction
 
 function! LightlineGitgutterHunks()
@@ -321,55 +329,30 @@ endfunction
 
 function! LightlineModified()
 	return &modified &&
-				\ &filetype !~# '\v(help|nerdtree|tagbar)' ? '+' :
+				\ &filetype !~# g:ignored_windows ? '+' :
 				\ ''
 endfunction
 
 function! LightlineReadonly()
 	return &readonly &&
-				\ &filetype !~# '\v(help|nerdtree|tagbar)' ? "\ue0a2" :
+				\ &filetype !~# g:ignored_windows ? "\ue0a2" :
 				\ ''
 endfunction
 
-function! LightlineTabname(n) abort
-	let s = ''
-	let winnr = tabpagewinnr(a:n)
-	let buflist = tabpagebuflist(a:n)
-	let bufignore = ['nerdtree', 'tagbar', 'help']
-	for b in buflist
-		let buftype = getbufvar(b, "&filetype")
-		if index(bufignore, buftype)==-1 "index returns -1 if the item is not contained in the list
-			let bufnr = b
-			break
-		elseif b==buflist[-1]
-			let bufnr = b
-		endif
-	endfor
-	let bufname = bufname(bufnr)
-	let s = (bufname != '' ? bufname : 'No Name')
-
-	return s
+function! LightlineBranchInfo()
+	if !g:have_fugitive || &filetype =~# g:ignored_windows
+		return ''
+	endif
+	let branch = fugitive#head()
+	let branch_icon = "\ue0a0"
+	return branch !=# '' ? ' '. branch_icon . branch : ''
 endfunction
 
-function! LightlineFugitive()
-	if &ft !~? 'vimfiler' && exists('*FugitiveHead')
-		if &filetype =~# '\v(help|tagbar|nerdtree)'
-			return ''
-		endif
-		let branch = fugitive#head()
-		let branch_icon = "\ue0a0"
-		return branch !=# '' ? ' '. branch_icon . branch : ''
+function! LightlineFunctionName()
+	if !g:have_tagbar || &filetype =~# g:ignored_windows
+		return ''
 	endif
-	return ''
-endfunction
-
-function! LightlineTagbar()
-	" This isn't working right.... it is causing odd characters to show up
-	" on the screen. For now, just return an empty string.
-	if exists('*tagbar#currenttag')
-		return &filetype !~# '\v(help|tagbar|nerdtree)' ? tagbar#currenttag("%s", "", 'p') : ''
-	endif
-	return ''
+	return tagbar#currenttag("%s", "", 'f')
 endfunction
 
 function! LightlineCloseBuffer()
@@ -377,6 +360,10 @@ function! LightlineCloseBuffer()
 endfunction
 
 function! GitGutterFoldToggle()
+	if !g:have_gitgutter
+		echo '...GitGutter plugin not installed'
+		return
+	endif
 	if !exists('t:gitgutter_fold')
 		let t:gitgutter_fold = 0
 	endif
@@ -392,17 +379,42 @@ function! GitGutterFoldToggle()
 	endif
 endfunction
 
+function! LastOpenFileName() abort
+	for bufnr in filter(range(1, bufnr('$')), 'buflisted(v:val)')
+		let bufname = fnamemodify(bufname(bufnr), ':p')
+		return bufname != '' ? bufname : 'No Name'
+	endfor
+	return ''
+endfunction
+
 function! UpdateTitle()
 	let &titlestring = 'VIM - ' . expand("%:t")
-	if exists('fugitive#head()')
-		let branch = fugitive#head()
-	else
-		let branch = ''
-	endif
+	let branch = fugitive#head()
 	if branch !=# ''
-		let icon = "\ue0a0"
-		let &titlestring = 'VIM - ' . icon . branch . ' - ' . expand("%:t")
+		let branch_info = ' ' . branch . ' ' . "\ue0a0"
+	else
+		let branch_info = ''
 	endif
+	let file_info = LastOpenFileName()
+	let file_info = substitute(file_info, '\/work\/dh404494', '', '')
+	let file_info = substitute(file_info, 'vobs\/projects\/springboard', '..', '')
+	let file_info = substitute(file_info, '\/home\/dh404494', '~', '')
+	let &titlestring = 'VIM ' . branch_info . ' ' . file_info
+endfunction
+
+function! BufClose() abort
+	" If only one buffer open and listed (ignoring hidden buffers) don't close
+	if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
+		echo '...No more buffers open'
+		return
+	endif
+	if !buflisted('$')
+		echo '...Unable to close an unlisted buffer'
+		return
+	endif
+	let bufnr = bufnr("%")
+	bprevious
+	execute 'bdelete ' . bufnr
 endfunction
 
 " --- NERDTree Configuration
@@ -452,6 +464,10 @@ let g:flake8_show_in_file = 0
 let g:flake8_quickfix_height = 10
 let g:flake8_always_visible = 1
 
+" --- Auto-pairs Configuration
+let g:AutoPairsShortcutToggle = ''
+let g:AutoPairsShortcutFastWrap = '<Leader>)'
+
 " --- Key Mappings for all plugins
 nmap <Leader>cc <plug>NERDCommenterToggle
 vmap <Leader>cc <plug>NERDCommenterToggle
@@ -473,10 +489,11 @@ nmap <Leader>8 <Plug>lightline#bufferline#go(8)
 nmap <Leader>9 <Plug>lightline#bufferline#go(9)
 nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 
-nnoremap <leader>x :NERDTreeToggle <CR>
-nnoremap <leader>t :TagbarToggle <CR>
-nnoremap <leader>d DevPanelToggle
-nmap <Leader>g :call GitGutterFoldToggle()<CR>
+nnoremap <Leader>x :NERDTreeToggle <CR>
+nnoremap <Leader>t :TagbarToggle <CR>
+nnoremap <Leader>d DevPanelToggle
+nnoremap <silent> <Leader>q :call BufClose()<CR>
+nnoremap <silent> <Leader>g :call GitGutterFoldToggle()<CR>
 
 " --- Autocmds for all plugins
 autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
@@ -506,19 +523,20 @@ tmap <silent> [1;5D <c-w>:wincmd h<CR>
 nmap <silent> [1;5C :wincmd l<CR>
 tmap <silent> [1;5C <c-w>:wincmd l<CR>
 
-nmap <silent> = :resize +5<CR>
-nmap <silent> - :resize -5<CR>
-nmap <silent> _ :vertical resize +5<CR>
-nmap <silent> + :vertical resize -5<CR>
+nmap <silent> <Leader>= :resize +5<CR>
+nmap <silent> <Leader>- :resize -5<CR>
+nmap <silent> <Leader>_ :vertical resize +5<CR>
+nmap <silent> <Leader>+ :vertical resize -5<CR>
+
+set foldlevel=10
+
+" Decrease / Increase fold level
+nmap z, zm
+nmap z. zr
+nmap z,, :set foldlevel=0 <CR>
+nmap z.. :set foldlevel=99 <CR>
 
 nnoremap ; :
-
-"----- Set cursor movement to more natural behavior of moving a row at a time
-"----- for wrapped lines, and to home/end of current row instead of full line
-"nnoremap <up> g<up>
-"nnoremap <down> g<down>
-"nnoremap <home> g<home>
-"nnoremap <end> g<end>
 
 "----- Let's try the following settings for C/C++
 autocmd FileType c,cpp
@@ -626,11 +644,6 @@ endfunction
 "map <silent> <c-z> :set foldmethod=expr foldexpr=(getline(v:lnum)=~'<c-r>=expand("<cword>")<cr>')?0:(getline(v:lnum-1)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+1)=~'<c-r>=expand("<cword>")<cr>')?1:(getline(v:lnum-2)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+2)=~'<c-r>=expand("<cword>")<cr>')?2:(getline(v:lnum-3)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+3)=~'<c-r>=expand("<cword>")<cr>')?3:(getline(v:lnum-4)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+4)=~'<c-r>=expand("<cword>")<cr>')?4:(getline(v:lnum-5)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+5)=~'<c-r>=expand("<cword>")<cr>')?5:(getline(v:lnum-6)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+6)=~'<c-r>=expand("<cword>")<cr>')?6:(getline(v:lnum-7)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+7)=~'<c-r>=expand("<cword>")<cr>')?7:(getline(v:lnum-8)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+8)=~'<c-r>=expand("<cword>")<cr>')?8:(getline(v:lnum-9)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+9)=~'<c-r>=expand("<cword>")<cr>')?9:(getline(v:lnum-10)=~'<c-r>=expand("<cword>")<cr>')\\|\\|(getline(v:lnum+10)=~'<c-r>=expand("<cword>")<cr>')?10:11 \| call ToggleFold()<CR>
 " Shift-Z - Fold functions
 "map <silent> Z :set foldmethod=indent \| call ToggleFold()<CR>
-set foldlevel=10
-
-" Decrease / Increase fold level
-map z, zm
-map z. zr
 
 endif
 
