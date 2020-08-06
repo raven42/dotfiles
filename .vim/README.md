@@ -17,13 +17,16 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>ci` | Invert selected code: Comment any uncommented code, and uncomment any commented code |
 | `<Leader>cy` | Yank selected code into clipboard and then comment out |
 | `<Leader>d` | Toggle the File Explorer (NERDTree) and Tag (Tagbar) windows |
-| `-` | Resize the current window making it 5 characters less in height |
-| `=` | Resize the current window making it 5 characters more in height |
-| `_` | Resize the current window making it 5 character less in width |
-| `+` | Resize the current window making it 5 character more in width |
+| `<Leader>-` | Resize the current window making it 5 characters less in height |
+| `<Leader>=` | Resize the current window making it 5 characters more in height |
+| `<Leader>_` | Resize the current window making it 5 character less in width |
+| `<Leader>+` | Resize the current window making it 5 character more in width |
+| `<Leader>q` | Close the current buffer :construction: |
 | `<Leader>g` | Activate the GitGutter fold method to fold all text around the current changes in the open file. |
 | `z,` | Decrease current foldlevel by one reducing the amount of context around a fold |
 | `z.` | Increase current foldlevel by one increasing the amount of context around a fold |
+| `z,,` | Set foldlevel to 0 (close all folds) |
+| `z..` | Set foldlevel to 99 (open all folds to level 99) |
 | `za` | Toggle a fold open / closed |
 | `<Ctrl-h>` | Toggle Hex mode. |
 
@@ -37,8 +40,6 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 The NERDTree plugin provides a file browser for any files. `<double-click>` or hit `<enter>` on any file to open it in a new buffer. `<single-click>` or hit `<enter>` on any directory to expand / collapse it. When a file is opened, it will open in a new buffer. The tabline will be updated to list that file name as well. Use `<Leader><#>` or `:n` / `:p` to move between opened buffers.
 
 If you do a `<middle-click>` on a file, then the current edit window will be split horizontally and the new file will be opened in the split.
-
-> :warning: **Warning:** Opening the same file twice will result in that file being loaded into two separate buffers. It is best to avoid this.
 
 > :construction: **Example:** coming soon...
 
@@ -104,6 +105,12 @@ To add any additional plugins, you can automatically add / load them by doing th
 cd ~/.vim/pack/plugins/start
 githome submodule add <plugin-url>
 githome commit -m "Added plugin <plugin>"
+```
+> :warning: **User Config:** After cloning the remote repo, you may want to set a specific username/email for that repository if using a different github server or account.
+```
+cd <plugin>
+git config --local user.name '<user>'
+git config --local user.email '<email>'
 ```
 
 ---

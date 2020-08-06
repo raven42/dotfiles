@@ -4,69 +4,43 @@
 #	export TERM
 #fi
 
-#echo "Something witty..."
-
-# Note: Directory alias definitions moved to ~/.default_rc or ~/.{branch}_rc files
-alias bcl='make -f makefile.sb clean no_depend=1'
+# Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias githome='/usr/bin/git --git-dir $HOME/.cfg/ --work-tree $HOME'
-#alias ls="ls -F"
+alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
 alias rebash='source ~/.bashrc'
-alias view="cleartool setview"
-alias telnet="telnet -e ^B"
 alias scp="scp -oStrictHostKeyChecking=no"
 alias ssh="ssh -oStrictHostKeyChecking=no"
-alias unco='cleartool unco -rm'
+alias telnet="telnet -e ^B"
 alias vi="vim"
 
 # Setup our environment:
-PATH=.:~/bin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/openwin/bin:/usr/atria/bin:/usr/rational/local/bin:/usr/ucb:/usr/bin:/usr/X11R6/bin:/import/local/bin:/import/local/ar/bin:/usr/ccs/bin:/opt/slickedit/bin:/usr/ccs/bin:/usr/local/bin:~swuser/bin:~cjohnson/bin:/corp/global/tools/bin:/corp/global/tools/bin/gittools:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:~/bin/fos:/tools/bsnbld/accupara/build
-export PATH
-
-PYTHONPATH=~/.local/lib/python3.5/site-packages
-export PYTHONPATH
-
 export EDITOR=/usr/bin/vim
+export HISTTIMEFORMAT='%m/%d/%Y-%T '
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export LD_LIBRARY_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib
+export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
+export MAKEFLAGS=-s
+export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man:/usr/atria/doc/man:~/opt/gcc-4.1.0-glibc-2.3.6/powerpc-750-linux-gnu/man
+export PATH=.:~/bin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:/tools/bsnbld/accupara/build
+export PYTHONPATH=~/.local/lib/python3.5/site-packages
+export TMOUT=0
+export TZ=/usr/share/zoneinfo/US/Central
 export VISUAL=/usr/bin/vim
 
-HISTTIMEFORMAT='%m/%d/%Y-%T '
-export HISTTIMEFORMAT
-
-TZ=/usr/share/zoneinfo/US/Central
-export TZ
-
-# These were set to en_US.UTF-8
-LANG=en_US.UTF-8
-export LANG
-LANGUAGE=en_US.UTF-8
-export LANGUAGE
-LC_ALL=en_US.UTF-8
-export LC_ALL
-
-LD_LIBRARY_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH
-LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib:$LD_RUN_PATH
-export LD_RUN_PATH
-MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man:/usr/atria/doc/man:~/opt/gcc-4.1.0-glibc-2.3.6/powerpc-750-linux-gnu/man
-export MANPATH
-TMOUT=0
-export TMOUT
-MAKEFLAGS=-s
-export MAKEFLAGS
-
-ZZZ_HOME=/zzz/work06/dhegland
-export ZZZ_HOME
-
-# Override any built in make commands
-make()
-{
-	if [ -f ~/bin/make ]; then
-		~/bin/make $@
-	else
-		/usr/bin/make $@
-	fi
-}
-
 shopt -s checkwinsize
+
+# External resource / script files
+DEFAULT_RC_PATH=${HOME}/.default
+COMMON_RC=${DEFAULT_RC_PATH}/common_rc
+DIRCOLORS=${HOME}/.dircolors
+GIT_DEFAULT_RC=${DEFAULT_RC_PATH}/repo_rc
+GIT_RC_PATH=${GIT_ROOT}/.rc
+GIT_RC=${GIT_RC_PATH}/rc
+GIT_TAGS_PATH=${GIT_RC_PATH}/tags
+GIT_COMPLETION=/tools/bsnbld/scripts/gittools/shell/git-completion.bash
+GIT_PROMPT=/tools/bsnbld/scripts/gittools/shell/git-prompt.sh
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
 if ! shopt -q login_shell ; then # We're not a login shell
@@ -77,12 +51,11 @@ if ! shopt -q login_shell ; then # We're not a login shell
 	done
 	unset i
 fi
-if [[ -f ~/.dircolors ]]; then
-	eval `dircolors -b ~/.dircolors`
+if [[ -f ${DIRCOLORS} ]]; then
+	eval `dircolors -b ${DIRCOLORS}`
 elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
 fi
-alias ls="ls -F -T 0 --color=auto"
 
 # 030m - Black
 # 031m - Red
@@ -127,40 +100,37 @@ PS_CR="\r"			# Carriage return
 PS_ESC="\e"			# Escape character
 PS_BELL="\a"		# Bell character
 
-. /tools/bsnbld/scripts/gittools/shell/git-completion.bash
-. /tools/bsnbld/scripts/gittools/shell/git-prompt.sh
+if [ -f $GIT_COMPLETION ]; then
+	. $GIT_COMPLETION
+fi
+if [ -f $GIT_PROMPT ]; then
+	. $GIT_PROMPT
+fi
 
 if [ $GIT_REPO ]; then
-	echo "  Setting up GIT environment variables..."
+	echo "Setting up GIT environment variables for ${GIT_REPO}..."
 	if [ ! -d ${GIT_ROOT} ]; then
 		echo "GIT_ROOT:${GIT_ROOT} not found."
 	else
-		if [ ! -f ${GIT_ROOT}/.rc/rc ]; then
+		if [ ! -f ${GIT_RC} ]; then
 			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
-				echo "rc spec not found. Generating defaults."
-				if [ ! -d ${GIT_ROOT}/.rc -a -w ${GIT_ROOT} ]; then
-					mkdir ${GIT_ROOT}/.rc
+				echo "rc spec not found. Generating defaults at ${GIT_RC}..."
+				if [ ! -d ${GIT_RC_PATH} -w ${GIT_ROOT} ]; then
+					mkdir ${GIT_RC_PATH}
 				fi
-				if [ ! -f ${GIT_ROOT}/.rc/rc -a -w ${GIT_ROOT}/.rc ]; then
-					cp ~/.default/rc ${GIT_ROOT}/.rc/
-					mkdir ${GIT_ROOT}/.rc/tags
+				if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} ]; then
+					cp ${GIT_DEFAULT_RC} ${GIT_RC}
+					mkdir ${GIT_TAGS_PATH}
 				fi
-				rc_spec=${GIT_ROOT}/.rc/rc
+				rc_spec=${GIT_RC}
 			else
-				echo "rc spec not found. Using defaults."
-				rc_spec=~/.git_default_rc/rc
+				echo "rc (${GIT_RC}) spec not found. Using defaults."
+				rc_spec=${GIT_DEFAULT_RC}
 			fi
 		else
-			rc_spec=${GIT_ROOT}/.rc/rc
+			rc_spec=${GIT_RC}
 		fi
 	fi
-	echo "GIT_ROOT:${GIT_ROOT}"
-
-	# Define CSCOPE database
-	#if [ -f ${GIT_ROOT}/.rc/cscope/cscope.out ]; then
-	#	CSCOPE_DB=${GIT_ROOT}/.rc/cscope/cscope.out
-	#	export CSCOPE_DB
-	#fi
 
 	if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
 		PS_COLOR=${FG_PINK}
@@ -177,24 +147,28 @@ else
 	TITLE_INFO="${USER}"
 fi
 
-# Include the default resource definitions
-. ${HOME}/.default_rc
+# Include the default alias / resource definitions
+if [ -f ${COMMON_RC} ]; then
+	. ${COMMON_RC}
+fi
 
+# Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
 	. ${rc_spec}
-	echo "RC SPEC:${rc_spec}"
-	echo "TAGDIR:${TAGDIR}"
+	echo "  RC SPEC:${rc_spec}"
+	echo "  TAGDIR:${TAGDIR}"
 fi
 
 #Display info
 export DISPLAY
 
-function set_prompt() {
+function format_prompt() {
+	# The prompt is set by exporting the PS1 variable with any string
 	if [ $GIT_REPO ]; then
-		if [ -f ${GIT_ROOT}/.rc/swbd ]; then
-			SWBD_PATH=${GIT_ROOT}/.rc/swbd
+		if [ -f ${GIT_RC_PATH}/swbd ]; then
+			SWBD_PATH=${GIT_RC_PATH}/swbd
 		else
-			SWBD_PATH=${HOME}/.default/swbd
+			SWBD_PATH=${DEFAULT_RC_PATH}/swbd
 		fi
 		. ${SWBD_PATH}
 
@@ -204,13 +178,11 @@ function set_prompt() {
 	else
 		SWBD_STRING=""
 	fi
-	PS1="[${SWBD_STRING}${PS_COLOR}${PS_INFO}${FG_RST}] ${PS_DIR}${PS_SYMB} ";
-	export PS1
+	export PS1="[${SWBD_STRING}${PS_COLOR}${PS_INFO}${FG_RST}] ${PS_DIR}${PS_SYMB} "
 }
 
-function set_title() {
-	set_prompt
-
+function format_title() {
+	# To change the window title, do an 'echo -ne "\033]0;<string>\007"'
 	if [ $GIT_REPO ]; then
 		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	else
@@ -218,22 +190,11 @@ function set_title() {
 	fi
 }
 
+function set_prompt() {
+	format_prompt
+	format_title
+}
+
 if [ $TERM = xterm ]; then
-	PROMPT_COMMAND=set_title
+	PROMPT_COMMAND=set_prompt
 fi
-
-# Change title of xterm when changing dirs
-#if [ $TERM = xterm ]; then
-#	if [ $GIT_REPO ]; then
-#		PROMPT_COMMAND='echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"'
-#	else
-#		PROMPT_COMMAND='echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"'
-#	fi
-#fi
-
-# cat .bash_profile 
-#if [ $(date +%m%d) = "0401" ]; then
-#	clear
-#	echo -e "Microsoft Windows XP [Version 5.1.2600]\n(C) Copyright 1985-2001 Microsoft Corp.\n"
-#	export PROMPT_COMMAND="export PS1=\$(pwd|sed 's/home[0-9][0-9]/Documents and Settings/;s/\//\\\\\\\\/g;s/^/C:/;s/$/> /')"
-#fi

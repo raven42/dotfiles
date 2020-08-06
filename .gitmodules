@@ -34,6 +34,6 @@
 [submodule ".vim/pack/plugins/start/devpanel-vim"]
 	path = .vim/pack/plugins/start/devpanel-vim
 	url = https://github.com/raven42/devpanel-vim.git
-[submodule ".vim/pack/plugins/start/auto-pairs"]
-	path = .vim/pack/plugins/start/auto-pairs
-	url = https://github.com/jiangmiao/auto-pairs.git
+[submodule ".vim/pack/plugins/start/vim-flake8"]
+	path = .vim/pack/plugins/start/vim-flake8
+	url = https://github.com/raven42/vim-flake8.git
