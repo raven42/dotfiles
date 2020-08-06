@@ -12,8 +12,6 @@ echo ".cfg" >> .gitignore
 git clone --bare <dotfiles-repo.git> $HOME/.cfg
 ```
 
-> Note: You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
-
 Setup git to not show untracked files in the status output
 ```githome config --local status.showUntrackedFiles no```
 
@@ -28,6 +26,8 @@ To update submodules if they are updated:
 ```
 githome submodule update
 ```
+
+> Note: You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
 
 ---
 
