@@ -191,6 +191,13 @@ autocmd BufWinLeave * call clearmatches()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugin Configurations
 
+" --- GitGutter Configuration - must be defined before loading plugins
+let g:gitgutter_highlight_lines = 1
+let g:gitgutter_sign_added = "\ue0b0\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
+
 packloadall
 
 " Here are a couple unicode characters used for any formatted output
@@ -445,13 +452,6 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-
-" --- GitGutter Configuration
-let g:gitgutter_highlight_lines = 1
-let g:gitgutter_sign_added = "\ue0b0\ue0b0"
-let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
 
 " --- AnyFold Configuration
 let g:anyfold_fold_comments=1
