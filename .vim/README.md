@@ -38,7 +38,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 
 ## DevPanel
 The DevPanel plugin will automatically open the NERDTree and Tagbar plugin windows and arrange them accordingly.
-:construction: **Example:** coming soon...
+![devpanel vim example](../img/devpanel_example.png?raw=true "DevPanel Example:")
 
 ---
 
