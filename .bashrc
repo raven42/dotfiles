@@ -42,6 +42,7 @@ GIT_RC=${GIT_RC_PATH}/rc
 GIT_TAGS_PATH=${GIT_RC_PATH}/tags
 GIT_COMPLETION=/tools/bsnbld/scripts/gittools/shell/git-completion.bash
 GIT_PROMPT=/tools/bsnbld/scripts/gittools/shell/git-prompt.sh
+USER_HOSTNAME="bsnvdga0120"
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
 if ! shopt -q login_shell ; then # We're not a login shell
@@ -135,6 +136,8 @@ if [ $GIT_REPO ]; then
 
 	if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
 		PS_COLOR=${FG_PINK}
+	elif [[ ${HOSTNAME} =~ ${USER_HOSTNAME} ]]; then
+		PS_COLOR=${FG_ORG}
 	else
 		PS_COLOR=${FG_CYAN}
 	fi
@@ -165,19 +168,19 @@ function format_prompt() {
 	# The prompt is set by exporting the PS1 variable with any string
 	if [ $GIT_REPO ]; then
 		if [ -f ${GIT_RC_PATH}/swbd ]; then
-			SWBD_PATH=${GIT_RC_PATH}/swbd
+			PLATFORM_PATH=${GIT_RC_PATH}/swbd
 		else
-			SWBD_PATH=${DEFAULT_RC_PATH}/swbd
+			PLATFORM_PATH=${DEFAULT_RC_PATH}/swbd
 		fi
-		. ${SWBD_PATH}
+		. ${PLATFORM_PATH}
 
 		if [ $SWBD ]; then
-			SWBD_STRING="${FG_YLW}SWBD-${SWBD:4} "
+			PLATFORM_STRING="${FG_YLW}SWBD-${SWBD:4} "
 		fi
 	else
-		SWBD_STRING=""
+		PLATFORM_STRING=""
 	fi
-	export PS1="[${SWBD_STRING}${PS_COLOR}${PS_INFO}${FG_RST}] ${PS_DIR}${PS_SYMB} "
+	export PS1="[${PLATFORM_STRING}${PS_COLOR}${PS_INFO}${FG_RST}] ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
