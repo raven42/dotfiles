@@ -12,10 +12,10 @@ echo ".cfg" >> .gitignore
 git clone --bare <dotfiles-repo.git> $HOME/.cfg
 ```
 
-> Note: You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
-
 Setup git to not show untracked files in the status output
-```githome config --local status.showUntrackedFiles no```
+```
+githome config --local status.showUntrackedFiles no
+```
 
 Once cloned, it may be necessary to initialize / update any submodules for any git repositories that are embedded in the environment.
 ```
@@ -28,6 +28,8 @@ To update submodules if they are updated:
 ```
 githome submodule update
 ```
+
+> Note: You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
 
 ---
 
@@ -43,8 +45,13 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 ## SWBD Platform
 The `${GIT_ROOT}/.rc/swbd` file is sourced after every command as part of the PROMPT_COMMAND function call. This can be used to set a current `$SWBD` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable.
 
+This file should contain as little as possible. Ideally only exporting the $SWBD environment variable.
+```
+export SWBD=swbd165
+```
+
 Example:
-`alias cp-img=cp ${GIT_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>`
+`alias cp-img='cp ${GIT_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>'`
 
 ---
 
