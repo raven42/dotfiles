@@ -36,6 +36,12 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 
 ---
 
+## DevPanel
+The DevPanel plugin will automatically open the NERDTree and Tagbar plugin windows and arrange them accordingly.
+:construction: **Example:** coming soon...
+
+---
+
 ## NERDTree
 The NERDTree plugin provides a file browser for any files. `<double-click>` or hit `<enter>` on any file to open it in a new buffer. `<single-click>` or hit `<enter>` on any directory to expand / collapse it. When a file is opened, it will open in a new buffer. The tabline will be updated to list that file name as well. Use `<Leader><#>` or `:n` / `:p` to move between opened buffers.
 
@@ -50,6 +56,7 @@ If you do a `<middle-click>` on a file, then the current edit window will be spl
 
 ## Tagbar
 The Tagbar plugin will use ctags to populate a window with any tags from the current file. `<double-click>` or hit `<enter>` on any tag to jump to it. `<single-click>` or move the cursor over any function and the full prototype will be listed below the statusline. When the cursor is over a particular tag, you can open it in a preview window by hitting the `P` (`<shift>p`) key.
+
 ### Shortcuts
 The following shortcuts all work in the Tagbar window.
 | Tagbar Shortcuts | Description |
@@ -59,12 +66,6 @@ The following shortcuts all work in the Tagbar window.
 | `s` | Toggle tag sorting method between file order and name order |
 | `x` | Toggle zoom mode (increase the Tagbar window to full screen width or to normal size). |
 | `P` | Open the selected tag in the preview window. |
-> :construction: **Example:** coming soon...
-
----
-
-## DevPanel
-The DevPanel plugin will automatically open the NERDTree and Tagbar plugin windows and arrange them accordingly.
 > :construction: **Example:** coming soon...
 
 ---
