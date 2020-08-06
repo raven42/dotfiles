@@ -491,13 +491,13 @@ nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 
 nnoremap <Leader>x :NERDTreeToggle <CR>
 nnoremap <Leader>t :TagbarToggle <CR>
-nnoremap <Leader>d DevPanelToggle
+nnoremap <Leader>d :DevPanelToggle<CR>
 nnoremap <silent> <Leader>q :call BufClose()<CR>
 nnoremap <silent> <Leader>g :call GitGutterFoldToggle()<CR>
 
 " --- Autocmds for all plugins
 autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
-autocmd VimEnter *.c,*.cpp,*.h,*.py DevPanel
+autocmd VimEnter *.c,*.cpp,*.h,*.py,*.vim DevPanel
 autocmd BufEnter * call UpdateTitle()
 "autocmd Filetype c,cpp,python AnyFoldActivate
 autocmd BufWritePost *.py call flake8#Flake8()
