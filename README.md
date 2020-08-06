@@ -28,7 +28,7 @@ githome submodule update
 ```
 
 # VIM Configuration
-See the .vim/README.md file for more information on the VIM setup and configuration.
+See the [.vim/README.md](.vim/README.md) file for more information on the VIM setup and configuration.
 
 For more reading, see the following:
 > <https://www.atlassian.com/git/tutorials/dotfiles>  
