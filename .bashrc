@@ -22,7 +22,7 @@ export LC_ALL=en_US.UTF-8
 export LD_LIBRARY_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib
 export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
 export MAKEFLAGS=-s
-export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man:/usr/atria/doc/man:~/opt/gcc-4.1.0-glibc-2.3.6/powerpc-750-linux-gnu/man
+export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
 export PATH=.:~/bin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:/tools/bsnbld/accupara/build
 export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export TMOUT=0
@@ -34,6 +34,7 @@ shopt -s checkwinsize
 # External resource / script files
 DEFAULT_RC_PATH=${HOME}/.default
 COMMON_RC=${DEFAULT_RC_PATH}/common_rc
+POST_RC=${DEFAULT_RC_PATH}/post_rc
 DIRCOLORS=${HOME}/.dircolors
 GIT_DEFAULT_RC=${DEFAULT_RC_PATH}/repo_rc
 GIT_RC_PATH=${GIT_ROOT}/.rc
@@ -134,8 +135,6 @@ if [ $GIT_REPO ]; then
 
 	if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
 		PS_COLOR=${FG_PINK}
-	elif [[ $HOSTNAME =~ "bsnvdga0120" ]]; then
-		PS_COLOR=${FG_ORG}
 	else
 		PS_COLOR=${FG_CYAN}
 	fi
@@ -197,4 +196,9 @@ function set_prompt() {
 
 if [ $TERM = xterm ]; then
 	PROMPT_COMMAND=set_prompt
+fi
+
+# Source the post_rc file if needed
+if [ -f ${POST_RC} ]; then
+	. ${POST_RC}
 fi
