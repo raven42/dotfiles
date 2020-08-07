@@ -53,12 +53,16 @@ xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx <other-email>@<domain>
 ```
 > :warning: Don't overwrite your existing id_rsa file for your normal user account.
 
-Update .ssh/config to add new host info. If the file doesn't exist, create it and set permissions using `chmod 600 ~/.ssh/config`
+Update .ssh/config to add new host info. If the file doesn't exist, create it and set permissions using `chmod 600 ~/.ssh/config`.
+> **NOTE:** This may also cause other SSH/SCP issues with other hosts. So to work around this, add strict identify file usage for all hosts.
 ```
 Host <local-hostname>
   Hostname github.com
   User <github-username>
   IdentityFile ~/.ssh/id_rsa.<other-email>
+
+Host *
+  IdentitiesOnly=yes
 ```
 
 Add your `.ssh/id_rsa.<other-email>.pub` public key to your github account in the `Settings` / `SSH and GPG keys` page.
