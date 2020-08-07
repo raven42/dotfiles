@@ -68,11 +68,14 @@ Test your SSH connection to github.
 ssh -T github.com
 ```
 
-If you want to use these SSH credentials for an existing repository, you may need to update your repository config file to the following:
+If you want to use these SSH credentials for an existing repository, you may need to update your repository config file to the following. You will also need to make sure the username and email is correct for this repository:
 ```
 <repository>/.git/config
 [remote "origin"]
 	url = git@github.com:<user-name>/<repository>
+[user]
+	name = <user-name>
+	email = <other-email>@<domain>
 ```
 
 ---
