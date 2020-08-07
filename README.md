@@ -3,7 +3,7 @@ Linux .dotfiles, scripts, and configurations
 
 This setup uses a bare repository to track linux .dotfiles and configuration files.
 
-> :warning: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
+> :information_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
 
 ## Setup
 To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`:
@@ -64,8 +64,11 @@ See the [.vim/README.md](.vim/README.md) file for more information on the VIM se
 
 ## Further Reading
 For more reading, see the following:
-> <https://www.atlassian.com/git/tutorials/dotfiles>  
-> <https://www.atlassian.com/git/tutorials/git-submodule>  
+> * <https://www.atlassian.com/git/tutorials/dotfiles>
+> * <https://www.atlassian.com/git/tutorials/git-submodule>
+> * <https://docs.github.com/en/github/writing-on-github>
+> * <https://www.webfx.com/tools/emoji-cheat-sheet/>
+
 
 Credit:
 > <darth.gerbil@gmail.com>
