@@ -61,7 +61,7 @@ Host <local-hostname>
   IdentityFile ~/.ssh/id_rsa.<other-email>
 ```
 
-Upload your public key to the github server under your user account.
+Add your `.ssh/id_rsa.<other-email>.pub` public key to your github account in the `Settings` / `SSH and GPG keys` page.
 
 Test your SSH connection to github.
 ```
