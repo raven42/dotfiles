@@ -35,6 +35,46 @@ githome submodule update
 
 > :information_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
 
+#### GITHUB SSH Keys
+If you with to install your own github ssh keys for another account (for example on a work VDI), you can generate a different set of private keys for a different email and install that public key on github.
+
+Generate new RSA key for different email account:
+```
+rsa-keygen -t rsa -C "<other-email>@<domain>"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/<user>/.ssh/id_rsa): /home/<user>/.ssh/id_rsa.<other-email>
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/<user>/.ssh/id_rsa.<other-email>.
+Your public key has been saved in /home/<user>/.ssh/id_rsa.<other-email>.pub.
+The key fingerprint is:
+xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx <other-email>@<domain>
+...
+```
+> :warning: Don't overwrite your existing id_rsa file for your normal user account.
+
+Update .ssh/config to add new host info. If the file doesn't exist, create it and set permissions using `chmod 600 ~/.ssh/config`
+```
+Host <local-hostname>
+  Hostname github.com
+  User <github-username>
+  IdentityFile ~/.ssh/id_rsa.<other-email>
+```
+
+Upload your public key to the github server under your user account.
+
+Test your SSH connection to github.
+```
+ssh -T github.com
+```
+
+If you want to use these SSH credentials for an existing repository, you may need to update your repository config file to the following:
+```
+<repository>/.git/config
+[remote "origin"]
+	url = git@github.com:<user-name>/<repository>
+```
+
 ---
 
 ## Bash Configuration
@@ -62,10 +102,38 @@ Example:
 ## VIM Configuration
 See the [.vim/README.md](.vim/README.md) file for more information on the VIM setup and configuration.
 
+---
+
+## VIM Compilation
+The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source.
+```
+git clone https://github.com/vim/vim
+cd vim
+./configure --prefix=${HOME} --enable-python3interp --enable-perlinterp --enable-gnome-check --enable-gui=auto --enable-gtk2-check --with-x --enable-fontset --enable-gtk2-check
+make
+make install
+```
+
+---
+
+## Univeral CTAGS
+These plugins also work better with Universal CTAGS instead of Exuberant CTAGS. This can also be compiled and installed from the source.
+```
+git clone https://github.com/universal-ctags/ctags
+cd ctags
+./autogen.sh
+./configure --prefix=${HOME}
+make
+make install
+```
+
+---
+
 ## Further Reading
 For more reading, see the following:
 > * <https://www.atlassian.com/git/tutorials/dotfiles>
 > * <https://www.atlassian.com/git/tutorials/git-submodule>
+> * <https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh>
 > * <https://docs.github.com/en/github/writing-on-github>
 > * <https://www.webfx.com/tools/emoji-cheat-sheet/>
 
