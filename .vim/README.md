@@ -30,7 +30,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `za` | Toggle a fold open / closed |
 | `<Ctrl-h>` | Toggle Hex mode. |
 
-> :warning: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
+> :information_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
   
 > :warning: **Folding:** Activating some foldmethods might take a while to activate.
 
