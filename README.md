@@ -35,6 +35,7 @@ githome submodule update
 
 > :information_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
 
+> :information_source: **SSH Keys:** If you wish to configure SSH keys to use with github as a different account, see the guide at [doc/ssh_config.md](doc/ssh_config.md).
 
 ---
 
