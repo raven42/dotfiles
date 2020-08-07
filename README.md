@@ -61,12 +61,11 @@ Example:
 
 ---
 
-## VIM Configuration
+## VIM
+### VIM Configuration
 See the [.vim/](.vim/) file for more information on the VIM setup and configuration.
 
----
-
-## VIM Compilation
+### VIM Compilation
 The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source.
 ```
 git clone https://github.com/vim/vim
