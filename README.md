@@ -62,7 +62,7 @@ Example:
 ---
 
 ## VIM Configuration
-See the [.vim/README.md](.vim/README.md) file for more information on the VIM setup and configuration.
+See the [.vim/](.vim/) file for more information on the VIM setup and configuration.
 
 ---
 
