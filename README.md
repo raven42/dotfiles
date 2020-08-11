@@ -3,7 +3,7 @@ Linux .dotfiles, scripts, and configurations
 
 This setup uses a bare repository to track linux .dotfiles and configuration files.
 
-> :information_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
+> :information\_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
 
 ## Setup
 To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest:
@@ -33,9 +33,9 @@ githome submodule update
 
 > :warning: **Note:** You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
 
-> :information_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
+> :information\_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
 
-> :information_source: **SSH Keys:** If you wish to configure SSH keys to use with github as a different account, see the guide at [doc/ssh_config.md](doc/ssh_config.md).
+> :information\_source: **SSH Keys:** If you wish to configure SSH keys to use with github as a different account, see the guide at [doc/ssh\_config.md](doc/ssh\_config.md).
 
 ---
 
@@ -43,13 +43,13 @@ githome submodule update
 The [.bashrc](.bashrc) file is a generic resource file which defines some basics which should be compatible for any user. This script will reference the following user specific files.
 | File | Purpose |
 | --- | --- |
-| .default/common_rc | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
-| ${GIT_ROOT}/.rc/rc | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
-| ${GIT_ROOT}/.rc/swbd | This file is used to define a specific platform to set for the current command shell. See SWBD platform discussion below |
-| .default/post_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
+| .default/common\_rc | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
+| ${GIT\_ROOT}/.rc/rc | If the `${GIT\_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
+| ${GIT\_ROOT}/.rc/swbd | This file is used to define a specific platform to set for the current command shell. See SWBD platform discussion below |
+| .default/post\_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
 
 ### SWBD Platform
-The `${GIT_ROOT}/.rc/swbd` file is sourced after every command as part of the PROMPT_COMMAND function call. This can be used to set a current `$SWBD` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable.
+The `${GIT\_ROOT}/.rc/swbd` file is sourced after every command as part of the PROMPT\_COMMAND function call. This can be used to set a current `$SWBD` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable.
 
 This file should contain as little as possible. Ideally only exporting the $SWBD environment variable.
 ```
@@ -57,7 +57,7 @@ export SWBD=swbd165
 ```
 
 Example:
-`alias cp-img='cp ${GIT_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>'`
+`alias cp-img='cp ${GIT\_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>'`
 
 ---
 
