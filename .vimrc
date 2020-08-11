@@ -313,7 +313,7 @@ let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
 
 " --- GitGutter Configuration
 let g:gitgutter_highlight_lines = 1
-let g:gitgutter_sign_added = "\ue0b0\ue0b0"
+let g:gitgutter_sign_added = "\ue0b0"
 let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
 let g:gitgutter_sign_removed = "\ue0b8"
 let g:gitgutter_sign_removed_first_line = "\ue0bc"
