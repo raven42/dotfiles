@@ -42,6 +42,9 @@ GIT_RC=${GIT_RC_PATH}/rc
 GIT_TAGS_PATH=${GIT_RC_PATH}/tags
 GIT_COMPLETION=/tools/bsnbld/scripts/gittools/shell/git-completion.bash
 GIT_PROMPT=/tools/bsnbld/scripts/gittools/shell/git-prompt.sh
+NERDTREE_GEN_SCRIPT=${HOME}/bin/gen_nerdtree_bookmarks.py
+NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
+NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
 USER_HOSTNAME="bsnvdga0120"
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
@@ -143,6 +146,20 @@ if [ $GIT_REPO ]; then
 	fi
 	PS_INFO="$GIT_REPO\$(__git_ps1)"
 	TITLE_INFO="[${GIT_REPO}]"
+
+	# Look for REPO specific NERDTree File and if not exists, then generate it
+	if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
+		if [ -f ${NERDTREE_BOOKMARKS} ]; then
+			if [[ ${NERDTREE_DEF_BOOKMARKS} -nt ${NERDTREE_BOOKMARKS} ]]; then
+				echo "NERDTree Bookmarks out of date. Generating new file..."
+				${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
+			fi
+		else
+			echo "Generating NERDTree Bookmarks file..."
+			${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
+		fi
+
+	fi
 else
 	PS_COLOR=${FG_GRN}
 	PS_INFO="${PS_HOST}${FG_YLW}\$(__git_ps1)${FG_RST}"
