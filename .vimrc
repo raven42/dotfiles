@@ -191,15 +191,6 @@ autocmd BufWinLeave * call clearmatches()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugin Configurations
 
-" --- GitGutter Configuration - must be defined before loading plugins
-let g:gitgutter_highlight_lines = 1
-let g:gitgutter_sign_added = "\ue0b0\ue0b0"
-let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-let g:gitgutter_sign_removed = "\ue0b2\ue0b2"
-
-packloadall
-
 " Here are a couple unicode characters used for any formatted output
 " E0A0	Branch
 " E0A1	Line number
@@ -217,29 +208,6 @@ packloadall
 " E0BD	Top-left angle line
 " E0BE	Top-right angle solid
 " E0BF	Top-right angle line
-
-" --- https://github.com/majutsushi/tagbar
-let g:have_tagbar = &runtimepath =~# 'tagbar' ? 1 : 0
-" --- https://github.com/preservim/nerdtree
-let g:have_nerdtree = &runtimepath =~# 'nerdtree' ? 1 : 0
-" --- https://github.com/tpope/vim-fugitive
-let g:have_fugitive = &runtimepath =~# 'fugitive' ? 1 : 0
-" --- https://github.com/airblade/vim-gitgutter
-let g:have_gitgutter = &runtimepath =~# 'gitgutter' ? 1 : 0
-" --- https://github.com/arecarn/vim-fold-cycle
-let g:have_foldcycle = &runtimepath =~# 'foldcycle' ? 1 : 0
-" --- https://github.com/Chiel92/vim-autoformat
-let g:have_autoformat = &runtimepath =~# 'autoformat' ? 1 : 0
-" --- https://github.com/pseewald/vim-anyfold
-let g:have_anyfold = &runtimepath =~# 'anyfold' ? 1 : 0
-" --- https://github.com/itchyny/lightline.vim
-let g:have_lightline = &runtimepath =~# 'lightline' ? 1 : 0
-" --- https://github.com/nvie/vim-flake8
-let g:have_flake8 = &runtimepath =~# 'flake8' ? 1 : 0
-" --- https://github.com/preservim/nerdcommenter.git
-let g:have_nerdcommenter = &runtimepath =~# 'nerdcommenter' ? 1 : 0
-" --- https://github.com/raven42/devpanel-vim.git
-let g:have_devpanel = &runtimepath =~# 'devpanel' ? 1 : 0
 
 "----- Lightline Plugin Configuration
 let g:lightline = {
@@ -300,6 +268,110 @@ let g:short_mode_map = {
 
 let g:ignored_windows = '\v(help|nerdtree|tagbar|qf)'
 let g:lightline#bufferline#read_only = "\ue0a2"
+
+" --- NERDTree Configuration
+let NERDTreeMouseMode = 2			" --- Open/Close dirs on single mouse click
+let NERDTreeNaturalSort = 1			" --- Sort order of files more natural
+if $GIT_ROOT !=# ''
+	let BookmarksFile = $GIT_ROOT . '/.rc/NERDTreeBookmarks'
+	if filereadable(BookmarksFile)
+		let NERDTreeBookmarksFile = BookmarksFile
+		let NERDTreeShowBookmarks = 1		" --- Show bookmarks on startup
+	elseif filereadable('~/.NERDTreeBookmarks')
+		let NERDTreeShowBookmarks = 1		" --- Show bookmarks on startup
+	endif
+endif
+
+" --- NERDCommenter Configuration
+let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
+let g:NERDSpaceDelims = 1				" --- add space after delimiter
+let g:NERDCompactSexyComs = 1			" --- use compact syntax for multi-line
+let g:NERDDefaultAlign = 'left'			" --- align line-wise comments to left
+let g:NERDAltDelims_java = 1			" --- set language to use alternate delims
+let g:NERDCommentEmptyLines = 1			" --- allow empty lines to be commented
+let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
+let g:NERDToggleCheckAllLines = 1		" --- check all lines for comment or not
+let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
+let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
+
+" E0A0	Branch
+" E0A1	Line number
+" E0A2	Padlock (read-only)
+" E0A3	Column number
+" E0B0	Right angle solid
+" E0B1	Right angle line
+" E0B2	Left angle solid
+" E0B3	Left angle line
+" E0B8	Bottom-left angle solid
+" E0B9	Bottom-left angle line
+" E0BA	Bottom-right angle solid
+" E0BB	Bottom-right angle line
+" E0BC	Top-left angle solid
+" E0BD	Top-left angle line
+" E0BE	Top-right angle solid
+" E0BF	Top-right angle line
+
+" --- GitGutter Configuration
+let g:gitgutter_highlight_lines = 1
+let g:gitgutter_sign_added = "\ue0b0\ue0b0"
+let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
+let g:gitgutter_sign_removed = "\ue0b8"
+let g:gitgutter_sign_removed_first_line = "\ue0bc"
+let g:gitgutter_sign_remove_above_and_below = "\ue0b0\ue0b2"
+let g:gitgutter_sign_modified_removed = "\ue0b0\ue0b2"
+
+" --- Tagbar Configuration
+let g:tagbar_position = 'bottom'
+let g:tagbar_height = winheight(0) / 2
+let g:tagbar_width = winwidth(0) > 150 ? 50 : winwidth(0) / 3
+let g:tagbar_previewwin_pos = 'botright'
+let g:tagbar_no_status_line = 1
+
+" --- Syntastic Configuration
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" --- AnyFold Configuration
+let g:anyfold_fold_comments=1
+let g:anyfold_fold_display=1
+
+" --- Flake8 Configuration
+let g:flake8_show_quickfix = 1
+let g:flake8_show_in_gutter = 1
+let g:flake8_show_in_file = 0
+let g:flake8_quickfix_height = 10
+let g:flake8_always_visible = 1
+
+" --- Auto-pairs Configuration
+let g:AutoPairsShortcutToggle = ''
+let g:AutoPairsShortcutFastWrap = '<Leader>)'
+
+packloadall
+
+" --- https://github.com/majutsushi/tagbar
+let g:have_tagbar = &runtimepath =~# 'tagbar' ? 1 : 0
+" --- https://github.com/preservim/nerdtree
+let g:have_nerdtree = &runtimepath =~# 'nerdtree' ? 1 : 0
+" --- https://github.com/tpope/vim-fugitive
+let g:have_fugitive = &runtimepath =~# 'fugitive' ? 1 : 0
+" --- https://github.com/airblade/vim-gitgutter
+let g:have_gitgutter = &runtimepath =~# 'gitgutter' ? 1 : 0
+" --- https://github.com/arecarn/vim-fold-cycle
+let g:have_foldcycle = &runtimepath =~# 'foldcycle' ? 1 : 0
+" --- https://github.com/Chiel92/vim-autoformat
+let g:have_autoformat = &runtimepath =~# 'autoformat' ? 1 : 0
+" --- https://github.com/pseewald/vim-anyfold
+let g:have_anyfold = &runtimepath =~# 'anyfold' ? 1 : 0
+" --- https://github.com/itchyny/lightline.vim
+let g:have_lightline = &runtimepath =~# 'lightline' ? 1 : 0
+" --- https://github.com/nvie/vim-flake8
+let g:have_flake8 = &runtimepath =~# 'flake8' ? 1 : 0
+" --- https://github.com/preservim/nerdcommenter.git
+let g:have_nerdcommenter = &runtimepath =~# 'nerdcommenter' ? 1 : 0
+" --- https://github.com/raven42/devpanel-vim.git
+let g:have_devpanel = &runtimepath =~# 'devpanel' ? 1 : 0
 
 function! LightlineFileEncoding()
 	return &filetype =~# g:ignored_windows ? '' :
@@ -423,50 +495,6 @@ function! BufClose() abort
 	bprevious
 	execute 'bdelete ' . bufnr
 endfunction
-
-" --- NERDTree Configuration
-let NERDTreeMouseMode = 2		" --- Open/Close directories on single mouse click
-let NERDTreeNaturalSort = 1		" --- Sort order of numbered files more natural
-
-" --- NERDCommenter Configuration
-let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
-let g:NERDSpaceDelims = 1				" --- add space after delimiter
-let g:NERDCompactSexyComs = 1			" --- use compact syntax for multi-line
-let g:NERDDefaultAlign = 'left'			" --- align line-wise comments to left
-let g:NERDAltDelims_java = 1			" --- set language to use alternate delims
-let g:NERDCommentEmptyLines = 1			" --- allow empty lines to be commented
-let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
-let g:NERDToggleCheckAllLines = 1		" --- check all lines for comment or not
-let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
-let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
-
-" --- Tagbar Configuration
-let g:tagbar_position = 'bottom'
-let g:tagbar_height = winheight(0) / 2
-let g:tagbar_width = winwidth(0) > 150 ? 50 : winwidth(0) / 3
-let g:tagbar_previewwin_pos = 'botright'
-let g:tagbar_no_status_line = 1
-
-" --- Syntastic Configuration
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
-" --- AnyFold Configuration
-let g:anyfold_fold_comments=1
-let g:anyfold_fold_display=1
-
-" --- Flake8 Configuration
-let g:flake8_show_quickfix = 1
-let g:flake8_show_in_gutter = 1
-let g:flake8_show_in_file = 0
-let g:flake8_quickfix_height = 10
-let g:flake8_always_visible = 1
-
-" --- Auto-pairs Configuration
-let g:AutoPairsShortcutToggle = ''
-let g:AutoPairsShortcutFastWrap = '<Leader>)'
 
 " --- Key Mappings for all plugins
 nmap <Leader>cc <plug>NERDCommenterToggle

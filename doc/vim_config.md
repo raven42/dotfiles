@@ -50,7 +50,23 @@ If you do a `<middle-click>` on a file, then the current edit window will be spl
 > :construction: **Example:** coming soon...
 
 ### Bookmarks
-> :construction: Comming soon...
+The NERDTree plugin provides a bookmark feature which can provide a quick access to directories of your choice. One downside of this though is it cannot resolve any environment variables in the path name. To help facilitate this, a per-repository specific bookmark file can be generated using a defaults file. This functionality has been added to automatically generate the bookmarks file on sourcing the `[.bashrc](../.bashrc)` script. This is done by using the `[bin/gen_nerdtree_bookmarks.py](../bin/gen_nerdtree_bookmarks.py)` script along with a defaults file located at `${HOME}/.default/NERDTreeDefaultBookmarks` file.
+
+To add bookmarks, modify the `.default/NERDTreeDefaultBookmarks` file to include any bookmarks you want to add. The format should be the name of your bookmark (cannot include spaces), then a single space followed by the path to the file. If an environment variable is needed, you can add that in with a `${<env-var>}` type syntax. The path should be an absolute path.
+
+Example:
+```
+source-directory /home/<user>/project/source
+build-directory ${HOME}/build
+projects ${GIT_ROOT}/projects
+```
+
+This will generate a file at `${GIT_ROOT}/.rc/NERDTreeBookmarks` which will contain the following:
+```
+source-directory /home/<user>/project/source
+build-directory /home/<user>/build
+projects /work/<user>/<repo>/projects
+```
 
 ---
 
