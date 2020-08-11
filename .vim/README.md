@@ -19,7 +19,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>d` | Toggle the File Explorer (NERDTree) and Tag (Tagbar) windows |
 | `<Leader>-` | Resize the current window making it 5 characters less in height |
 | `<Leader>=` | Resize the current window making it 5 characters more in height |
-| `<Leader>_` | Resize the current window making it 5 character less in width |
+| `<Leader>\_` | Resize the current window making it 5 character less in width |
 | `<Leader>+` | Resize the current window making it 5 character more in width |
 | `<Leader>q` | Close the current buffer :construction: (Not yet fully funcitonal) |
 | `<Leader>g` | Activate the GitGutter fold method to fold all text around the current changes in the open file. |
@@ -30,7 +30,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `za` | Toggle a fold open / closed |
 | `<Ctrl-h>` | Toggle Hex mode. |
 
-> :information_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
+> :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
   
 > :warning: **Folding:** Activating some foldmethods might take a while to activate.
 
@@ -38,7 +38,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 
 ## DevPanel
 The DevPanel plugin will automatically open the NERDTree and Tagbar plugin windows and arrange them accordingly.
-![devpanel vim example](../img/devpanel_example.png?raw=true "DevPanel Example:")
+![devpanel vim example](../img/devpanel\_example.png?raw=true "DevPanel Example:")
 
 ---
 
@@ -50,7 +50,7 @@ If you do a `<middle-click>` on a file, then the current edit window will be spl
 > :construction: **Example:** coming soon...
 
 ### Bookmarks
-The NERDTree plugin provides a bookmark feature which can provide a quick access to directories of your choice. One downside of this though is it cannot resolve any environment variables in the path name. To help facilitate this, a per-repository specific bookmark file can be generated using a defaults file. This functionality has been added to automatically generate the bookmarks file on sourcing the `[.bashrc](../.bashrc)` script. This is done by using the `[bin/gen_nerdtree_bookmarks.py](../bin/gen_nerdtree_bookmarks.py)` script along with a defaults file located at `${HOME}/.default/NERDTreeDefaultBookmarks` file.
+The NERDTree plugin provides a bookmark feature which can provide a quick access to directories of your choice. One downside of this though is it cannot resolve any environment variables in the path name. To help facilitate this, a per-repository specific bookmark file can be generated using a defaults file. This functionality has been added to automatically generate the bookmarks file on sourcing the `[.bashrc](../.bashrc)` script. This is done by using the `[bin/gen\_nerdtree\_bookmarks.py](../bin/gen\_nerdtree\_bookmarks.py)` script along with a defaults file located at `${HOME}/.default/NERDTreeDefaultBookmarks` file.
 
 To add bookmarks, modify the `.default/NERDTreeDefaultBookmarks` file to include any bookmarks you want to add. The format should be the name of your bookmark (cannot include spaces), then a single space followed by the path to the file. If an environment variable is needed, you can add that in with a `${<env-var>}` type syntax. The path should be an absolute path.
 
@@ -58,10 +58,10 @@ Example:
 ```
 source-directory /home/<user>/project/source
 build-directory ${HOME}/build
-projects ${GIT_ROOT}/projects
+projects ${GIT\_ROOT}/projects
 ```
 
-This will generate a file at `${GIT_ROOT}/.rc/NERDTreeBookmarks` which will contain the following:
+This will generate a file at `${GIT\_ROOT}/.rc/NERDTreeBookmarks` which will contain the following:
 ```
 source-directory /home/<user>/project/source
 build-directory /home/<user>/build
