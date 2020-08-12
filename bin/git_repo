@@ -12,7 +12,7 @@ prog=`basename $0`
 git_server=git@github-bsn.broadcom.com
 repo=bsnfos.git
 
-swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel
+swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel:/builds/bsn/Nightly/fos
 
 usage="Usage: $prog [<options>] [<repo>]
 
@@ -86,7 +86,7 @@ fi
 # If searching for username
 if [ $usr_srch ]; then
 	# Usermap
-	usermap=~dh404494/bin/usermap
+	usermap=/projects/bsnswtools//bin/fos/usermap
 	num_usr=0
 	usr_list=`$usermap -o $usr_srch`
 	for usr in $usr_list; do
@@ -133,6 +133,10 @@ fi
 
 # Define the workspace for the specified user
 workspace=`grep ${usr} /projects/devop_metadata/LATEST_ZZMAP | cut -d: -f 2`
+if [ "${usr}" == "${USER}" ]; then
+	workspace+=$'\n'
+	workspace+="/work/${usr}"
+fi
 remote_repo=san/${repo}
 
 # Look for default git root directory
@@ -151,11 +155,13 @@ if [ "$git_repo" == "" ]; then
 	echo "Repo not specified."
 	echo ""
 	for path in ${workspace}; do
-		cd ${path}
-		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
+		#cd ${path}
+		find ${path} -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
 	done
 	echo ""
-	read -p "Specify repository: " git_repo
+	read -p "Specify repository: " full_path
+	git_repo=`basename $full_path`
+	git_path=`dirname $full_path`
 fi
 
 # Loop through directories in workspace looking for a match
@@ -174,8 +180,8 @@ if [ ! ${git_path} ]; then
 	echo "Repository ${git_repo} not found. Existing repositories:"
 	echo ""
 	for path in ${workspace}; do
-		cd ${path}
-		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
+		#cd ${path}
+		find ${path} -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
 	done
 	echo ""
 	while true; do
