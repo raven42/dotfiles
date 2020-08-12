@@ -8,10 +8,11 @@
 usr=$USER
 prog=`basename $0`
 
-if [ "${GIT_PATH}" ]; then
-	git_path=${GIT_PATH}
+if [ "${GIT_PATHS}" ]; then
+	git_path_full=${GIT_PATHS}
 else
-	git_path=~/git
+	# update to use /corp/global/tools/bin/gittools/get_my_workspace to get root path
+	git_path_full=~/git
 fi
 
 # Git server definitions
@@ -19,17 +20,17 @@ git_server=git@hq1-up-gitbna-1.brocade.com
 remote_repo=san/endor.git
 
 # Look for default git root directory
-if [ ! -d $git_path ]; then
+if [ ! $git_path_full ]; then
 	echo ""
-	echo "GIT Directory $git_path not defined. Unable to proceed."
+	echo "GIT Directory $git_path_full not defined. Unable to proceed."
 	echo ""
 	echo "   Please either create symlink at ~/git pointing to your /zzz workspace"
-	echo "   or define GIT_PATH pointing to your /zzz workspace in your shell"
+	echo "   or define GIT_PATHS pointing to your /zzz workspace in your shell"
 	echo "   resource file."
 	echo ""
 	echo "   Example: ln -s /zzz/work05/dh404494/git_repositories ~/git"
 	echo "      or"
-	echo "   Example: GIT_PATH=/zzz/work05/dh404494/git_repositories"
+	echo "   Example: export GIT_PATHS=/zzz/work05/dh404494/git_repositories"
 	echo ""
 	exit 1
 fi
@@ -43,17 +44,29 @@ fi
 if [ "$git_repo" == "" ]; then
 	echo "Repo not specified."
 	echo ""
-	ls -w 1 $git_path
+	for path in ${git_path_full//:/ }; do
+		ls -w 1 ${path}
+	done
 	echo ""
 	read -p "Specify repository: " git_repo
 fi
 
-git_root=${git_path}/${git_repo}
+# Loop through directories in git_path_full looking for a match
+paths=0
+for path in ${git_path_full//:/ }; do
+	if  [ -d ${path}/${git_repo} ]; then
+		git_path=${path}
+		break;
+	fi
+	let paths+=1
+done
 
-if [ ! -d ${git_root} ]; then
+if [ ! ${git_path} ]; then
 	echo "Repository ${git_repo} not found. Existing repositories:"
 	echo ""
-	ls -w 1 ${git_path}
+	for path in ${git_path_full//:/ }; do
+		ls -w 1 ${path}
+	done
 	echo ""
 	while true; do
 		read -p "Would you like to create a new repository? [y/n]: " yn
@@ -64,8 +77,25 @@ if [ ! -d ${git_root} ]; then
 		esac
 	done
 
-	mkdir ${git_root}
+	if [ $paths -gt 1 ]; then
+		echo ""
+		echo "Available paths:"
+		echo ""
+		echo "${git_path_full//:/$'\n'}"
+		echo ""
+		read -p "Which path do you want to store the new repo: " git_path
+		echo ""
+	fi
+
+	if [ ! -d ${git_path} ]; then
+		echo "GIT path:${git_path} does not exist. Unable to proceed."
+		exit 1
+	fi
+
+	mkdir ${git_path}/${git_repo}
 fi
+
+git_root=${git_path}/${git_repo}
 
 # Check if there is a repo already cloned here
 if [ ! -d ${git_root}/.git ]; then
