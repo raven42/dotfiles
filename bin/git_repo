@@ -9,8 +9,8 @@ usr=$USER
 prog=`basename $0`
 
 # Git server definitions
-git_server=git@github-bsn.broadcom.com
-repo=bsnfos.git
+git_server=git@github.gwd.broadcom.net
+repo=BSN/bsnfos.git
 
 swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel:/builds/bsn/Nightly/fos
 
@@ -24,9 +24,10 @@ usage="Usage: $prog [<options>] [<repo>]
 "
 
 find_depth=6
+debug=0
 
 sopts="u:h"
-lopts="usr:,user:,remote-repo:,repo:,nightly:,help"
+lopts="usr:,user:,remote-repo:,repo:,nightly:,help,debug"
 
 optarg=0
 opts=`getopt -n $prog -o $sopts -ual $lopts -- $@`
@@ -69,6 +70,10 @@ while [ $1 != -- ]; do
 			shift
 			;;
 
+		--debug)
+			debug=1
+			;;
+
 		-h | --help)
 			echo ""
 			echo "$usage"
@@ -86,7 +91,7 @@ fi
 # If searching for username
 if [ $usr_srch ]; then
 	# Usermap
-	usermap=/projects/bsnswtools//bin/fos/usermap
+	usermap=/projects/bsnswtools/bin/fos/usermap
 	num_usr=0
 	usr_list=`$usermap -o $usr_srch`
 	for usr in $usr_list; do
@@ -137,7 +142,7 @@ if [ "${usr}" == "${USER}" ]; then
 	workspace+=$'\n'
 	workspace+="/work/${usr}"
 fi
-remote_repo=san/${repo}
+remote_repo=${repo}
 
 # Look for default git root directory
 if [ ! ${workspace/$'\n'/} ]; then
@@ -160,20 +165,39 @@ if [ "$git_repo" == "" ]; then
 	done
 	echo ""
 	read -p "Specify repository: " full_path
-	git_repo=`basename $full_path`
-	git_path=`dirname $full_path`
+	if [[ $full_path =~ "/" ]]; then
+		git_repo=`basename $full_path`
+		git_path=`dirname $full_path`
+	else
+		git_repo=$full_path
+	fi
 fi
 
 # Loop through directories in workspace looking for a match
 paths=0
 if [ ! ${git_path} ]; then
 	for path in ${workspace}; do
+		if [ $debug -eq 1 ]; then
+			echo "looking in path:$path"
+		fi
 		if  [ -d ${path}/${git_repo} ]; then
 			git_path=${path}
 			break;
 		fi
 		let paths+=1
 	done
+fi
+
+if [ $debug -eq 1 ]; then
+	echo ""
+	echo "workspace(s):"
+	echo "$workspace"
+	echo "paths:$paths"
+	echo "git_path:$git_path"
+	echo "git_repo:$git_repo"
+	echo "server:${git_server}"
+	echo "remote_repo:$remote_repo"
+	echo ""
 fi
 
 if [ ! ${git_path} ]; then
