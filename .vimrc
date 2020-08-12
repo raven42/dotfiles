@@ -100,9 +100,9 @@ highlight ErrorMsg		ctermfg=Yellow guifg=Yellow
 highlight FoldColumn	ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
 highlight Folded		ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
 highlight GitGutterAdd			ctermfg=Green
-highlight GitGutterAddLine		ctermbg=17
+highlight GitGutterAddLine		ctermbg=235
 highlight GitGutterChange		ctermfg=Blue
-highlight GitGutterChangeLine	ctermbg=235
+highlight GitGutterChangeLine	ctermbg=17
 highlight GitGutterDelete		ctermfg=Red
 highlight GitGutterDeleteLine	ctermbg=52
 highlight Identifier	ctermfg=DarkBlue guifg=DarkBlue
@@ -266,8 +266,30 @@ let g:short_mode_map = {
 			\ 't': 'T',
 			\ }
 
-let g:ignored_windows = '\v(help|nerdtree|tagbar|qf)'
-let g:lightline#bufferline#read_only = "\ue0a2"
+let g:lightline#bufferline#composed_number_map = {
+			\ 1:  "\u3010" . '1' . "\u3011",  2:  "\u3010" . '2' . "\u3011",
+			\ 3:  "\u3010" . '3' . "\u3011",  4:  "\u3010" . '4' . "\u3011",
+			\ 5:  "\u3010" . '5' . "\u3011",  6:  "\u3010" . '6' . "\u3011",
+			\ 7:  "\u3010" . '7' . "\u3011",  8:  "\u3010" . '8' . "\u3011",
+			\ 9:  "\u3010" . '9' . "\u3011",  10: "\u3010" . '10' . "\u3011",
+			\ 11: "\u3010" . '11' . "\u3011", 12: "\u3010" . '12' . "\u3011",
+			\ 13: "\u3010" . '13' . "\u3011", 14: "\u3010" . '14' . "\u3011",
+			\ 15: "\u3010" . '15' . "\u3011", 16: "\u3010" . '16' . "\u3011",
+			\ 17: "\u3010" . '17' . "\u3011", 18: "\u3010" . '18' . "\u3011",
+			\ 19: "\u3010" . '19' . "\u3011", 20: "\u3010" . '20' . "\u3011",
+			\ }
+
+let g:lightline#bufferline#composed_number_map = {
+			\ 1:  "\u2776", 2:  "\u2777", 3:  "\u2778", 4:  "\u2779",
+			\ 5:  "\u277a", 6:  "\u277b", 7:  "\u277c", 8:  "\u277d",
+			\ 9:  "\u277e", 10: "\u277f", 11: "\u2780", 12: "\u2781",
+			\ 13: "\u2782", 14: "\u2783", 15: "\u2784", 16: "\u2785",
+			\ 17: "\u2786", 18: "\u2787", 19: "\u2788", 20: "\u2789",
+			\ }
+
+let g:lightline#bufferline#show_number = 2
+let g:lightline#bufferline#unicode_symbols = 1
+let g:lightline#bufferline#filename_modifier = ':t'
 
 " --- NERDTree Configuration
 let NERDTreeMouseMode = 2			" --- Open/Close dirs on single mouse click
@@ -373,6 +395,8 @@ let g:have_nerdcommenter = &runtimepath =~# 'nerdcommenter' ? 1 : 0
 " --- https://github.com/raven42/devpanel-vim.git
 let g:have_devpanel = &runtimepath =~# 'devpanel' ? 1 : 0
 
+let g:ignored_windows = '\v(help|nerdtree|tagbar|qf)'
+
 function! LightlineFileEncoding()
 	return &filetype =~# g:ignored_windows ? '' :
 				\ &fenc !=# '' ? &fenc : &enc
@@ -408,7 +432,7 @@ endfunction
 
 function! LightlineModified()
 	return &modified &&
-				\ &filetype !~# g:ignored_windows ? '+' :
+				\ &filetype !~# g:ignored_windows ? "\u270e" :
 				\ ''
 endfunction
 
@@ -485,10 +509,6 @@ function! BufClose() abort
 	" If only one buffer open and listed (ignoring hidden buffers) don't close
 	if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
 		echo '...No more buffers open'
-		return
-	endif
-	if !buflisted('$')
-		echo '...Unable to close an unlisted buffer'
 		return
 	endif
 	let bufnr = bufnr("%")
