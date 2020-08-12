@@ -21,10 +21,10 @@ while [ "$#" -gt "0" ]; do
 
 	if [ "$1" == "-usr" ]; then
 		shift
-		usr=$1
+		usr_srch=$1
 	elif [ "$1" == "-user" ]; then
 		shift
-		usr=$1
+		usr_srch=$1
 	elif [ "$1" == "-repo" ]; then
 		shift
 		repo=$1
@@ -37,6 +37,27 @@ while [ "$#" -gt "0" ]; do
 
 	shift
 done
+
+if [ $usr_srch ]; then
+	# Usermap
+	usermap=~dh404494/bin/usermap
+	num_usr=0
+	usr_list=`$usermap -o $usr_srch`
+	for usr in $usr_list; do
+		let num_usr+=1
+	done
+
+	if [ $num_usr -eq 0 ]; then
+		echo "User $usr_srch not found"
+		exit 1
+	fi
+	if [ $num_usr -gt 1 ]; then
+		echo "Multiple users found matching name. Please specify which user."
+		echo ""
+		$usermap $usr_srch
+		read -p  "Please enter user OktaID: " usr
+	fi
+fi
 
 # Define the workspace for the specified user
 workspace=`grep ${usr} /projects/devop_metadata/LATEST_ZZMAP | cut -d: -f 2`
