@@ -12,7 +12,7 @@ prog=`basename $0`
 git_server=git@github.gwd.broadcom.net
 repo=BSN/bsnfos.git
 
-swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel:/builds/bsn/Nightly/fos
+swrel=/zwork/emake-bsn-202/stg1/swrel:/builds/bsn/Nightly/fos
 
 usage="Usage: $prog [<options>] [<repo>]
 
@@ -138,14 +138,19 @@ fi
 
 # Define the workspace for the specified user
 workspace=`grep ${usr} /projects/devop_metadata/LATEST_ZZMAP | cut -d: -f 2`
-if [ "${usr}" == "${USER}" ]; then
+if [ -d "/work/${usr}" ]; then
 	workspace+=$'\n'
 	workspace+="/work/${usr}"
+fi
+
+if [ -d "/zshared/work01/${usr}" ]; then
+	workspace+=$'\n'
+	workspace+="/zshared/work01/${usr}"
 fi
 remote_repo=${repo}
 
 # Look for default git root directory
-if [ ! ${workspace/$'\n'/} ]; then
+if [ ! ${workspace//[$'\r\n']/} ]; then
 	echo ""
 	echo "Workspace not defined for user:${usr}."
 	if [ "${usr}" == "${USER}" ]; then
