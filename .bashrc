@@ -120,7 +120,7 @@ if [ $GIT_REPO ]; then
 		if [ ! -f ${GIT_RC} ]; then
 			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
 				echo "rc spec not found. Generating defaults at ${GIT_RC}..."
-				if [ ! -d ${GIT_RC_PATH} -w ${GIT_ROOT} ]; then
+				if [ ! -d ${GIT_RC_PATH} -a -w ${GIT_ROOT} ]; then
 					mkdir ${GIT_RC_PATH}
 				fi
 				if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} ]; then
@@ -145,7 +145,7 @@ if [ $GIT_REPO ]; then
 		PS_COLOR=${FG_CYAN}
 	fi
 	PS_INFO="$GIT_REPO\$(__git_ps1)"
-	TITLE_INFO="[${GIT_REPO}]"
+	TITLE_INFO="$(__git_ps1) \xee\x82\xa0"
 
 	# Look for REPO specific NERDTree File and if not exists, then generate it
 	if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
@@ -158,7 +158,6 @@ if [ $GIT_REPO ]; then
 			echo "Generating NERDTree Bookmarks file..."
 			${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
 		fi
-
 	fi
 else
 	PS_COLOR=${FG_GRN}
@@ -203,7 +202,7 @@ function format_prompt() {
 function format_title() {
 	# To change the window title, do an 'echo -ne "\033]0;<string>\007"'
 	if [ $GIT_REPO ]; then
-		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
+		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s/\/work\/${USER}//" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	else
 		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	fi
