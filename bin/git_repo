@@ -11,7 +11,7 @@ prog=`basename $0`
 usage="Usage: $prog [-usr <username>] [<repo>]"
 
 # Git server definitions
-git_server=git@hq1-up-gitbna-1.brocade.com
+git_server=git@github-bsn.broadcom.com
 repo=bsnfos.git
 
 find_depth=4
@@ -39,7 +39,7 @@ while [ "$#" -gt "0" ]; do
 done
 
 # Define the workspace for the specified user
-workspace=`grep ${usr} /departments/sre/Scripts_and_Logs/LATEST_ZZMAP | cut -d: -f 2`
+workspace=`grep ${usr} /projects/devop_metadata/LATEST_ZZMAP | cut -d: -f 2`
 remote_repo=san/${repo}
 
 # Look for default git root directory
