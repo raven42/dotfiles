@@ -29,12 +29,11 @@ done
 # Define the workspace for the specified user
 workspace=`grep ${usr} /departments/sre/Scripts_and_Logs/LATEST_ZZMAP | cut -d: -f 2`
 
-# Ignore these directories in the workspace path
-ignore_dirs="dyn_view_rstg|README_DYN_VIEWSTG"
-
 # Git server definitions
 git_server=git@hq1-up-gitbna-1.brocade.com
 remote_repo=san/endor.git
+
+find_depth=4
 
 # Look for default git root directory
 if [ ! ${workspace/$'\n'/} ]; then
@@ -52,7 +51,8 @@ if [ "$git_repo" == "" ]; then
 	echo "Repo not specified."
 	echo ""
 	for path in ${workspace}; do
-		ls -w 1 ${path} | grep -Ev "${ignore_dirs}"
+		cd ${path}
+		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
 	done
 	echo ""
 	read -p "Specify repository: " git_repo
@@ -72,7 +72,8 @@ if [ ! ${git_path} ]; then
 	echo "Repository ${git_repo} not found. Existing repositories:"
 	echo ""
 	for path in ${workspace}; do
-		ls -w 1 ${path} | grep -Ev "${ignore_dirs}"
+		cd ${path}
+		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
 	done
 	echo ""
 	while true; do
