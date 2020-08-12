@@ -8,52 +8,59 @@
 usr=$USER
 prog=`basename $0`
 
-if [ "${GIT_PATHS}" ]; then
-	git_path_full=${GIT_PATHS}
-else
-	# update to use /corp/global/tools/bin/gittools/get_my_workspace to get root path
-	git_path_full=~/git
-fi
+usage="Usage: $prog [-usr <username>] [<repo>]"
+
+# Read in command line options
+while [ "$#" -gt "0" ]; do
+
+	if [ "$1" == "-usr" ]; then
+		shift
+		usr=$1
+	elif [ "$1" == "-user" ]; then
+		shift
+		usr=$1
+	else
+		git_repo=$1
+	fi
+
+	shift
+done
+
+# Define the workspace for the specified user
+workspace=`grep ${usr} /departments/sre/Scripts_and_Logs/LATEST_ZZMAP | cut -d: -f 2`
+
+# Ignore these directories in the workspace path
+ignore_dirs="dyn_view_rstg|README_DYN_VIEWSTG"
 
 # Git server definitions
 git_server=git@hq1-up-gitbna-1.brocade.com
 remote_repo=san/endor.git
 
 # Look for default git root directory
-if [ ! $git_path_full ]; then
+if [ ! ${workspace/$'\n'/} ]; then
 	echo ""
-	echo "GIT Directory $git_path_full not defined. Unable to proceed."
-	echo ""
-	echo "   Please either create symlink at ~/git pointing to your /zzz workspace"
-	echo "   or define GIT_PATHS pointing to your /zzz workspace in your shell"
-	echo "   resource file."
-	echo ""
-	echo "   Example: ln -s /zzz/work05/dh404494/git_repositories ~/git"
-	echo "      or"
-	echo "   Example: export GIT_PATHS=/zzz/work05/dh404494/git_repositories"
+	echo "Workspace not defined for user:${usr}."
+	if [ "${usr}" == "${USER}" ]; then
+		echo "Please contact SRE to get a /zzz/work## workspace assigned."
+	fi
 	echo ""
 	exit 1
-fi
-
-# If local-repo name specified, set variable
-if [ "$#" -eq "1" ]; then
-	git_repo=$1
 fi
 
 # If local-repo not specified, list existing repositories and query for repo
 if [ "$git_repo" == "" ]; then
 	echo "Repo not specified."
 	echo ""
-	for path in ${git_path_full//:/ }; do
-		ls -w 1 ${path}
+	for path in ${workspace}; do
+		ls -w 1 ${path} | grep -Ev "${ignore_dirs}"
 	done
 	echo ""
 	read -p "Specify repository: " git_repo
 fi
 
-# Loop through directories in git_path_full looking for a match
+# Loop through directories in workspace looking for a match
 paths=0
-for path in ${git_path_full//:/ }; do
+for path in ${workspace}; do
 	if  [ -d ${path}/${git_repo} ]; then
 		git_path=${path}
 		break;
@@ -64,8 +71,8 @@ done
 if [ ! ${git_path} ]; then
 	echo "Repository ${git_repo} not found. Existing repositories:"
 	echo ""
-	for path in ${git_path_full//:/ }; do
-		ls -w 1 ${path}
+	for path in ${workspace}; do
+		ls -w 1 ${path} | grep -Ev "${ignore_dirs}"
 	done
 	echo ""
 	while true; do
@@ -81,7 +88,7 @@ if [ ! ${git_path} ]; then
 		echo ""
 		echo "Available paths:"
 		echo ""
-		echo "${git_path_full//:/$'\n'}"
+		echo "${workspace}"
 		echo ""
 		read -p "Which path do you want to store the new repo: " git_path
 		echo ""
