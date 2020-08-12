@@ -8,36 +8,74 @@
 usr=$USER
 prog=`basename $0`
 
-usage="Usage: $prog [-usr <username>] [<repo>]"
-
 # Git server definitions
 git_server=git@github-bsn.broadcom.com
 repo=bsnfos.git
 
+usage="Usage: $prog [<options>] [<repo>]
+
+ Options:
+   -usr <name>          - Search for name and use that users workspace
+   -remote-repo <repo>  - Specify the remote GIT repo (default:$repo) when cloning
+   -repo <path>         - Specify full path to workspace and repo to use
+"
+
 find_depth=4
 
+sopts="u:h"
+lopts="usr:,user:,remote-repo:,repo:,help"
+
+optarg=0
+opts=`getopt -n $prog -o $sopts -ual $lopts -- $@`
+if [ $? != 0 ]; then
+	echo ""
+	echo "$Usage"
+	echo ""
+	exit 2
+fi
+
+eval set -- "$opts"
+
 # Read in command line options
-while [ "$#" -gt "0" ]; do
+while [ $1 != -- ]; do
 
-	if [ "$1" == "-usr" ]; then
-		shift
-		usr_srch=$1
-	elif [ "$1" == "-user" ]; then
-		shift
-		usr_srch=$1
-	elif [ "$1" == "-repo" ]; then
-		shift
-		repo=$1
-		if [ "${repo: -4}" != ".git" ]; then
-			repo="$1.git"
-		fi
-	else
-		git_repo=$1
-	fi
+	case "$1" in
 
+		-u | --usr | --user)
+			usr_srch=$2
+			shift
+			;;
+
+		--remote-repo)
+			repo=$2
+			if [ "${repo: -4}" != ".git" ]; then
+				repo="${repo}.git"
+			fi
+			shift
+			;;
+
+		--repo)
+			full_path=$2
+			shift
+			git_repo=`basename $full_path`
+			git_path=`dirname $full_path`
+			;;
+
+		-h | --help)
+			echo ""
+			echo "$usage"
+			echo ""
+			exit 0
+			;;
+	esac
 	shift
 done
 
+if [ $# -eq 2 ]; then
+	git_repo=$2
+fi
+
+# If searching for username
 if [ $usr_srch ]; then
 	# Usermap
 	usermap=~dh404494/bin/usermap
@@ -88,13 +126,15 @@ fi
 
 # Loop through directories in workspace looking for a match
 paths=0
-for path in ${workspace}; do
-	if  [ -d ${path}/${git_repo} ]; then
-		git_path=${path}
-		break;
-	fi
-	let paths+=1
-done
+if [ ! ${git_path} ]; then
+	for path in ${workspace}; do
+		if  [ -d ${path}/${git_repo} ]; then
+			git_path=${path}
+			break;
+		fi
+		let paths+=1
+	done
+fi
 
 if [ ! ${git_path} ]; then
 	echo "Repository ${git_repo} not found. Existing repositories:"
