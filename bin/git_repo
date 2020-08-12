@@ -12,7 +12,7 @@ prog=`basename $0`
 git_server=git@github.gwd.broadcom.net
 repo=BSN/bsnfos.git
 
-swrel=/zwork/emake-bsn-202/stg1/swrel:/builds/bsn/Nightly/fos
+swrel=/zwork/fosnode-bsn-*/stg1/prod/fos
 
 usage="Usage: $prog [<options>] [<repo>]
 
@@ -23,7 +23,7 @@ usage="Usage: $prog [<options>] [<repo>]
    -nightly <pat>       - Look for repo matching <pat> in swrel nightly build path
 "
 
-find_depth=6
+find_depth=4
 debug=0
 
 sopts="u:h"
@@ -114,6 +114,9 @@ fi
 if [ $pattern ]; then
 	num_paths=0
 	for swrel_path in `echo ${swrel} | sed -e 's/:/ /g'`; do
+		if [ $debug -eq 1 ]; then
+			echo "Searing nightly ${swrel_path} for pattern ${pattern}"
+		fi
 		srch=`find ${swrel_path} -maxdepth ${find_depth} 2> /dev/null | grep ${pattern}`
 		for path in ${srch}; do
 			if [ -e ${path}/.git ]; then
