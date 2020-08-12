@@ -12,7 +12,7 @@ prog=`basename $0`
 git_server=git@github-bsn.broadcom.com
 repo=bsnfos.git
 
-swrel=/zzz/work00/swrel
+swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel
 
 usage="Usage: $prog [<options>] [<repo>]
 
@@ -23,7 +23,7 @@ usage="Usage: $prog [<options>] [<repo>]
    -nightly <pat>       - Look for repo matching <pat> in swrel nightly build path
 "
 
-find_depth=4
+find_depth=6
 
 sopts="u:h"
 lopts="usr:,user:,remote-repo:,repo:,nightly:,help"
@@ -107,14 +107,16 @@ fi
 
 # If doing a nightly build search pattern
 if [ $pattern ]; then
-	srch=`find ${swrel} -maxdepth ${find_depth} | grep ${pattern}`
 	num_paths=0
-	for path in ${srch}; do
-		if [ -e ${path}/.git ]; then
-			echo "${path}"
-			full_path=${path}
-			let num_paths+=1
-		fi
+	for swrel_path in `echo ${swrel} | sed -e 's/:/ /g'`; do
+		srch=`find ${swrel_path} -maxdepth ${find_depth} 2> /dev/null | grep ${pattern}`
+		for path in ${srch}; do
+			if [ -e ${path}/.git ]; then
+				echo "${path}"
+				full_path=${path}
+				let num_paths+=1
+			fi
+		done
 	done
 	if [ $num_paths -eq 0 ]; then
 		echo "Pattern ${pattern} not found"
@@ -150,7 +152,7 @@ if [ "$git_repo" == "" ]; then
 	echo ""
 	for path in ${workspace}; do
 		cd ${path}
-		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
+		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
 	done
 	echo ""
 	read -p "Specify repository: " git_repo
@@ -173,7 +175,7 @@ if [ ! ${git_path} ]; then
 	echo ""
 	for path in ${workspace}; do
 		cd ${path}
-		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
+		find . -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
 	done
 	echo ""
 	while true; do
