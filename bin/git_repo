@@ -145,4 +145,4 @@ if [ ! -d ${git_root}/.git ]; then
 	done
 fi
 
-env GIT_ROOT=${git_root} GIT_PATH=${git_path} GIT_REPO=${git_repo} ${SHELL}
+env GIT_ROOT=${git_root} GIT_PATH=`dirname ${git_root}` GIT_REPO=`basename ${git_root}` GIT_DIR=${git_root}/.git GIT_WORK_TREE=${git_root} ${SHELL} ; exit
