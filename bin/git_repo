@@ -10,6 +10,12 @@ prog=`basename $0`
 
 usage="Usage: $prog [-usr <username>] [<repo>]"
 
+# Git server definitions
+git_server=git@hq1-up-gitbna-1.brocade.com
+repo=bsnfos.git
+
+find_depth=4
+
 # Read in command line options
 while [ "$#" -gt "0" ]; do
 
@@ -19,6 +25,12 @@ while [ "$#" -gt "0" ]; do
 	elif [ "$1" == "-user" ]; then
 		shift
 		usr=$1
+	elif [ "$1" == "-repo" ]; then
+		shift
+		repo=$1
+		if [ "${repo: -4}" != ".git" ]; then
+			repo="$1.git"
+		fi
 	else
 		git_repo=$1
 	fi
@@ -28,12 +40,7 @@ done
 
 # Define the workspace for the specified user
 workspace=`grep ${usr} /departments/sre/Scripts_and_Logs/LATEST_ZZMAP | cut -d: -f 2`
-
-# Git server definitions
-git_server=git@hq1-up-gitbna-1.brocade.com
-remote_repo=san/endor.git
-
-find_depth=4
+remote_repo=san/${repo}
 
 # Look for default git root directory
 if [ ! ${workspace/$'\n'/} ]; then
@@ -93,6 +100,8 @@ if [ ! ${git_path} ]; then
 		echo ""
 		read -p "Which path do you want to store the new repo: " git_path
 		echo ""
+	else
+		git_path=$path
 	fi
 
 	if [ ! -d ${git_path} ]; then
