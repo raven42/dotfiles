@@ -12,7 +12,7 @@ prog=`basename $0`
 git_server=git@github.gwd.broadcom.net
 repo=BSN/bsnfos.git
 
-swrel=/zwork/fosnode-bsn-*/stg1/prod/fos
+swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel:/builds/bsn/Nightly/fos
 
 usage="Usage: $prog [<options>] [<repo>]
 
@@ -23,7 +23,7 @@ usage="Usage: $prog [<options>] [<repo>]
    -nightly <pat>       - Look for repo matching <pat> in swrel nightly build path
 "
 
-find_depth=4
+find_depth=6
 debug=0
 
 sopts="u:h"
@@ -114,9 +114,6 @@ fi
 if [ $pattern ]; then
 	num_paths=0
 	for swrel_path in `echo ${swrel} | sed -e 's/:/ /g'`; do
-		if [ $debug -eq 1 ]; then
-			echo "Searing nightly ${swrel_path} for pattern ${pattern}"
-		fi
 		srch=`find ${swrel_path} -maxdepth ${find_depth} 2> /dev/null | grep ${pattern}`
 		for path in ${srch}; do
 			if [ -e ${path}/.git ]; then
@@ -141,12 +138,20 @@ fi
 
 # Define the workspace for the specified user
 workspace=`grep ${usr} /projects/devop_metadata/LATEST_ZZMAP | cut -d: -f 2`
+if [ -d "${HOME}/work" ]; then
+	if [ $debug -eq 1 ]; then echo "Adding ${HOME}/work to workspaces..."; fi
+	workspace+=$'\n'
+	workspace+="${HOME}/work"
+fi
+
 if [ -d "/work/${usr}" ]; then
+	if [ $debug -eq 1 ]; then echo "Adding /work/${usr} to workspaces..."; fi
 	workspace+=$'\n'
 	workspace+="/work/${usr}"
 fi
 
 if [ -d "/zshared/work01/${usr}" ]; then
+	if [ $debug -eq 1 ]; then echo "Adding /zshared/work01/${usr} to workspaces..."; fi
 	workspace+=$'\n'
 	workspace+="/zshared/work01/${usr}"
 fi
@@ -198,7 +203,7 @@ fi
 
 if [ $debug -eq 1 ]; then
 	echo ""
-	echo "workspace(s):"
+	echo -n "workspace(s):"
 	echo "$workspace"
 	echo "paths:$paths"
 	echo "git_path:$git_path"
