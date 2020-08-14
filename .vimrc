@@ -635,11 +635,19 @@ nmap z,, :set foldlevel=0 <CR>
 nmap z.. :set foldlevel=99 <CR>
 
 function! ToggleSearchWord()
+	if exists('g:toggle_search_word')
+		set foldlevel=99
+		let @/ = ''					" --- Clear the search pattern
+		unlet g:toggle_search_word
+		return
+	endif
 	let @/ = expand('<cword>')		" --- Set search pattern to current word
 	call SearchFold(0)				" --- Call SearchFold() for normal mode
+	set foldlevel=2					" --- Set to show a few lines of context
+	let g:toggle_search_word = 1
 endfunction
 
-nmap <C-z> :call ToggleSearchWord()<CR>
+nmap <silent> <C-z> :call ToggleSearchWord()<CR>
 
 nnoremap ; :
 

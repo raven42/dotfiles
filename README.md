@@ -97,7 +97,7 @@ For more reading, see the following:
 > * <https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh>
 > * <https://docs.github.com/en/github/writing-on-github>
 > * <https://www.webfx.com/tools/emoji-cheat-sheet/>
-
+> * <https://www.rapidtables.com/code/text/unicode-characters.html>
 
 Credit:
 > <darth.gerbil@gmail.com>
