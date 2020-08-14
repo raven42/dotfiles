@@ -445,7 +445,7 @@ if [ $GIT_REPO ]; then
 	gitRepoTime
 	GIT_BRANCH=`git rev-parse --abbrev-ref HEAD | sed -e 's/.*\([0-9]\)\.\([0-9]\)\.\([0-9x]*\).*/v\1\2\3/'`
 	if [ "${GIT_BRANCH:0:4}" == "priv" ]; then
-		distDir="${GIT_BRANCH}${distDate}"
+		distDir="${GIT_BRANCH:5}${distDate}"
 	else
 		distDir="${user}_${GIT_BRANCH}${distDate}"
 	fi
