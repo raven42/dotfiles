@@ -145,7 +145,7 @@ if [ $GIT_REPO ]; then
 		PS_COLOR=${FG_CYAN}
 	fi
 	PS_INFO="$GIT_REPO\$(__git_ps1)"
-	TITLE_INFO="$(__git_ps1) \xee\x82\xa0"
+	TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
 
 	# Look for REPO specific NERDTree File and if not exists, then generate it
 	if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
