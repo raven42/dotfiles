@@ -16,18 +16,28 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>cm` | Comment a block of code using minimal comments |
 | `<Leader>ci` | Invert selected code: Comment any uncommented code, and uncomment any commented code |
 | `<Leader>cy` | Yank selected code into clipboard and then comment out |
-| `<Leader>d` | Toggle the File Explorer (NERDTree) and Tag (Tagbar) windows |
 | `<Leader>-` | Resize the current window making it 5 characters less in height |
 | `<Leader>=` | Resize the current window making it 5 characters more in height |
 | `<Leader>_` | Resize the current window making it 5 character less in width |
 | `<Leader>+` | Resize the current window making it 5 character more in width |
-| `<Leader>q` | Close the current buffer :construction: (Not yet fully funcitonal) |
-| `<Leader>g` | Activate the GitGutter fold method to fold all text around the current changes in the open file. |
+| `<Leader>q` | Close the current buffer |
+| `<Leader>d` | Toggle the File Explorer (NERDTree) and Tag (Tagbar) windows |
+| `<Leader>x` | Toggle the File Explorer window (NERDTree) |
+| `<Leader>t` | Toggle the Tag window (Tagbar) |
+| `<Leader>u` | Toggle the undo history window (Undotree) |
+| --- | --- |
+| `zw` | Set **search** pattern to word under cursor and toggle search fold method |
+| `zs` | Toggle **search** fold method (fold text around current search pattern) |
+| `zl` | Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher |
+| `zg` | Activate the **GIT** method to fold all text around the current changes in the open file. |
+| `zi` | Toggle **indent** fold method. |
 | `z,` | Decrease current foldlevel by one reducing the amount of context around a fold |
 | `z.` | Increase current foldlevel by one increasing the amount of context around a fold |
 | `z,,` | Set foldlevel to 0 (close all folds) |
 | `z..` | Set foldlevel to 99 (open all folds to level 99) |
 | `za` | Toggle a fold open / closed |
+| `z<#>` | Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3 |
+| --- | --- |
 | `<Ctrl-h>` | Toggle Hex mode. |
 
 > :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
