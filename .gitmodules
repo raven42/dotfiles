@@ -40,3 +40,6 @@
 [submodule ".vim/pack/plugins/start/vim-easygrep"]
 	path = .vim/pack/plugins/start/vim-easygrep
 	url = https://github.com/dkprice/vim-easygrep.git
+[submodule ".vim/pack/plugins/start/undotree"]
+	path = .vim/pack/plugins/start/undotree
+	url = https://github.com/mbbill/undotree.git

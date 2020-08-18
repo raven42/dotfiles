@@ -115,7 +115,7 @@ highlight NonText		ctermfg=LightGreen guifg=LightGreen
 highlight Normal		ctermfg=White guifg=White guibg=Black
 highlight PreProc		ctermfg=Yellow guifg=Yellow
 highlight Question		ctermfg=Red guifg=Red
-highlight Search		ctermfg=White guifg=White ctermbg=DarkBlue guibg=DarkBlue
+highlight Search		ctermfg=White guifg=White ctermbg=DarkMagenta guibg=DarkBlue
 highlight SignColumn	ctermfg=White ctermbg=Black guifg=Magenta guibg=Grey
 highlight Special		ctermfg=Yellow guifg=Yellow
 highlight SpecialKey	cterm=bold
@@ -405,8 +405,16 @@ if version >= 600
 	let g:AutoPairsShortcutToggle = ''
 	let g:AutoPairsShortcutFastWrap = '<Leader>)'
 
+	" --- UndoTree Configuration
+	let g:undotree_WindowLayout = 3
+	let g:undotree_SplitWidth = 30
+	let g:undotree_DiffpanelHeight = 20
+	let g:undotree_HighlightChangedText = 0
+	let g:undotree_HighlightChangedWithSign = 0
+	let g:undotree_DiffAutoOpen = 0
+
 	" --- Generic definitions used by functions for plugins
-	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf)'
+	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree|diff)'
 	let g:branch_icon = "\ue0a0"
 
 	packloadall
@@ -435,6 +443,10 @@ if version >= 600
 	let g:have_devpanel = &runtimepath =~# 'devpanel' ? 1 : 0
 	" --- https://github.com/dkprice/vim-easygrep.git
 	let g:have_easygrep = &runtimepath =~# 'easygrep' ? 1 : 0
+	" --- https://github.com/mbbill/undotree.git
+	let g:have_undotree = &runtimepath =~# 'undotree' ? 1 : 0
+	" --- https://github.com/vim-scripts/searchfold.vim.git
+	let g:have_searchfold = &runtimepath =~# 'searchfold' ? 1 : 0
 
 	function! LightlineFileEncoding()
 		return &filetype =~# g:ignored_windows ? '' :
@@ -464,6 +476,8 @@ if version >= 600
 	function! LightlineMode()
 		return &filetype ==# 'nerdtree' ? 'File Explorer' :
 					\ &filetype ==# 'tagbar' ? 'Tags' :
+					\ &filetype ==# 'undotree' ? 'History' :
+					\ &filetype ==# 'diff' ? 'Diffs' :
 					\ exists('w:flake8_window') ? 'Python Errors/Warnings' :
 					\ winwidth(0) < 90 ? get(g:short_mode_map, mode(), '') :
 					\ lightline#mode()
@@ -578,37 +592,27 @@ if version >= 600
 	nmap <Leader>cy <plug>NERDCommenterYank
 	vmap <Leader>cy <plug>NERDCommenterYank
 
-	" nmap <Leader>1 <Plug>lightline#bufferline#go(1)
-	" nmap <Leader>2 <Plug>lightline#bufferline#go(2)
-	" nmap <Leader>3 <Plug>lightline#bufferline#go(3)
-	" nmap <Leader>4 <Plug>lightline#bufferline#go(4)
-	" nmap <Leader>5 <Plug>lightline#bufferline#go(5)
-	" nmap <Leader>6 <Plug>lightline#bufferline#go(6)
-	" nmap <Leader>7 <Plug>lightline#bufferline#go(7)
-	" nmap <Leader>8 <Plug>lightline#bufferline#go(8)
-	" nmap <Leader>9 <Plug>lightline#bufferline#go(9)
-	" nmap <Leader>0 <Plug>lightline#bufferline#go(10)
-	nmap <Leader>1 :call BufActivateNth(0)<CR>
-	nmap <Leader>2 :call BufActivateNth(1)<CR>
-	nmap <Leader>3 :call BufActivateNth(2)<CR>
-	nmap <Leader>4 :call BufActivateNth(3)<CR>
-	nmap <Leader>5 :call BufActivateNth(4)<CR>
-	nmap <Leader>6 :call BufActivateNth(5)<CR>
-	nmap <Leader>7 :call BufActivateNth(6)<CR>
-	nmap <Leader>8 :call BufActivateNth(7)<CR>
-	nmap <Leader>9 :call BufActivateNth(8)<CR>
-	nmap <Leader>0 :call BufActivateNth(9)<CR>
+	nmap <silent> <Leader>1 :call BufActivateNth(0)<CR>
+	nmap <silent> <Leader>2 :call BufActivateNth(1)<CR>
+	nmap <silent> <Leader>3 :call BufActivateNth(2)<CR>
+	nmap <silent> <Leader>4 :call BufActivateNth(3)<CR>
+	nmap <silent> <Leader>5 :call BufActivateNth(4)<CR>
+	nmap <silent> <Leader>6 :call BufActivateNth(5)<CR>
+	nmap <silent> <Leader>7 :call BufActivateNth(6)<CR>
+	nmap <silent> <Leader>8 :call BufActivateNth(7)<CR>
+	nmap <silent> <Leader>9 :call BufActivateNth(8)<CR>
+	nmap <silent> <Leader>0 :call BufActivateNth(9)<CR>
 
-	nnoremap <Leader>x :NERDTreeToggle <CR>
-	nnoremap <Leader>t :TagbarToggle <CR>
-	nnoremap <Leader>d :DevPanelToggle<CR>
+	nnoremap <silent> <Leader>x :NERDTreeToggle <CR>
+	nnoremap <silent> <Leader>t :TagbarToggle <CR>
+	nnoremap <silent> <Leader>d :DevPanelToggle<CR>
 	nnoremap <silent> <Leader>q :call BufClose()<CR>
+	nnoremap <silent> <Leader>u :UndotreeToggle<CR>
 
 	" --- Autocmds for all plugins
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
 	autocmd VimEnter *.c,*.cpp,*.h,*.py,*.vim DevPanel
 	autocmd BufEnter * call UpdateTitle()
-	"autocmd Filetype c,cpp,python AnyFoldActivate
 	autocmd BufWritePost *.py call flake8#Flake8()
 
 	augroup quickfixclose
@@ -641,12 +645,6 @@ nmap <silent> <Leader>+ :vertical resize -5<CR>
 
 set foldlevel=10
 
-" Decrease / Increase fold level
-nmap z, zm
-nmap z. zr
-nmap z,, :set foldlevel=0 <CR>
-nmap z.. :set foldlevel=99 <CR>
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding utilities
 
@@ -662,7 +660,7 @@ let g:LogLevelFoldMap = {
 			\ '\[VERBOSE\]'	: 9
 			\ }
 
-function! FoldLogLevel(lnum)
+function! FoldLevelLog(lnum)
 	let line = getline(a:lnum)
 	for [level, foldlevel] in items(g:LogLevelFoldMap)
 		if line =~? level
@@ -672,9 +670,11 @@ function! FoldLogLevel(lnum)
 	return '0'
 endfunction
 
-function! FoldTextFunction() " {{{2
-	if g:have_tagbar
+function! FoldTextFmt(fmt) " {{{2
+	if a:fmt ==# 'tag' && g:have_tagbar
 		let text = tagbar#GetNearbyTag(v:foldend, '%s', 'p')
+	elseif a:fmt ==# 'null'
+		let text = ''
 	else
 		let suba = getline(v:foldstart)
 		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
@@ -682,11 +682,11 @@ function! FoldTextFunction() " {{{2
 		let suba = substitute(suba, '\s*$', '', '')
 		let text = suba
 	endif
-	let lines = v:foldend - v:foldstart + 1
 	let fillchar = matchstr(&fillchars, 'fold:\zs.')
 	if strlen(fillchar) == 0
 		let fillchar = '-'
 	endif
+	let lines = v:foldend - v:foldstart + 1
 	let lines = repeat(fillchar, 4).' ' . lines . ' lines '.repeat(fillchar, 3)
 	if has('float')
 		let nuw = max([float2nr(log10(line('$')))+3, &numberwidth])
@@ -707,55 +707,87 @@ function! FoldTextFunction() " {{{2
 	return text
 endfunction
 
-function! ToggleLogFold()
+function! ToggleFold(fold_method)
 	if exists('g:toggle_fold')
-		set foldlevel=99
-		unlet g:toggle_fold
-		return
+		if g:toggle_fold ==# a:fold_method
+			set foldlevel=99
+			unlet g:toggle_fold
+			return
+		endif
 	endif
-	set foldmethod=expr
-	set foldexpr=FoldLogLevel(v:lnum)
-	set foldlevel=5
-	let g:toggle_fold = 1
+
+	if a:fold_method ==# 'log'
+		set foldmethod=expr
+		set foldexpr=FoldLevelLog(v:lnum)
+		set foldlevel=5
+		for [level, foldlevel] in items(g:LogLevelFoldMap)
+			if foldlevel == &foldlevel
+				let disp_level = level
+				break
+			endif
+		endfor
+		echo 'Folding log-level - showing all logs ' . disp_level . ' or higher...'
+	elseif a:fold_method ==# 'git'
+		if !g:have_gitgutter
+			echo 'GitGutter plugin not installed...'
+			return
+		endif
+		call gitgutter#fold#enable()
+		if g:have_tagbar
+			set foldtext=FoldTextFmt('tag')
+		else
+			set foldtext=gitgutter#fold#foldtext()
+		endif
+		set foldlevel=1
+		let [a,m,r] = GitGutterGetHunkSummary()
+		echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
+	elseif a:fold_method ==# 'search'
+		if !g:have_searchfold
+			echo 'SearchFold plugin not installed...'
+			return
+		endif
+		call SearchFold(0)				" --- Call SearchFold() for normal mode
+		set foldlevel=2					" --- Set to show a few lines of context
+		set foldtext=FoldTextFmt('tag')
+	elseif a:fold_method ==# 'search-word'
+		if !g:have_searchfold
+			echo 'SearchFold plugin not installed...'
+			return
+		endif
+		let @/ = expand('<cword>')		" --- Set search pattern to current word
+		call SearchFold(0)				" --- Call SearchFold() for normal mode
+		set foldlevel=2					" --- Set to show a few lines of context
+		set foldtext=FoldTextFmt('tag')
+	elseif a:fold_method ==# 'indent'
+		set foldmethod=indent
+		set foldtext=FoldTextFmt('null')
+		set foldlevel=0
+	endif
+
+	let g:toggle_fold = a:fold_method
 endfunction
 
-function! ToggleGitFold()
-	if !g:have_gitgutter
-		echo '...GitGutter plugin not installed'
-		return
-	endif
-	if exists('t:toggle_fold')
-		set foldlevel=99
-		unlet g:toggle_fold
-		return
-	endif
-	GitGutterFold
-	if g:have_tagbar
-		set foldtext=FoldTextFunction()
-	else
-		set foldtext=gitgutter#fold#foldtext()
-	endif
-	set foldlevel=1
-	let g:toggle_fold = 1
-endfunction
+nnoremap <silent> zw :call ToggleFold('search-word')<CR>
+nnoremap <silent> zs :call ToggleFold('search')<CR>
+nnoremap <silent> zl :call ToggleFold('log')<CR>
+nnoremap <silent> zg :call ToggleFold('git')<CR>
+nnoremap <silent> zi :call ToggleFold('indent')<CR>
 
-function! ToggleSearchWord()
-	if exists('g:toggle_fold')
-		set foldlevel=99
-		let @/ = ''					" --- Clear the search pattern
-		unlet g:toggle_fold
-		return
-	endif
-	let @/ = expand('<cword>')		" --- Set search pattern to current word
-	call SearchFold(0)				" --- Call SearchFold() for normal mode
-	set foldlevel=2					" --- Set to show a few lines of context
-	set foldtext=FoldTextFunction()
-	let g:toggle_fold = 1
-endfunction
-
-nnoremap <silent> <C-z> :call ToggleSearchWord()<CR>
-nnoremap <silent> <C-l> :call ToggleLogFold()<CR>
-nnoremap <silent> <Leader>g :call ToggleGitFold()<CR>
+" Decrease / Increase fold level
+nmap z, zm
+nmap z. zr
+nmap z,, :set foldlevel=0 <CR>
+nmap z.. :set foldlevel=99 <CR>
+nmap z0 :set foldlevel=0<CR>
+nmap z1 :set foldlevel=1<CR>
+nmap z2 :set foldlevel=2<CR>
+nmap z3 :set foldlevel=3<CR>
+nmap z4 :set foldlevel=4<CR>
+nmap z5 :set foldlevel=5<CR>
+nmap z6 :set foldlevel=6<CR>
+nmap z7 :set foldlevel=7<CR>
+nmap z8 :set foldlevel=8<CR>
+nmap z9 :set foldlevel=9<CR>
 
 nnoremap ; :
 
@@ -783,83 +815,6 @@ if has("gui_running")
 	set ttymouse=sgr
 endif
 
-"show only lines containing word under cursor
-if version >= 600
-
-	set fml=0
-	set foldtext=FoldText()
-
-	function! FoldText()
-		let nl = v:foldend - v:foldstart + 1
-		let txt = '+-- ' . nl . ' lines '
-		return txt
-	endfunction
-
-	function! ToggleFold()
-		if !exists('t:folded')
-			let t:folded = 0
-		endif
-		if (t:folded == 0)
-			set foldnestmax=1
-			set foldlevel=10
-			let t:folded = 1
-		else
-			exec "normal! zR"
-			set foldmethod=manual
-			let t:folded = 0
-		endif
-	endfunction
-
-	" Returns either the contents of a fold or spelling suggestions.
-	if (v:version >= 700) && has('balloon_eval')
-		function! BalloonExpr()
-			let foldStart = foldclosed(v:beval_lnum )
-			let foldEnd = foldclosedend(v:beval_lnum)
-			let lines = []
-			if foldStart < 0
-				" We're not in a fold.
-				" If 'spell' is on and the word pointed to is incorrectly spelled,
-				" the tool tip will contain a few suggestions.
-				let lines = spellsuggest( spellbadword( v:beval_text )[ 0 ], 5, 0 )
-			else
-				let numLines = foldEnd - foldStart + 1
-				" Up to 31 lines get shown okay; beyond that, only 30 lines are shown with
-				" ellipsis in between to indicate too much. The reason why 31 get shown ok
-				" is that 30 lines plus one of ellipsis is 31 anyway.
-				if ( numLines > 31 )
-					let lines = getline( foldStart, foldStart + 14 )
-					let lines += [ '-- Snipped ' . ( numLines - 30 ) . ' lines --' ]
-					let lines += getline( foldEnd - 14, foldEnd )
-				else
-					let lines = getline( foldStart, foldEnd )
-				endif
-			endif
-			return join( lines, has( "balloon_multiline" ) ? "\n" : " " )
-		endfunction
-		set ballooneval
-		set balloondelay=10
-		set balloonexpr=BalloonExpr()
-	endif
-
-	set omnifunc=syntaxcomplete#Complete
-
-	function! FoldCursor(lnum)
-		"set foldlevel=0
-		let word = expand('<cword>')
-		if getline(a:lnum) =~? word
-			return '0'
-		endif
-		if getline(a:lnum+foldlevel) =~? word
-			return foldlevel
-		endif
-		if getline(a:lnum-foldlevel) =~? word
-			return foldlevel
-		endif
-		return '99'
-	endfunction
-
-endif
-
 "handy formatting commands for cstyle
 "<Ctrl-F2> - replace whitespace at end of line
 map <silent> O1;5Q :1,$s/[ \t]*$//<CR>:let @/ = ""<CR>
@@ -873,7 +828,6 @@ map <silent> [15;5~ :1,$s/\(printf\) (/\1(/<CR>
 map <silent> [17;5~ :1,$s/){/) {/<CR>
 "<Ctrl-F7> - fix cast spacing
 map <silent> [18;5~ :1,$s/(\(char\\|char \*\\|char \*\*\\|int\\|int \*\)) /(\1)/<CR>
-
 
 let w:hexmode = 0
 function! ToggleHex()
