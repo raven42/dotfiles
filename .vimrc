@@ -147,7 +147,15 @@ highlight lCursor		guifg=bg guibg=fg
 
 set nocompatible			" ---- Use Vim defaults (much better!)
 set bs=indent,eol,start		" ---- allow backspacing over everything in insert mode
-set viminfo='20,\"50		" ---- read/write a .viminfo file with 50 lines of registers
+" set viminfo=%,<800,'10,/50,:100,h,f0,n~/.vim/cache/.viminfo
+" "           | |    |   |   |    | |  + viminfo file path
+" "           | |    |   |   |    | + file marks 0-9,A-Z 0=NOT stored
+" "           | |    |   |   |    + disable 'hlsearch' loading viminfo
+" "           | |    |   |   + command-line history saved
+" "           | |    |   + search history saved
+" "           | |    + files marks saved
+" "           | + lines saved each register (old name for <, vi6.2)
+" "           + save/restore buffer list
 set viminfo='50,\"1000,:100,n~/.viminfo
 set history=50				" ---- keep 50 lines of command line history
 set ruler					" ---- show the cursor position all the time
@@ -175,6 +183,7 @@ set autoindent				" ---- autoindenting is good
 set smartindent				" ---- Recognize syntax for formatting
 set autoread				" ---- Autoread file when change is detected
 set shortmess=aIt
+set textwidth=140			" ---- Set default character width before autowrap
 set tags=${TAGFILES}
 
 filetype plugin on
@@ -182,7 +191,20 @@ filetype indent on
 
 " ---- :help cinoptions-values
 " NOTE: additional formatting options specified in .vim/after/ftplugin.vim
-autocmd FileType c,cpp setlocal cinoptions=>4,t0,#0,:0,l1,t0,p2,+2s,c0,(0,m1,)50,J1,#N
+autocmd FileType c,cpp setlocal cinoptions=>4,t0,#0,:0,l1,p2,+2s,c0,(0,m1,)50,J1,#N
+"                                          |  |  |  |  |  |  |   |  |  |  |   |  + Recognize shell/perl script comment style
+"                                          |  |  |  |  |  |  |   |  |  |  |   + Don't confuse object declarations with labels
+"                                          |  |  |  |  |  |  |   |  |  |  + Look for unclosed paranthesis 50 lines away
+"                                          |  |  |  |  |  |  |   |  |  + Line up close paren on new line with open paren
+"                                          |  |  |  |  |  |  |   |  + Line up arguments under unclosed parens
+"                                          |  |  |  |  |  |  |   + Align lines after comment opener
+"                                          |  |  |  |  |  |  + Indent continuation line by 2 shift-width
+"                                          |  |  |  |  |  + indent parameter declarations after function but before open bracket
+"                                          |  |  |  |  + align with case label instead of statement after it
+"                                          |  |  |  + case labels align with switch instead of shift-width in
+"                                          |  |  + preprocessor directives should be left aligned
+"                                          |  + function return type left justified intead of shift-width
+"                                          + normal indentation after start of a block
 autocmd FileType python,sh setlocal cinoptions=>4,t0,#s
 autocmd BufWinEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
 autocmd InsertEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+\%#\@<!$/
@@ -292,14 +314,21 @@ if version >= 600
 				\ 17: "\u2786", 18: "\u2787", 19: "\u2788", 20: "\u2789",
 				\ }
 
+	" --- Lightline#Bufferline Configuration
 	let g:lightline#bufferline#show_number = 2
 	let g:lightline#bufferline#unicode_symbols = 1
 	let g:lightline#bufferline#filename_modifier = ':t'
+	let g:lightline#bufferline#unnamed = 'No Name'
+	let g:lightline#bufferline#number_separator = ' '
 
 	" --- NERDTree Configuration
 	let NERDTreeMouseMode = 2			" --- Open/Close dirs on single mouse click
 	let NERDTreeNaturalSort = 1			" --- Sort order of files more natural
 	let NERDTreeShowHidden = 1			" --- Show hidden files/folders by default
+	let NERDTreeIgnore = [
+				\ '\.o$', '\.d$', '\~$', '\.pyc$',
+				\ '\.swp$', '\.swo$', '\.swn$',
+				\ '\.swm$', '\.swl$', '\.swk$', ]
 	if $GIT_ROOT !=# ''
 		let BookmarksFile = $GIT_ROOT . '/.rc/NERDTreeBookmarks'
 		if filereadable(BookmarksFile)
@@ -469,26 +498,6 @@ if version >= 600
 		echom 'Closing buffer ' . % . '...'
 	endfunction
 
-	function! GitGutterFoldToggle()
-		if !g:have_gitgutter
-			echo '...GitGutter plugin not installed'
-			return
-		endif
-		if !exists('t:gitgutter_fold')
-			let t:gitgutter_fold = 0
-		endif
-		if t:gitgutter_fold == 0
-			GitGutterFold
-			let t:gitgutter_fold = 1
-			set foldtext=gitgutter#fold#foldtext()
-			set foldlevel=1
-		else
-			GitGutterFold
-			let t:gitgutter_fold = 0
-			set foldlevel=99
-		endif
-	endfunction
-
 	function! LastOpenFileName() abort
 		if !exists('t:lastfilename')
 			let t:lastfilename = fnamemodify(bufname('%'), ':p')
@@ -529,6 +538,9 @@ if version >= 600
 	endfunction
 
 	function! BufActivateNth(bufnr) abort
+		while &filetype =~# g:ignored_windows
+			execute 'wincmd w'
+		endwhile
 		let l:buffers = FilteredBuffers()
 		if a:bufnr < len(l:buffers)
 			execute 'buffer ' . l:buffers[a:bufnr]
@@ -589,7 +601,6 @@ if version >= 600
 	nnoremap <Leader>t :TagbarToggle <CR>
 	nnoremap <Leader>d :DevPanelToggle<CR>
 	nnoremap <silent> <Leader>q :call BufClose()<CR>
-	nnoremap <silent> <Leader>g :call GitGutterFoldToggle()<CR>
 
 	" --- Autocmds for all plugins
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
@@ -634,20 +645,115 @@ nmap z. zr
 nmap z,, :set foldlevel=0 <CR>
 nmap z.. :set foldlevel=99 <CR>
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Folding utilities
+
+let g:LogLevelFoldMap = {
+			\ '\[EMERG\]'	: 1,
+			\ '\[ALERT\]'	: 2,
+			\ '\[CRIT\]'	: 3,
+			\ '\[ERR\]'		: 4,
+			\ '\[WARN\]'	: 5,
+			\ '\[NOTICE\]'	: 6,
+			\ '\[INFO\]'	: 7,
+			\ '\[DEBUG\]'	: 8,
+			\ '\[VERBOSE\]'	: 9
+			\ }
+
+function! FoldLogLevel(lnum)
+	let line = getline(a:lnum)
+	for [level, foldlevel] in items(g:LogLevelFoldMap)
+		if line =~? level
+			return foldlevel
+		endif
+	endfor
+	return '0'
+endfunction
+
+function! FoldTextFunction() " {{{2
+	if g:have_tagbar
+		let text = tagbar#GetNearbyTag(v:foldend, '%s', 'p')
+	else
+		let suba = getline(v:foldstart)
+		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
+		let suba = substitute(suba, foldmarkerpat, '', 'g')
+		let suba = substitute(suba, '\s*$', '', '')
+		let text = suba
+	endif
+	let lines = v:foldend - v:foldstart + 1
+	let fillchar = matchstr(&fillchars, 'fold:\zs.')
+	if strlen(fillchar) == 0
+		let fillchar = '-'
+	endif
+	let lines = repeat(fillchar, 4).' ' . lines . ' lines '.repeat(fillchar, 3)
+	if has('float')
+		let nuw = max([float2nr(log10(line('$')))+3, &numberwidth])
+	else
+		let nuw = &numberwidth
+	endif
+	let n = winwidth(winnr()) - &foldcolumn - nuw - strlen(lines)
+	let text = text[:min([strlen(text), n])]
+	if text[-1:] != ' '
+		if strlen(text) < n
+			let text .= ' '
+		else
+			let text = substitute(text, '\s*.$', '', '')
+		endif
+	endif
+	let text .= repeat(fillchar, n - strlen(text))
+	let text .= lines
+	return text
+endfunction
+
+function! ToggleLogFold()
+	if exists('g:toggle_fold')
+		set foldlevel=99
+		unlet g:toggle_fold
+		return
+	endif
+	set foldmethod=expr
+	set foldexpr=FoldLogLevel(v:lnum)
+	set foldlevel=5
+	let g:toggle_fold = 1
+endfunction
+
+function! ToggleGitFold()
+	if !g:have_gitgutter
+		echo '...GitGutter plugin not installed'
+		return
+	endif
+	if exists('t:toggle_fold')
+		set foldlevel=99
+		unlet g:toggle_fold
+		return
+	endif
+	GitGutterFold
+	if g:have_tagbar
+		set foldtext=FoldTextFunction()
+	else
+		set foldtext=gitgutter#fold#foldtext()
+	endif
+	set foldlevel=1
+	let g:toggle_fold = 1
+endfunction
+
 function! ToggleSearchWord()
-	if exists('g:toggle_search_word')
+	if exists('g:toggle_fold')
 		set foldlevel=99
 		let @/ = ''					" --- Clear the search pattern
-		unlet g:toggle_search_word
+		unlet g:toggle_fold
 		return
 	endif
 	let @/ = expand('<cword>')		" --- Set search pattern to current word
 	call SearchFold(0)				" --- Call SearchFold() for normal mode
 	set foldlevel=2					" --- Set to show a few lines of context
-	let g:toggle_search_word = 1
+	set foldtext=FoldTextFunction()
+	let g:toggle_fold = 1
 endfunction
 
-nmap <silent> <C-z> :call ToggleSearchWord()<CR>
+nnoremap <silent> <C-z> :call ToggleSearchWord()<CR>
+nnoremap <silent> <C-l> :call ToggleLogFold()<CR>
+nnoremap <silent> <Leader>g :call ToggleGitFold()<CR>
 
 nnoremap ; :
 

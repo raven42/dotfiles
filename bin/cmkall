@@ -54,10 +54,7 @@ rehash=0
 dir_name_set=0
 full_swbd_list="55 62 63 61 148 156 161 165 171 173 178 188"
 
-pathpat="(/[^/]*)+:[0-9]+"
-ccred=$(echo -e "\033[0;31m")
-ccyellow=$(echo -e "\033[0;33m")
-ccend=$(echo -e "\033[0m")
+colorize_logs=~dh404494/bin/colorize-logs
 
 gitRepoTime()
 {
@@ -104,7 +101,7 @@ print_bldlogs()
 		# only print errors from 1 swbd
 		if [[ $print_log_done == 0 ]]; then
 			$exec cd ${rootDir}${VPS}/build/swbd${swbd_arr[idx]}/build_logs
-			$exec grep -B 100 -A 5 -m1 " Error" * | sed -E -e "s/.*[Ee]rror[: ]/$ccred&$ccend/g" -e "s/.*[Ww]arning[: ]/$ccyellow&$ccend/g"
+			$exec grep -B 100 -A 5 -m1 " Error" * | $colorize_logs
 			print_log_done=1
 		fi
 	done

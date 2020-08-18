@@ -137,32 +137,24 @@ if [ $GIT_REPO ]; then
 		fi
 	fi
 
-	if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
-		PS_COLOR=${FG_PINK}
-	elif [[ ${HOSTNAME} =~ ${USER_HOSTNAME} ]]; then
-		PS_COLOR=${FG_ORG}
-	else
-		PS_COLOR=${FG_CYAN}
-	fi
-	PS_INFO="$GIT_REPO\$(__git_ps1)"
-	TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
+	if [[ ${GIT_ROOT} =~ ${USER} ]]; then
 
-	# Look for REPO specific NERDTree File and if not exists, then generate it
-	if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
-		if [ -f ${NERDTREE_BOOKMARKS} ]; then
-			if [[ ${NERDTREE_DEF_BOOKMARKS} -nt ${NERDTREE_BOOKMARKS} ]]; then
-				echo "NERDTree Bookmarks out of date. Generating new file..."
+		# Look for REPO specific NERDTree File and if not exists, then generate it
+		if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
+			if [ -f ${NERDTREE_BOOKMARKS} ]; then
+				if [[ ${NERDTREE_DEF_BOOKMARKS} -nt ${NERDTREE_BOOKMARKS} ]]; then
+					echo "NERDTree Bookmarks out of date. Generating new file..."
+					${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
+				fi
+			else
+				echo "Generating NERDTree Bookmarks file..."
 				${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
 			fi
-		else
-			echo "Generating NERDTree Bookmarks file..."
-			${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
 		fi
+
+		# Look for TAG files and if none are found, generate new ones
+
 	fi
-else
-	PS_COLOR=${FG_GRN}
-	PS_INFO="${PS_HOST}${FG_YLW}\$(__git_ps1)${FG_RST}"
-	TITLE_INFO="${USER}"
 fi
 
 # Include the default alias / resource definitions
@@ -183,6 +175,14 @@ export DISPLAY
 function format_prompt() {
 	# The prompt is set by exporting the PS1 variable with any string
 	if [ $GIT_REPO ]; then
+		if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
+			PS_COLOR=${FG_PINK}
+		elif [[ ${HOSTNAME} =~ ${USER_HOSTNAME} ]]; then
+			PS_COLOR=${FG_ORG}
+		else
+			PS_COLOR=${FG_CYAN}
+		fi
+
 		if [ -f ${GIT_RC_PATH}/swbd ]; then
 			PLATFORM_PATH=${GIT_RC_PATH}/swbd
 		else
@@ -193,7 +193,10 @@ function format_prompt() {
 		if [ $SWBD ]; then
 			PLATFORM_STRING="${FG_YLW}SWBD-${SWBD:4} "
 		fi
+		PS_INFO="$GIT_REPO\$(__git_ps1)"
 	else
+		PS_COLOR=${FG_GRN}
+		PS_INFO="${PS_HOST}${FG_YLW}\$(__git_ps1)${FG_RST}"
 		PLATFORM_STRING=""
 	fi
 	export PS1="[${PLATFORM_STRING}${PS_COLOR}${PS_INFO}${FG_RST}] ${PS_DIR}${PS_SYMB} "
@@ -202,8 +205,10 @@ function format_prompt() {
 function format_title() {
 	# To change the window title, do an 'echo -ne "\033]0;<string>\007"'
 	if [ $GIT_REPO ]; then
+		TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
 		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s/\/work\/${USER}//" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	else
+		TITLE_INFO="${USER}"
 		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	fi
 }
