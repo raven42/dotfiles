@@ -433,6 +433,8 @@ if version >= 600
 	let g:have_nerdcommenter = &runtimepath =~# 'nerdcommenter' ? 1 : 0
 	" --- https://github.com/raven42/devpanel-vim.git
 	let g:have_devpanel = &runtimepath =~# 'devpanel' ? 1 : 0
+	" --- https://github.com/dkprice/vim-easygrep.git
+	let g:have_easygrep = &runtimepath =~# 'easygrep' ? 1 : 0
 
 	function! LightlineFileEncoding()
 		return &filetype =~# g:ignored_windows ? '' :
