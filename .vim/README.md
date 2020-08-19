@@ -25,7 +25,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>x` | Toggle the File Explorer window (NERDTree) |
 | `<Leader>t` | Toggle the Tag window (Tagbar) |
 | `<Leader>u` | Toggle the undo history window (Undotree) |
-| Folding Shortcuts | |
+| **Folding Shortcuts** | |
 | `zw` | Set **search** pattern to word under cursor and toggle search fold method |
 | `zs` | Toggle **search** fold method (fold text around current search pattern) |
 | `zl` | Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher |
@@ -37,14 +37,14 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `z..` | Set foldlevel to 99 (open all folds to level 99) |
 | `za` | Toggle a fold open / closed |
 | `z<#>` | Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3 |
-| Git Shortcuts | |
+| **Git Shortcuts** | |
 | `g]` | Move to next hunk |
 | `g[` | Move to previous hunk |
 | `gs` | Stage the hunk under the cursor |
 | `gu` | Undo the hunk under the cursor |
 | `gp` | Toggle the preview window and populate with the hunk under the cursor |
 | `gq` | Toggle the quickfix window and populate with all hunks |
-| Other Shortcuts | |
+| **Other Shortcuts** | |
 | `<Ctrl-h>` | Toggle Hex mode. |
 
 > :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
