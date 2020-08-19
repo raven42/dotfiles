@@ -21,15 +21,15 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>_` | Resize the current window making it 5 character less in width |
 | `<Leader>+` | Resize the current window making it 5 character more in width |
 | `<Leader>q` | Close the current buffer |
-| `<Leader>d` | Toggle the File Explorer (NERDTree) and Tag (Tagbar) windows |
-| `<Leader>x` | Toggle the File Explorer window (NERDTree) |
-| `<Leader>t` | Toggle the Tag window (Tagbar) |
-| `<Leader>u` | Toggle the undo history window (Undotree) |
+| `<Leader>d` | Toggle the File Explorer [NERDTree](https://github.com/preservim/nerdtree.git) and Tag [Tagbar](git@github.com:raven42/tagbar.git) windows |
+| `<Leader>x` | Toggle the File Explorer window [NERDTree](https://github.com/preservim/nerdtree.git) |
+| `<Leader>t` | Toggle the Tag window [Tagbar](git@github.com:raven42/tagbar.git) |
+| `<Leader>u` | Toggle the undo history window [UndoTree](https://github.com/mbbill/undotree.git) |
 | **Folding Shortcuts** | |
-| `zw` | Set **search** pattern to word under cursor and toggle search fold method |
-| `zs` | Toggle **search** fold method (fold text around current search pattern) |
+| `zw` | Set **search** pattern to word under cursor and toggle search fold method using the [SearchFold](https://github.com/vim-scripts/searchfold.vim.git) plugin |
+| `zs` | Toggle **search** fold method using the [SearchFold](https://github.com/vim-scripts/searchfold.vim.git) plugin |
 | `zl` | Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher |
-| `zg` | Activate the **GIT** method to fold all text around the current changes in the open file. |
+| `zg` | Activate the **GIT** method to fold all text around the current changes in the open file using the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin. |
 | `zi` | Toggle **indent** fold method. |
 | `z,` | Decrease current foldlevel by one reducing the amount of context around a fold |
 | `z.` | Increase current foldlevel by one increasing the amount of context around a fold |
@@ -37,7 +37,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `z..` | Set foldlevel to 99 (open all folds to level 99) |
 | `za` | Toggle a fold open / closed |
 | `z<#>` | Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3 |
-| **Git Shortcuts** | |
+| **Git Shortcuts** | **More Info:** See the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin for more details |
 | `g]` | Move to next hunk |
 | `g[` | Move to previous hunk |
 | `gs` | Stage the hunk under the cursor |
@@ -46,6 +46,10 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `gq` | Toggle the quickfix window and populate with all hunks |
 | **Other Shortcuts** | |
 | `<Ctrl-h>` | Toggle Hex mode. |
+| **Commands** | |
+| `:Autoformat` | Run the [Autoformat](https://github.com/Chiel92/vim-autoformat) plugin to fix any formatting errors |
+| `:Grep <args>` | Run the [EasyGrep](https://github.com/dkprice/vim-easygrep.git) pluging to run `grep` from the current directory |
+
 
 > :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
   
@@ -112,13 +116,13 @@ The Lightbar plugin will display useful information about the currently opened f
 ## GitGutter
 The GitGutter plugin will display information about the added / modified / removed git hunks in the current file.
 
-Lines that have been added will be highlighted on the left side of the file window with two green left arrows.
+Lines that have been added will be highlighted on the left side of the file window with a green left arrow.
 > :construction: **Example:** coming soon...
 
 Lines that have been modified will be highlighted on the left side of the file window with a blue left then right arrow.
 > :construction: **Example:** coming soon...
 
-Lines that have been deleted will be highlighted on the left side of the file window with two red right arrows (note: the highlight will occur on the line prior to the deletion).
+Lines that have been deleted will be highlighted on the left side of the file window with a red right arrow (note: the highlight will occur on the line prior to the deletion).
 > :construction: **Example:** coming soon...
 
 ---
