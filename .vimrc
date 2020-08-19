@@ -689,10 +689,10 @@ function! FoldTextFmt(fmt) " {{{2
 	endif
 	let fillchar = matchstr(&fillchars, 'fold:\zs.')
 	if strlen(fillchar) == 0
-		let fillchar = '-'
+		let fillchar = "-"
 	endif
 	let lines = v:foldend - v:foldstart + 1
-	let lines = repeat(fillchar, 4).' ' . lines . ' lines '.repeat(fillchar, 3)
+	let lines = repeat(fillchar, 4).'| ' . lines . ' lines |'.repeat(fillchar, 3)
 	if has('float')
 		let nuw = max([float2nr(log10(line('$')))+3, &numberwidth])
 	else
@@ -713,10 +713,11 @@ function! FoldTextFmt(fmt) " {{{2
 endfunction
 
 function! ToggleFold(fold_method)
-	if exists('g:toggle_fold')
-		if g:toggle_fold ==# a:fold_method
+	if exists('b:toggle_fold')
+		if b:toggle_fold ==# a:fold_method
 			set foldlevel=99
-			unlet g:toggle_fold
+			unlet b:toggle_fold
+			echo 'All folds disabled'
 			return
 		endif
 	endif
@@ -725,6 +726,7 @@ function! ToggleFold(fold_method)
 		set foldmethod=expr
 		set foldexpr=FoldLevelLog(v:lnum)
 		set foldlevel=5
+		set foldtext=FoldTextFmt('null')
 		for [level, foldlevel] in items(g:LogLevelFoldMap)
 			if foldlevel == &foldlevel
 				let disp_level = level
@@ -769,7 +771,7 @@ function! ToggleFold(fold_method)
 		set foldlevel=0
 	endif
 
-	let g:toggle_fold = a:fold_method
+	let b:toggle_fold = a:fold_method
 endfunction
 
 nnoremap <silent> zw :call ToggleFold('search-word')<CR>
