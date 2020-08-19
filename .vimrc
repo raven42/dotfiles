@@ -52,12 +52,11 @@ if &t_Co > 2 || has("gui_running")
 	set hlsearch
 endif
 
-if &term=="xterm"
-	set t_Co=8
-	set t_Sb=^[[4%dm
-	set t_Sf=^[[3%dm
+if has("gui_running")
+	set guifont=Monospace\ 8
+	set mouse=a
+	set ttymouse=sgr
 endif
-"----- END Default /etc/vimrc contents
 
 "----- set up the stuff for color highlighing in an xterm
 if &term =~ "xterm"
@@ -76,6 +75,9 @@ if &term =~ "xterm"
 		set t_kh=[7%dm
 		set t_@7=[4%dm
 	endif
+	" Handle terminal raw mode correctly
+	set t_TI=
+	set t_TE=
 endif
 
 " ---- Syntax Highlighting Defintions
@@ -808,12 +810,6 @@ autocmd FileType make set nosmarttab
 let php3_sql_query = 1
 let php3_minlines = 3000
 let php3_baselib = 1
-
-if has("gui_running")
-	set guifont=Monospace\ 8
-	set mouse=a
-	set ttymouse=sgr
-endif
 
 "handy formatting commands for cstyle
 "<Ctrl-F2> - replace whitespace at end of line
