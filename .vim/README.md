@@ -42,7 +42,8 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `g[` | Move to previous hunk |
 | `gs` | Stage the hunk under the cursor |
 | `gu` | Undo the hunk under the cursor |
-| `gp` | Preview the changes in the hunk under the cursor |
+| `gp` | Toggle the preview window and populate with the hunk under the cursor |
+| `gq` | Toggle the quickfix window and populate with all hunks |
 | Other Shortcuts | |
 | `<Ctrl-h>` | Toggle Hex mode. |
 

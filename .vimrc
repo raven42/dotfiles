@@ -588,7 +588,32 @@ if version >= 600
 		execute 'bdelete ' . bufnr
 	endfunction
 
+	function! ToggleGitHunkPreview() abort
+		for winnr in range(1, winnr('#'))
+			if getwinvar(winnr, '&filetype') ==# 'diff'
+				execute winnr . 'wincmd w'
+				quit
+				return
+			endif
+		endfor
+		GitGutterPreviewHunk
+	endfunction
+
+	function! ToggleGitQuickFix() abort
+		if exists('g:quickfix_window')
+			unlet g:quickfix_window
+			cclose
+			return
+		endif
+		GitGutterQuickFix
+		copen
+		let g:quickfix_window = 1
+	endfunction
+
 	function! CheckForDotFiles() abort
+		if expand('%t') ==# ''
+			return
+		endif
 		let out = system("git --git-dir=$HOME/.cfg/ --work-tree $HOME ls-files")
 		if out =~# expand('%:t')
 			let g:gitgutter_git_args = '--git-dir=$HOME/.cfg/ --work-tree $HOME'
@@ -628,14 +653,15 @@ if version >= 600
 	nnoremap g[ :GitGutterPrevHunk<CR>
 	nnoremap gs :GitGutterStageHunk<CR>
 	nnoremap gu :GitGutterUndoHunk<CR>
-	nnoremap gp :GitGutterPreviewHunk<CR>
+	nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
+	nnoremap <silent> gq :call ToggleGitQuickFix()<CR>
 
 	" --- Autocmds for all plugins
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
 	autocmd VimEnter *.c,*.cpp,*.h,*.py,*.vim DevPanel
 	autocmd BufEnter * call UpdateTitle()
 	autocmd BufWritePost *.py call flake8#Flake8()
-	autocmd BufWinEnter * call CheckForDotFiles()
+	autocmd BufEnter * call CheckForDotFiles()
 
 	augroup quickfixclose
 		autocmd!
