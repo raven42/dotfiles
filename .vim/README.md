@@ -21,9 +21,9 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `<Leader>_` | Resize the current window making it 5 character less in width |
 | `<Leader>+` | Resize the current window making it 5 character more in width |
 | `<Leader>q` | Close the current buffer |
-| `<Leader>d` | Toggle the File Explorer [NERDTree](https://github.com/preservim/nerdtree.git) and Tag [Tagbar](git@github.com:raven42/tagbar.git) windows |
+| `<Leader>d` | Toggle the File Explorer [NERDTree](https://github.com/preservim/nerdtree.git) and Tag [Tagbar](https://github.com/majutsushi/tagbar.git) windows |
 | `<Leader>x` | Toggle the File Explorer window [NERDTree](https://github.com/preservim/nerdtree.git) |
-| `<Leader>t` | Toggle the Tag window [Tagbar](git@github.com:raven42/tagbar.git) |
+| `<Leader>t` | Toggle the Tag window [Tagbar](https://github.com/majutsushi/tagbar.git) |
 | `<Leader>u` | Toggle the undo history window [UndoTree](https://github.com/mbbill/undotree.git) |
 | **Folding Shortcuts** | |
 | `zw` | Set **search** pattern to word under cursor and toggle search fold method using the [SearchFold](https://github.com/vim-scripts/searchfold.vim.git) plugin |
