@@ -672,7 +672,7 @@ endfunction
 
 function! FoldTextFmt(fmt) " {{{2
 	if a:fmt ==# 'tag' && g:have_tagbar
-		let text = tagbar#GetNearbyTag(v:foldend, '%s', 'p')
+		let text = tagbar#GetTagNearLine(v:foldend, '%s', 'p')
 	elseif a:fmt ==# 'null'
 		let text = ''
 	else
