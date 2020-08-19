@@ -76,6 +76,9 @@ if &term =~ "xterm"
 		set t_@7=[4%dm
 	endif
 	" Handle terminal raw mode correctly
+	" FIXME: This should be temporary until a better fix is found
+	" This limits vim from recognizing <C-a> and <C-S-a> as separate
+	" key sequences. For more info see :help modifyOtherKeys
 	set t_TI=
 	set t_TE=
 endif
