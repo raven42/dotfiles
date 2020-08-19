@@ -381,6 +381,7 @@ if version >= 600
 	let g:gitgutter_sign_removed_first_line = "\ue0bc"
 	let g:gitgutter_sign_remove_above_and_below = "\ue0b0\ue0b2"
 	let g:gitgutter_sign_modified_removed = "\ue0b0\ue0b2"
+	let g:gitgutter_preview_win_location = 'rightbelow'
 
 	" --- Tagbar Configuration
 	let g:tagbar_position = 'bottom'
@@ -587,6 +588,15 @@ if version >= 600
 		execute 'bdelete ' . bufnr
 	endfunction
 
+	function! CheckForDotFiles() abort
+		let out = system("git --git-dir=$HOME/.cfg/ --work-tree $HOME ls-files")
+		if out =~# expand('%:t')
+			let g:gitgutter_git_args = '--git-dir=$HOME/.cfg/ --work-tree $HOME'
+		else
+			let g:gitgutter_git_args = ''
+		endif
+	endfunction
+
 	" --- Key Mappings for all plugins
 	nmap <Leader>cc <plug>NERDCommenterToggle
 	vmap <Leader>cc <plug>NERDCommenterToggle
@@ -614,11 +624,18 @@ if version >= 600
 	nnoremap <silent> <Leader>q :call BufClose()<CR>
 	nnoremap <silent> <Leader>u :UndotreeToggle<CR>
 
+	nnoremap g] :GitGutterNextHunk<CR>
+	nnoremap g[ :GitGutterPrevHunk<CR>
+	nnoremap gs :GitGutterStageHunk<CR>
+	nnoremap gu :GitGutterUndoHunk<CR>
+	nnoremap gp :GitGutterPreviewHunk<CR>
+
 	" --- Autocmds for all plugins
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
 	autocmd VimEnter *.c,*.cpp,*.h,*.py,*.vim DevPanel
 	autocmd BufEnter * call UpdateTitle()
 	autocmd BufWritePost *.py call flake8#Flake8()
+	autocmd BufWinEnter * call CheckForDotFiles()
 
 	augroup quickfixclose
 		autocmd!
