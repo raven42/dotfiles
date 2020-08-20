@@ -384,10 +384,6 @@ if version >= 600
 	let g:gitgutter_preview_win_location = 'rightbelow'
 
 	" --- Tagbar Configuration
-	let g:tagbar_position = 'bottom'
-	let g:tagbar_height = winheight(0) / 2
-	let g:tagbar_width = winwidth(0) > 150 ? 50 : winwidth(0) / 3
-	let g:tagbar_previewwin_pos = 'botright'
 	let g:tagbar_no_status_line = 1
 
 	" --- Syntastic Configuration
@@ -418,6 +414,9 @@ if version >= 600
 	let g:undotree_HighlightChangedText = 0
 	let g:undotree_HighlightChangedWithSign = 0
 	let g:undotree_DiffAutoOpen = 0
+
+	" --- DevPanel Configuration
+	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make'
 
 	" --- Generic definitions used by functions for plugins
 	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree|diff)'
@@ -658,7 +657,6 @@ if version >= 600
 
 	" --- Autocmds for all plugins
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
-	autocmd VimEnter *.c,*.cpp,*.h,*.py,*.vim DevPanel
 	autocmd BufEnter * call UpdateTitle()
 	autocmd BufWritePost *.py call flake8#Flake8()
 	autocmd BufEnter * call CheckForDotFiles()
