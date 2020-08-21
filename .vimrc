@@ -190,9 +190,30 @@ set autoread				" ---- Autoread file when change is detected
 set shortmess=aIt
 set textwidth=140			" ---- Set default character width before autowrap
 set tags=${TAGFILES}
+set foldlevel=10
 
 filetype plugin on
 filetype indent on
+
+"----- Let's try the following settings for C/C++
+autocmd FileType c,cpp
+			\	set formatoptions=croql
+			\	cindent
+			\	comments=sr:/*,mb:*,ex:*/,://
+
+"----- We need real tabs for Makefiles.
+autocmd FileType make set noexpandtab
+autocmd FileType make set nosmarttab
+
+"----- have java highlight our functions
+"let java_highlight_functions=1
+
+"----- have php3 highlight SQL, and keep in better sync.
+let php3_sql_query = 1
+let php3_minlines = 3000
+let php3_baselib = 1
+
+nnoremap ; :
 
 " ---- :help cinoptions-values
 " NOTE: additional formatting options specified in .vim/after/ftplugin.vim
@@ -221,7 +242,7 @@ autocmd BufWinLeave * call clearmatches()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " PLUGIN Configuration
 
-if version >= 600
+if version >= 800
 
 	" Here are a couple unicode characters used for any formatted output
 	" E0A0	Branch
@@ -666,30 +687,28 @@ if version >= 600
 		autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
 	augroup END
 
+	" <CTRL-UP> - Switch to window above
+	nmap <silent> [1;5A :wincmd k<CR>
+	tmap <silent> [1;5A <c-w>:wincmd k<CR>
+	" <CTRL-DOWN> - Switch to window below
+	nmap <silent> [1;5B :wincmd j<CR>
+	tmap <silent> [1;5B <c-w>:wincmd j<CR>
+	" <CTRL-LEFT> - Switch to window to the left
+	nmap <silent> [1;5D :wincmd h<CR>
+	tmap <silent> [1;5D <c-w>:wincmd h<CR>
+	" <CTRL-RIGHT> - Switch to window to the right
+	nmap <silent> [1;5C :wincmd l<CR>
+	tmap <silent> [1;5C <c-w>:wincmd l<CR>
+
+	nmap <silent> <Leader>= :resize +5<CR>
+	nmap <silent> <Leader>- :resize -5<CR>
+	nmap <silent> <Leader>_ :vertical resize +5<CR>
+	nmap <silent> <Leader>+ :vertical resize -5<CR>
+
 endif
 
 " End PLUGIN Configurations
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" <CTRL-UP> - Switch to window above
-nmap <silent> [1;5A :wincmd k<CR>
-tmap <silent> [1;5A <c-w>:wincmd k<CR>
-" <CTRL-DOWN> - Switch to window below
-nmap <silent> [1;5B :wincmd j<CR>
-tmap <silent> [1;5B <c-w>:wincmd j<CR>
-" <CTRL-LEFT> - Switch to window to the left
-nmap <silent> [1;5D :wincmd h<CR>
-tmap <silent> [1;5D <c-w>:wincmd h<CR>
-" <CTRL-RIGHT> - Switch to window to the right
-nmap <silent> [1;5C :wincmd l<CR>
-tmap <silent> [1;5C <c-w>:wincmd l<CR>
-
-nmap <silent> <Leader>= :resize +5<CR>
-nmap <silent> <Leader>- :resize -5<CR>
-nmap <silent> <Leader>_ :vertical resize +5<CR>
-nmap <silent> <Leader>+ :vertical resize -5<CR>
-
-set foldlevel=10
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding utilities
@@ -836,40 +855,6 @@ nmap z6 :set foldlevel=6<CR>
 nmap z7 :set foldlevel=7<CR>
 nmap z8 :set foldlevel=8<CR>
 nmap z9 :set foldlevel=9<CR>
-
-nnoremap ; :
-
-"----- Let's try the following settings for C/C++
-autocmd FileType c,cpp
-			\	set formatoptions=croql
-			\	cindent
-			\	comments=sr:/*,mb:*,ex:*/,://
-
-"----- We need real tabs for Makefiles.
-autocmd FileType make set noexpandtab
-autocmd FileType make set nosmarttab
-
-"----- have java highlight our functions
-"let java_highlight_functions=1
-
-"----- have php3 highlight SQL, and keep in better sync.
-let php3_sql_query = 1
-let php3_minlines = 3000
-let php3_baselib = 1
-
-"handy formatting commands for cstyle
-"<Ctrl-F2> - replace whitespace at end of line
-map <silent> O1;5Q :1,$s/[ \t]*$//<CR>:let @/ = ""<CR>
-"<Ctrl-F3> - retab file to remove 'spaces instead of tabs'
-map <silent> O1;5R :%retab!<CR>
-"<Ctrl-F4> - fix keyword / parenthesis spacing
-map <silent> O1;5S :1,$s/\(if\\|for\\|while\\|return\\|sizeof\)(/\1 (/<CR>
-"<Ctrl-F5> - fix keyword / parenthesis spacing
-map <silent> [15;5~ :1,$s/\(printf\) (/\1(/<CR>
-"<Ctrl-F6> - fix parenthesis / bracket
-map <silent> [17;5~ :1,$s/){/) {/<CR>
-"<Ctrl-F7> - fix cast spacing
-map <silent> [18;5~ :1,$s/(\(char\\|char \*\\|char \*\*\\|int\\|int \*\)) /(\1)/<CR>
 
 let w:hexmode = 0
 function! ToggleHex()
