@@ -5,55 +5,80 @@ This directory sets up and configures vim using various plugins. It integrates t
 
 # Basic usage
 Basic usage and navigation uses the standard vim movement keys and also uses the mouse to move between windows, select text in visual mode, and move the cursor. There are also some useful key mappings to move between windows.
-| Key Sequence | Description |
-| --- | --- |
-| `<Ctrl-Up>` | Move to the window above the current one. |
-| `<Ctrl-Down>` | Move to the window below the current one. |
-| `<Ctrl-Left>` | Move to the window to the left of the current one. |
-| `<Ctrl-Right>` | Move to the window to the right of the current one. |
-| `<Leader><#>` | Move to the open buffer as signified by `#`. (Example: `\2`) |
-| `<Leader>cc` | Toggle a comment block around the currently selected code in visual mode. |
-| `<Leader>cm` | Comment a block of code using minimal comments |
-| `<Leader>ci` | Invert selected code: Comment any uncommented code, and uncomment any commented code |
-| `<Leader>cy` | Yank selected code into clipboard and then comment out |
-| `<Leader>-` | Resize the current window making it 5 characters less in height |
-| `<Leader>=` | Resize the current window making it 5 characters more in height |
-| `<Leader>_` | Resize the current window making it 5 character less in width |
-| `<Leader>+` | Resize the current window making it 5 character more in width |
-| `<Leader>q` | Close the current buffer |
-| `<Leader>d` | Toggle the File Explorer [NERDTree](https://github.com/preservim/nerdtree.git) and Tag [Tagbar](https://github.com/majutsushi/tagbar.git) windows |
-| `<Leader>x` | Toggle the File Explorer window [NERDTree](https://github.com/preservim/nerdtree.git) |
-| `<Leader>t` | Toggle the Tag window [Tagbar](https://github.com/majutsushi/tagbar.git) |
-| `<Leader>u` | Toggle the undo history window [UndoTree](https://github.com/mbbill/undotree.git) |
-| **Folding Shortcuts** | |
-| `zw` | Set **search** pattern to word under cursor and toggle search fold method using the [SearchFold](https://github.com/vim-scripts/searchfold.vim.git) plugin |
-| `zs` | Toggle **search** fold method using the [SearchFold](https://github.com/vim-scripts/searchfold.vim.git) plugin |
-| `zl` | Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher |
-| `zg` | Activate the **GIT** method to fold all text around the current changes in the open file using the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin. |
-| `zi` | Toggle **indent** fold method. |
-| `z,` | Decrease current foldlevel by one reducing the amount of context around a fold |
-| `z.` | Increase current foldlevel by one increasing the amount of context around a fold |
-| `z,,` | Set foldlevel to 0 (close all folds) |
-| `z..` | Set foldlevel to 99 (open all folds to level 99) |
-| `za` | Toggle a fold open / closed |
-| `z<#>` | Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3 |
-| **Git Shortcuts** | **More Info:** See the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin for more details |
-| `g]` | Move to next hunk |
-| `g[` | Move to previous hunk |
-| `gs` | Stage the hunk under the cursor |
-| `gu` | Undo the hunk under the cursor |
-| `gp` | Toggle the preview window and populate with the hunk under the cursor |
-| `gq` | Toggle the quickfix window and populate with all hunks |
-| **Other Shortcuts** | |
-| `<Ctrl-h>` | Toggle Hex mode. |
-| **Commands** | |
-| `:Autoformat` | Run the [Autoformat](https://github.com/Chiel92/vim-autoformat) plugin to fix any formatting errors |
-| `:Grep <args>` | Run the [EasyGrep](https://github.com/dkprice/vim-easygrep.git) pluging to run `grep` from the current directory |
 
+### Key Shortcuts
+```
+<Ctrl-Up>    - Move to the window above the current one.
+<Ctrl-Down>  - Move to the window below the current one.
+<Ctrl-Left>  - Move to the window to the left of the current one.
+<Ctrl-Right> - Move to the window to the right of the current one.
+<Leader><#>  - Move to the open buffer as signified by `#`. (Example: `\2`)
+<Leader>cc   - Toggle a comment block around the currently selected code in visual mode.
+<Leader>cm   - Comment a block of code using minimal comments
+<Leader>ci   - Invert selected code: Comment any uncommented code, and uncomment any commented code
+<Leader>cy   - Yank selected code into clipboard and then comment out
+<Leader>-    - Resize the current window making it 5 characters less in height
+<Leader>=    - Resize the current window making it 5 characters more in height
+<Leader>_    - Resize the current window making it 5 character less in width
+<Leader>+    - Resize the current window making it 5 character more in width
+<Leader>q    - Close the current buffer
+<Leader>d    - Toggle the DevPanel showing the File Explorer, Tag, and if needed the Python Syntax Checker panels
+<Leader>x    - Toggle the File Explorer panel
+<Leader>t    - Toggle the Tag panel
+<Leader>u    - Toggle the undo history panel
+<Leader>vv   - Grep for the word under the cursor, match all occurences
+<Leader>va   - Like vv, but add to existing list
+<Leader>vr   - Perform a global search on the word under the cursor and prompt for a pattern with which to replace it.
+```
+
+### Folding Shortcuts
+```
+zw   - Set **search** pattern to word under cursor and toggle search fold method
+zs   - Toggle **search** fold method to fold based on the current search pattern
+zl   - Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher
+zg   - Activate the **GIT** method to fold all text around the current changes in the open file
+zi   - Toggle **indent** fold method. Useful for showing only function names.
+z,   - Decrease current foldlevel by one reducing the amount of context around a fold
+z.   - Increase current foldlevel by one increasing the amount of context around a fold
+z,,  - Set foldlevel to 0 (close all folds)
+z..  - Set foldlevel to 99 (open all folds to level 99)
+za   - Toggle a fold open / closed
+z<#> - Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3
+```
+
+### Git Shortcuts
+```
+g] - Move to next hunk
+g[ - Move to previous hunk
+gs - Stage the hunk under the cursor
+gu - Undo the hunk under the cursor, reverting it to the unmodified state
+gp - Toggle the preview window and populate with the hunk under the cursor
+gq - Toggle the quickfix window and populate with all hunks
+```
+> **More Info:** See the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin for more details
+
+### Other Shortcuts
+```
+<Ctrl-h> - Toggle Hex mode.
+```
+
+### Commands
+```
+:Autoformat                     - Attempt to fix any formatting errors
+:Grep <args>                    - Search for the specified patter from the current directory
+:GrepAdd <arg>                  - Add the search pattern to the grep list
+:Replace <target> <replacement> - Perform a global search and replace using the same files as the `:Grep` command. Opens dialog to confirm
+:ReplaceUndo                    - Undo the last `:Replace` operation
+:GrepOptions                    - Open a window to set grep options.
+:GrepRoot [+arg]                - Configure the location easygrep searches from
+```
 
 > :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
   
 > :warning: **Folding:** Activating some foldmethods might take a while to activate.
+
+### More Info
+For more information, see the documentation for list of plugins at the bottom. The complete list of integrated plugins can be found in the vim [plugins](.vim/pack/plugins/start/) directory
 
 ---
 
@@ -153,17 +178,19 @@ git config --local user.email '<email>'
 
 ---
 
-The following plugins are included in this configuration:
-> <https://github.com/raven42/devpanel-vim>  
-> <https://github.com/raven42/indentpython.vim>  
-> <https://github.com/itchyny/lightline.vim>  
-> <https://github.com/mengelbrecht/lightline-bufferline>  
-> <https://github.com/preservim/nerdtree>  
-> <https://github.com/preservim/nerdcommenter>  
-> <https://github.com/raven42/tagbar>  
-> <https://github.com/vim-scripts/searchfold.vim>  
-> <https://github.com/nvie/vim-flake8>  
-> <https://github.com/tpope/vim-fugitive>  
-> <https://github.com/airblade/vim-gitgutter>  
-> <https://github.com/roxma/vim-paste-easy>  
-> <https://github.com/Chiel92/vim-autoformat>  
+## Plugin Integrations
+> * [NERDTree](https://github.com/preservim/nerdtree) - File Browser
+> * [NERDCommenter](https://github.com/preservim/nerdcommenter) - Easy commenting
+> * [Tagbar](https://github.com/majutsushi/tagbar) - Tag Browser
+> * [GitGutter](https://github.com/airblade/vim-gitgutter) - Git Integration
+> * [Fugitive](https://github.com/tpope/vim-fugitive) - Git Integration
+> * [EasyGrep](https://github.com/dkprice/vim-easygrep) - Grep functionality
+> * [Autoformat](https://github.com/Chiel92/vim-autoformat) - Syntax formatting
+> * [Flake8](https://github.com/nvie/vim-flake8) - Python syntax checker
+> * [IndentPython](https://github.com/vim-scripts/indentpython.vim) - Python indentation syntax formatter
+> * [DevPanel](https://github.com/raven42/devpanel-vim) - IDE Window Manager
+> * [Lightline](https://github.com/itchyny/lightline.vim) - Status line information
+> * [Lightline-Bufferline](https://github.com/mengelbrecht/lightline-bufferline) - Adds buffer line to top of Vim window
+> * [SeachFold](https://github.com/vim-scripts/searchfold.vim) - Folding based on search patterns
+> * [UndoTree](https://github.com/mbbill/undotree) - Undo / Redo history tree browser
+> * [PasteEasy](https://github.com/roxma/vim-paste-easy) - Better pasting while in insert mode
