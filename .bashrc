@@ -187,11 +187,10 @@ function format_prompt() {
 		fi
 
 		if [ -f ${GIT_RC_PATH}/swbd ]; then
-			PLATFORM_PATH=${GIT_RC_PATH}/swbd
-		else
-			PLATFORM_PATH=${DEFAULT_RC_PATH}/swbd
+			. ${GIT_RC_PATH}/swbd
+		elif [ -f ${DEFAULT_RC_PATH}/swbd ]; then
+			. ${DEFAULT_RC_PATH}/swbd
 		fi
-		. ${PLATFORM_PATH}
 
 		if [ $SWBD ]; then
 			PLATFORM_STRING="${FG_YLW}SWBD-${SWBD:4} "
