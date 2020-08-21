@@ -71,6 +71,8 @@ gq - Toggle the quickfix window and populate with all hunks
 :ReplaceUndo                    - Undo the last `:Replace` operation
 :GrepOptions                    - Open a window to set grep options.
 :GrepRoot [+arg]                - Configure the location easygrep searches from
+:Git                            - Show summary window similar to git status
+:Git blame                      - Open the current files git blame history in a split window
 ```
 
 > :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
