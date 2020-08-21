@@ -30,7 +30,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `zs` | Toggle **search** fold method using the [SearchFold](https://github.com/vim-scripts/searchfold.vim.git) plugin |
 | `zl` | Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher |
 | `zg` | Activate the **GIT** method to fold all text around the current changes in the open file using the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin. |
-| `zi` | Toggle **indent** fold method. |
+| `zi` | Toggle **indent** fold method. Useful for showing only function names. |
 | `z,` | Decrease current foldlevel by one reducing the amount of context around a fold |
 | `z.` | Increase current foldlevel by one increasing the amount of context around a fold |
 | `z,,` | Set foldlevel to 0 (close all folds) |
@@ -41,7 +41,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 | `g]` | Move to next hunk |
 | `g[` | Move to previous hunk |
 | `gs` | Stage the hunk under the cursor |
-| `gu` | Undo the hunk under the cursor |
+| `gu` | Undo the hunk under the cursor, reverting it to the unmodified state |
 | `gp` | Toggle the preview window and populate with the hunk under the cursor |
 | `gq` | Toggle the quickfix window and populate with all hunks |
 | **Other Shortcuts** | |
