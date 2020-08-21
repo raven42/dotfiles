@@ -365,6 +365,24 @@ if version >= 800
 		endif
 	endif
 
+	" --- NERDTree Git Configuration
+	"  NOTE: To enter unicode ctrl-v then u for 2 byte or U for 4 byte unicode
+	"  Ex: <Ctrl-V>u2714  for \u2714 (checkmark)
+	let g:NERDTreeGitStatusShowClean = 1
+	let g:NERDTreeGitStatusConcealBrackets = 1
+	let g:NERDTreeGitStatusIndicatorMapCustom = {
+				\ 'Modified'  :'✚',
+                \ 'Staged'    :'✔',
+                \ 'Untracked' :'✭',
+                \ 'Renamed'   :'➜',
+                \ 'Unmerged'  :'═',
+                \ 'Deleted'   :'✖',
+                \ 'Dirty'     :'✗',
+                \ 'Ignored'   :'!',
+                \ 'Clean'     :' ',
+                \ 'Unknown'   :'?'
+                \ }
+
 	" --- NERDCommenter Configuration
 	let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
 	let g:NERDSpaceDelims = 1				" --- add space after delimiter
