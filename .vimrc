@@ -264,8 +264,8 @@ if version >= 800
 	" E0BF 	Top-right angle line
 	" 25BC ▼	Arrow Down
 	" 25B2 ▲	Arrow Up
-	" 25B6 ▶	Arrow Left
-	" 25C0 ◀	Arrow Right
+	" 25B6 ▶	Arrow Right
+	" 25C0 ◀	Arrow Left
 	"  NOTE: To enter unicode ctrl-v then u for 2 byte or U for 4 byte unicode
 	"  Ex: <Ctrl-V>u2714  for \u2714 (checkmark)
 
@@ -287,23 +287,23 @@ if version >= 800
 				\ 'right-subseparator'		: "\ue0b3",
 				\ 'arrow-up'				: "\u25b2",
 				\ 'arrow-down'				: "\u25bc",
-				\ 'arrow-left'				: "\u25b6",
-				\ 'arrow-right'				: "\u25c0",
+				\ 'arrow-left'				: "\u25c0",
+				\ 'arrow-right'				: "\u25b6",
 				\ 'line-added'				: "\ue0b0",
 				\ 'line-modified'			: "\ue0b2" . "\ue0b0",
 				\ 'line-modified-removed'	: "\ue0b0" . "\ue0b2",
 				\ 'line-removed-above'		: "\ue0bc",
 				\ 'line-removed'			: "\ue0b8",
-				\ 'modified'				:'✚',
-                \ 'staged'					:'✔',
-                \ 'untracked'				:'✭',
-                \ 'renamed'					:'➜',
-                \ 'unmerged'				:'═',
-                \ 'deleted'					:'✖',
-                \ 'dirty'					:'✗',
-                \ 'ignored'					:'!',
-                \ 'clean'					:' ',
-                \ 'unknown'					:'?'
+				\ 'modified'				: '✚',
+                \ 'staged'					: '✔',
+                \ 'untracked'				: '✭',
+                \ 'renamed'					: '➜',
+                \ 'unmerged'				: '═',
+                \ 'deleted'					: '✖',
+                \ 'dirty'					: '✗',
+                \ 'ignored'					: '!',
+                \ 'clean'					: ' ',
+                \ 'unknown'					: '?'
 				\ }
 
 	let g:charmap_normal = {
@@ -314,10 +314,10 @@ if version >= 800
 				\ 'column-num'				: '',
 				\ 'left-separator'			: '',
 				\ 'right-separator'			: '',
-				\ 'left-subseparator'		: '',
-				\ 'right-subseparator'		: '',
+				\ 'left-subseparator'		: '|',
+				\ 'right-subseparator'		: '|',
 				\ 'arrow-up'				: '^',
-				\ 'arrow-down'				: '',
+				\ 'arrow-down'				: '-',
 				\ 'arrow-left'				: '<',
 				\ 'arrow-right'				: '>',
 				\ 'line-added'				: '+',
@@ -465,7 +465,7 @@ if version >= 800
 	endif
 
 	" --- NERDTree Git Configuration
-	let g:NERDTreeGitStatusShowClean = 1
+	let g:NERDTreeGitStatusShowClean = 0
 	let g:NERDTreeGitStatusConcealBrackets = 1
 	let g:NERDTreeStatusUpdateOnCursorHold = 0
 	let g:NERDTreeGitStatusIndicatorMapCustom = {
@@ -482,7 +482,7 @@ if version >= 800
                 \ }
 
 	let g:NERDTreeDirArrowExpandable = g:charmap['arrow-right']
-	let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-up']
+	let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-down']
 
 	" --- NERDCommenter Configuration
 	let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
@@ -496,23 +496,6 @@ if version >= 800
 	let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
 	let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
 
-	" E0A0	Branch
-	" E0A1	Line number
-	" E0A2	Padlock (read-only)
-	" E0A3	Column number
-	" E0B0	Right angle solid
-	" E0B1	Right angle line
-	" E0B2	Left angle solid
-	" E0B3	Left angle line
-	" E0B8	Bottom-left angle solid
-	" E0B9	Bottom-left angle line
-	" E0BA	Bottom-right angle solid
-	" E0BB	Bottom-right angle line
-	" E0BC	Top-left angle solid
-	" E0BD	Top-left angle line
-	" E0BE	Top-right angle solid
-	" E0BF	Top-right angle line
-
 	" --- GitGutter Configuration
 	let g:gitgutter_highlight_lines = 1
 	let g:gitgutter_preview_win_location = 'rightbelow'
@@ -525,6 +508,7 @@ if version >= 800
 
 	" --- Tagbar Configuration
 	let g:tagbar_no_status_line = 1
+	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 
 	" --- Syntastic Configuration
 	let g:syntastic_always_populate_loc_list = 1
@@ -556,7 +540,7 @@ if version >= 800
 	let g:undotree_DiffAutoOpen = 0
 
 	" --- DevPanel Configuration
-	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make'
+	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
 
 	" --- Generic definitions used by functions for plugins
 	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree|diff)'
