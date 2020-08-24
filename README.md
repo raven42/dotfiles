@@ -88,10 +88,14 @@ make
 make install
 ```
 
-## Unicode support
-If your terminal emulator does not support unicode characters, support for unicode characters in .bashrc / .vimrc can be removed by adding the following line to your `.default/common_rc` private resource script.
+## Environment Configurations Options
+There are a few environmental configuration options which can be toggled in a user private `.default/common_rc` script.
 ```
+# To disable unicode characters in VIM and bash prompts
 export USE_UNICODE=0
+
+# To disable target platform compilation string in command prompt
+export SHOW_TARGET_IN_PROMPT=0
 ```
 
 ---
