@@ -269,6 +269,10 @@ if version >= 800
 	"  NOTE: To enter unicode ctrl-v then u for 2 byte or U for 4 byte unicode
 	"  Ex: <Ctrl-V>u2714  for \u2714 (checkmark)
 
+	" Flags to disable some plugins
+	let g:loaded_nerdtree_git_status = 1
+	" let g:loaded_tagbar = 1
+
 	if $USE_UNICODE !=# ''
 		let g:use_unicode = $USE_UNICODE
 	else
@@ -765,6 +769,8 @@ if version >= 800
 	nmap <silent> <Leader>8 :call BufActivateNth(7)<CR>
 	nmap <silent> <Leader>9 :call BufActivateNth(8)<CR>
 	nmap <silent> <Leader>0 :call BufActivateNth(9)<CR>
+	nmap <silent> <Leader>n :bn<CR>
+	nmap <silent> <Leader>p :bp<CR>
 
 	nnoremap <silent> <Leader>x :NERDTreeToggle <CR>
 	nnoremap <silent> <Leader>t :TagbarToggle <CR>
