@@ -266,21 +266,112 @@ if version >= 800
 	" 25B2 ▲	Arrow Up
 	" 25B6 ▶	Arrow Left
 	" 25C0 ◀	Arrow Right
+	"  NOTE: To enter unicode ctrl-v then u for 2 byte or U for 4 byte unicode
+	"  Ex: <Ctrl-V>u2714  for \u2714 (checkmark)
 
-	let g:use_unicode = 1
+	if $USE_UNICODE !=# ''
+		let g:use_unicode = $USE_UNICODE
+	else
+		let g:use_unicode = 1
+	endif
+
+	let g:charmap_unicode = {
+				\ 'branch'					: "\ue0a0",
+				\ 'line-num'				: "\ue0a1",
+				\ 'lock'					: "\ue0a2",
+				\ 'write'					: "\u270e",
+				\ 'column-num'				: "\ue0a3",
+				\ 'left-separator'			: "\ue0b0",
+				\ 'right-separator'			: "\ue0b2",
+				\ 'left-subseparator'		: "\ue0b1",
+				\ 'right-subseparator'		: "\ue0b3",
+				\ 'arrow-up'				: "\u25b2",
+				\ 'arrow-down'				: "\u25bc",
+				\ 'arrow-left'				: "\u25b6",
+				\ 'arrow-right'				: "\u25c0",
+				\ 'line-added'				: "\ue0b0",
+				\ 'line-modified'			: "\ue0b2" . "\ue0b0",
+				\ 'line-modified-removed'	: "\ue0b0" . "\ue0b2",
+				\ 'line-removed-above'		: "\ue0bc",
+				\ 'line-removed'			: "\ue0b8",
+				\ 'modified'				:'✚',
+                \ 'staged'					:'✔',
+                \ 'untracked'				:'✭',
+                \ 'renamed'					:'➜',
+                \ 'unmerged'				:'═',
+                \ 'deleted'					:'✖',
+                \ 'dirty'					:'✗',
+                \ 'ignored'					:'!',
+                \ 'clean'					:' ',
+                \ 'unknown'					:'?'
+				\ }
+
+	let g:charmap_normal = {
+				\ 'branch'					: '',
+				\ 'line-num'				: '',
+				\ 'lock'					: 'r',
+				\ 'write'					: '+',
+				\ 'column-num'				: '',
+				\ 'left-separator'			: '',
+				\ 'right-separator'			: '',
+				\ 'left-subseparator'		: '',
+				\ 'right-subseparator'		: '',
+				\ 'arrow-up'				: '^',
+				\ 'arrow-down'				: '',
+				\ 'arrow-left'				: '<',
+				\ 'arrow-right'				: '>',
+				\ 'line-added'				: '+',
+				\ 'line-modified'			: '~',
+				\ 'line-modified-removed'	: '~',
+				\ 'line-removed-above'		: '-',
+				\ 'line-removed'			: '-',
+				\ 'modified'				: '+',
+                \ 'staged'					: '*',
+                \ 'untracked'				: 'u',
+                \ 'renamed'					: 'r',
+                \ 'unmerged'				: '=',
+                \ 'deleted'					: '-',
+                \ 'dirty'					: 'x',
+                \ 'ignored'					: '!',
+                \ 'clean'					: ' ',
+                \ 'unknown'					: '?'
+				\ }	
+	
+	let g:nummap_unicode1 = {
+				\ 1:  "\u3010" . '1' . "\u3011",  2:  "\u3010" . '2' . "\u3011",
+				\ 3:  "\u3010" . '3' . "\u3011",  4:  "\u3010" . '4' . "\u3011",
+				\ 5:  "\u3010" . '5' . "\u3011",  6:  "\u3010" . '6' . "\u3011",
+				\ 7:  "\u3010" . '7' . "\u3011",  8:  "\u3010" . '8' . "\u3011",
+				\ 9:  "\u3010" . '9' . "\u3011",  10: "\u3010" . '10' . "\u3011",
+				\ 11: "\u3010" . '11' . "\u3011", 12: "\u3010" . '12' . "\u3011",
+				\ 13: "\u3010" . '13' . "\u3011", 14: "\u3010" . '14' . "\u3011",
+				\ 15: "\u3010" . '15' . "\u3011", 16: "\u3010" . '16' . "\u3011",
+				\ 17: "\u3010" . '17' . "\u3011", 18: "\u3010" . '18' . "\u3011",
+				\ 19: "\u3010" . '19' . "\u3011", 20: "\u3010" . '20' . "\u3011",
+				\ }
+
+	let g:nummap_unicode2 = {
+				\ 1:  "\u2776", 2:  "\u2777", 3:  "\u2778", 4:  "\u2779",
+				\ 5:  "\u277a", 6:  "\u277b", 7:  "\u277c", 8:  "\u277d",
+				\ 9:  "\u277e", 10: "\u277f", 11: "\u2780", 12: "\u2781",
+				\ 13: "\u2782", 14: "\u2783", 15: "\u2784", 16: "\u2785",
+				\ 17: "\u2786", 18: "\u2787", 19: "\u2788", 20: "\u2789",
+				\ }
+
+	let g:nummap_normal = {
+				\ 1:  '1.',  2:  '2.',  3:  '3.',  4:  '4.',
+				\ 5:  '5.',  6:  '6.',  7:  '7.',  8:  '8.',
+				\ 9:  '9.',  10: '10.', 11: '11.', 12: '12.',
+				\ 13: '13.', 14: '14.', 15: '15.', 16: '16.',
+				\ 17: '17.', 18: '18.', 19: '19.', 20: '20.',
+				\ }
 
 	if g:use_unicode
-		let g:lightline_sep_left = "\ue0b0"
-		let g:lightline_sep_right = "\ue0b2"
-		let g:lightline_subsep_left = "\ue0b1"
-		let g:lightline_subsep_right = "\ue0b3"
-		let g:lightline_lineinfo = "\ue0a3"
+		let g:charmap = g:charmap_unicode
+		let g:nummap = g:nummap_unicode2
 	else
-		let g:lightline_sep_left = ''
-		let g:lightline_sep_right = ''
-		let g:lightline_subsep_left = '|'
-		let g:lightline_subsep_right = '|'
-		let g:lightline_lineinfo = ''
+		let g:charmap = g:charmap_normal
+		let g:nummap = g:nummap_normal
 	endif
 
 	"----- Lightline Plugin Configuration
@@ -302,7 +393,7 @@ if version >= 800
 				\	'inactive': ['filename', 'modified'],
 				\ },
 				\ 'component': {
-				\	'lineinfo': g:lightline_lineinfo . '%3l:%-2v',
+				\	'lineinfo': g:charmap['column-num'] . '%3l:%-2v',
 				\ },
 				\ 'component_expand': {
 				\	'buffers': 'lightline#bufferline#buffers'
@@ -323,12 +414,12 @@ if version >= 800
 				\	'functionName': 'LightlineFunctionName',
 				\ },
 				\ 'separator': {
-				\	'left': g:lightline_sep_left,
-				\	'right': g:lightline_sep_right
+				\	'left': g:charmap['left-separator'],
+				\	'right': g:charmap['right-separator'],
 				\ },
 				\ 'subseparator': {
-				\	'left': g:lightline_subsep_left,
-				\	'right': g:lightline_subsep_right
+				\	'left': g:charmap['left-subseparator'],
+				\	'right': g:charmap['right-subseparator']
 				\ }
 				\ }
 
@@ -346,42 +437,7 @@ if version >= 800
 				\ 't': 'T',
 				\ }
 
-	let g:lightline#bufferline#composed_number_map1 = {
-				\ 1:  "\u3010" . '1' . "\u3011",  2:  "\u3010" . '2' . "\u3011",
-				\ 3:  "\u3010" . '3' . "\u3011",  4:  "\u3010" . '4' . "\u3011",
-				\ 5:  "\u3010" . '5' . "\u3011",  6:  "\u3010" . '6' . "\u3011",
-				\ 7:  "\u3010" . '7' . "\u3011",  8:  "\u3010" . '8' . "\u3011",
-				\ 9:  "\u3010" . '9' . "\u3011",  10: "\u3010" . '10' . "\u3011",
-				\ 11: "\u3010" . '11' . "\u3011", 12: "\u3010" . '12' . "\u3011",
-				\ 13: "\u3010" . '13' . "\u3011", 14: "\u3010" . '14' . "\u3011",
-				\ 15: "\u3010" . '15' . "\u3011", 16: "\u3010" . '16' . "\u3011",
-				\ 17: "\u3010" . '17' . "\u3011", 18: "\u3010" . '18' . "\u3011",
-				\ 19: "\u3010" . '19' . "\u3011", 20: "\u3010" . '20' . "\u3011",
-				\ }
-
-	let g:lightline#bufferline#composed_number_map2 = {
-				\ 1:  "\u2776", 2:  "\u2777", 3:  "\u2778", 4:  "\u2779",
-				\ 5:  "\u277a", 6:  "\u277b", 7:  "\u277c", 8:  "\u277d",
-				\ 9:  "\u277e", 10: "\u277f", 11: "\u2780", 12: "\u2781",
-				\ 13: "\u2782", 14: "\u2783", 15: "\u2784", 16: "\u2785",
-				\ 17: "\u2786", 18: "\u2787", 19: "\u2788", 20: "\u2789",
-				\ }
-
-	let g:lightline#bufferline#composed_number_map3 = {
-				\ 1:  '1.', 2: '2.', 3: '3.', 4: '4.',
-				\ 5:  '5.', 6: '6.', 7: '7.', 8: '8.',
-				\ 9:  '9.', 10: '10.', 11: '11.', 12: '12.',
-				\ 13:  '13.', 14: '14.', 15: '15.', 16: '16.',
-				\ 17:  '17.', 18: '18.', 19: '19.', 20: '20.',
-				\ }
-
-	if g:use_unicode
-		let g:lightline#bufferline#composed_number_map = 
-					\ g:lightline#bufferline#composed_number_map2
-	else
-		let g:lightline#bufferline#composed_number_map = 
-					\ g:lightline#bufferline#composed_number_map3
-	endif
+	let g:lightline#bufferline#composed_number_map = g:nummap
 
 	" --- Lightline#Bufferline Configuration
 	let g:lightline#bufferline#show_number = 2
@@ -409,47 +465,24 @@ if version >= 800
 	endif
 
 	" --- NERDTree Git Configuration
-	"  NOTE: To enter unicode ctrl-v then u for 2 byte or U for 4 byte unicode
-	"  Ex: <Ctrl-V>u2714  for \u2714 (checkmark)
 	let g:NERDTreeGitStatusShowClean = 1
 	let g:NERDTreeGitStatusConcealBrackets = 1
 	let g:NERDTreeStatusUpdateOnCursorHold = 0
-	let g:NERDTreeGitStatusIndicatorMapCustom_unicode = {
-				\ 'Modified'  :'✚',
-                \ 'Staged'    :'✔',
-                \ 'Untracked' :'✭',
-                \ 'Renamed'   :'➜',
-                \ 'Unmerged'  :'═',
-                \ 'Deleted'   :'✖',
-                \ 'Dirty'     :'✗',
-                \ 'Ignored'   :'!',
-                \ 'Clean'     :' ',
-                \ 'Unknown'   :'?'
-                \ }
-	let g:NERDTreeGitStatusIndicatorMapCustom_normal = {
-				\ 'Modified'  :'+',
-                \ 'Staged'    :'*',
-                \ 'Untracked' :'~',
-                \ 'Renamed'   :'>',
-                \ 'Unmerged'  :'=',
-                \ 'Deleted'   :'x',
-                \ 'Dirty'     :'x',
-                \ 'Ignored'   :'!',
-                \ 'Clean'     :' ',
-                \ 'Unknown'   :'?'
+	let g:NERDTreeGitStatusIndicatorMapCustom = {
+				\ 'Modified'  : g:charmap['modified'],
+                \ 'Staged'    : g:charmap['staged'],
+                \ 'Untracked' : g:charmap['untracked'],
+                \ 'Renamed'   : g:charmap['renamed'],
+                \ 'Unmerged'  : g:charmap['unmerged'],
+                \ 'Deleted'   : g:charmap['deleted'],
+                \ 'Dirty'     : g:charmap['dirty'],
+                \ 'Ignored'   : g:charmap['ignored'],
+                \ 'Clean'     : g:charmap['clean'],
+                \ 'Unknown'   : g:charmap['unknown']
                 \ }
 
-	if g:use_unicode
-		let g:NERDTreeGitStatusIndicatorMapCustom =
-					\ g:NERDTreeGitStatusIndicatorMapCustom_unicode
-		let g:NERDTreeDirArrowExpandable = "\u25b6"
-		let g:NERDTreeDirArrowCollapsible = "\u25bc"
-	else
-		let g:NERDTreeGitStatusIndicatorMapCustom =
-					\ g:NERDTreeGitStatusIndicatorMapCustom_normal
-		let g:NERDTreeDirArrowExpandable = '>'
-		let g:NERDTreeDirArrowCollapsible = '^'
-	endif
+	let g:NERDTreeDirArrowExpandable = g:charmap['arrow-right']
+	let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-up']
 
 	" --- NERDCommenter Configuration
 	let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
@@ -483,21 +516,12 @@ if version >= 800
 	" --- GitGutter Configuration
 	let g:gitgutter_highlight_lines = 1
 	let g:gitgutter_preview_win_location = 'rightbelow'
-	if g:use_unicode
-		let g:gitgutter_sign_added = "\ue0b0"
-		let g:gitgutter_sign_modified = "\ue0b2\ue0b0"
-		let g:gitgutter_sign_removed = "\ue0b8"
-		let g:gitgutter_sign_removed_first_line = "\ue0bc"
-		let g:gitgutter_sign_remove_above_and_below = "\ue0b0\ue0b2"
-		let g:gitgutter_sign_modified_removed = "\ue0b0\ue0b2"
-	else
-		let g:gitgutter_sign_added = '+'
-		let g:gitgutter_sign_modified = '~'
-		let g:gitgutter_sign_removed = '-'
-		let g:gitgutter_sign_removed_first_line = '-'
-		let g:gitgutter_sign_remove_above_and_below = '-'
-		let g:gitgutter_sign_modified_removed = '~'
-	endif
+	let g:gitgutter_sign_added = g:charmap['line-added']
+	let g:gitgutter_sign_modified = g:charmap['line-modified']
+	let g:gitgutter_sign_removed = g:charmap['line-removed']
+	let g:gitgutter_sign_removed_first_line = g:charmap['line-removed-above']
+	let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
+	let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
 
 	" --- Tagbar Configuration
 	let g:tagbar_no_status_line = 1
@@ -536,11 +560,7 @@ if version >= 800
 
 	" --- Generic definitions used by functions for plugins
 	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree|diff)'
-	if g:use_unicode
-		let g:branch_icon = "\ue0a0"
-	else
-		let g:branch_icon = ''
-	endif
+	let g:branch_icon = g:charmap['branch']
 
 	packloadall
 
@@ -611,15 +631,13 @@ if version >= 800
 	function! LightlineModified()
 		return !&modified ? '' :
 					\ &filetype =~# g:ignored_windows ? '' :
-					\ g:use_unicode ? "\u270e" :
-					\ '+'
+					\ g:charmap['write']
 	endfunction
 
 	function! LightlineReadonly()
 		return !&readonly ? '' :
 					\ &filetype =~# g:ignored_windows ? '' :
-					\ g:use_unicode ? "\ue0a2" :
-					\ 'r'
+					\ g:charmap['lock']
 	endfunction
 
 	function! LightlineBranchInfo()
