@@ -13,6 +13,8 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Ctrl-Left>  - Move to the window to the left of the current one.
 <Ctrl-Right> - Move to the window to the right of the current one.
 <Leader><#>  - Move to the open buffer as signified by `#`. (Example: `\2`)
+<Leader>n    - Move to the next buffer
+<Leader>p    - Move to the previous buffer
 <Leader>cc   - Toggle a comment block around the currently selected code in visual mode.
 <Leader>cm   - Comment a block of code using minimal comments
 <Leader>ci   - Invert selected code: Comment any uncommented code, and uncomment any commented code
