@@ -89,7 +89,7 @@ make install
 ```
 
 ## Unicode support
-If your terminal emulator does not support unicode characters, support for unicode characters in .bashrc / .vimrc can be removed by adding the following line to your `.rc/common_rc` private resource script.
+If your terminal emulator does not support unicode characters, support for unicode characters in .bashrc / .vimrc can be removed by adding the following line to your `.default/common_rc` private resource script.
 ```
 export USE_UNICODE=0
 ```
