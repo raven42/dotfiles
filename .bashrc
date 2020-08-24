@@ -211,10 +211,10 @@ function format_prompt() {
 function format_title() {
 	# To change the window title, do an 'echo -ne "\033]0;<string>\007"'
 	if [ $GIT_REPO ]; then
-		if [ $USE_UNICODE ]; then
+		if [ $USE_UNICODE -eq 1 ]; then
 			TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
 		else
-			TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
+			TITLE_INFO="$(__git_ps1)"
 		fi
 		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s/\/work\/${USER}//" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	else
