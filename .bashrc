@@ -25,6 +25,7 @@ export MAKEFLAGS=-s
 export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
 export PATH=.:~/bin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:/tools/bsnbld/accupara/build
 export PYTHONPATH=~/.local/lib/python3.5/site-packages
+export SHOW_TARGET_IN_PROMPT=1
 export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
 export USE_UNICODE=1
@@ -193,8 +194,10 @@ function format_prompt() {
 			. ${DEFAULT_RC_PATH}/swbd
 		fi
 
-		if [ $SWBD ]; then
+		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a $SWBD ]; then
 			PLATFORM_STRING="${FG_YLW}SWBD-${SWBD:4} "
+		else
+			PLATFORM_STRING=""
 		fi
 		PS_INFO="$GIT_REPO\$(__git_ps1)"
 	else
