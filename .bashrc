@@ -188,24 +188,26 @@ function format_prompt() {
 			PS_COLOR=${FG_CYAN}
 		fi
 
-		if [ -f ${GIT_RC_PATH}/swbd ]; then
-			. ${GIT_RC_PATH}/swbd
-		elif [ -f ${DEFAULT_RC_PATH}/swbd ]; then
-			. ${DEFAULT_RC_PATH}/swbd
+		if [ -f ${GIT_RC_PATH}/target ]; then
+			. ${GIT_RC_PATH}/target
+		elif [ -f ${DEFAULT_RC_PATH}/target ]; then
+			. ${DEFAULT_RC_PATH}/target
 		fi
 
-		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a $SWBD ]; then
-			PLATFORM_STRING="${FG_YLW}SWBD-${SWBD:4} "
+		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$TARGET" != "" ]; then
+			PLATFORM_STRING="${FG_YLW}${TARGET}${FG_RST} "
 		else
 			PLATFORM_STRING=""
 		fi
+		# branch code $'\xee\x82\xa0'
 		PS_INFO="$GIT_REPO\$(__git_ps1)"
+		# PS_INFO=$'$GIT_REPO \xee\x82\xa0$(__git_ps1)'
 	else
 		PS_COLOR=${FG_GRN}
 		PS_INFO="${PS_HOST}${FG_YLW}\$(__git_ps1)${FG_RST}"
 		PLATFORM_STRING=""
 	fi
-	export PS1="[${PLATFORM_STRING}${PS_COLOR}${PS_INFO}${FG_RST}] ${PS_DIR}${PS_SYMB} "
+	export PS1="${PLATFORM_STRING}${PS_COLOR}${PS_INFO}${FG_RST} ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
@@ -216,11 +218,10 @@ function format_title() {
 		else
 			TITLE_INFO="$(__git_ps1)"
 		fi
-		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s/\/work\/${USER}//" -e "s|/zzz/work[0-9][0-9]\(.*\)/.*${GIT_REPO}|\1|" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	else
 		TITLE_INFO="${USER}"
-		echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s/\/home\/${USER}/~/" -e "s|/vobs|/.|" -e "s|/projects|.|" -e "s|/springboard|.|"
 	fi
+	echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
 }
 
 function set_prompt() {
