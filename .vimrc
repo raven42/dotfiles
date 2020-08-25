@@ -7,6 +7,15 @@ if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
 	set fileencodings=utf-8
 endif
 
+" The following envinronment variables are used in this resource script
+" $CSCOPE_DB		: looks for a cscope database
+" $TAGFILES			: Defines the VIM tag files to use for ctags
+" $HOME				: Used to define 'makeprg' for make tasks
+" $USE_UNICODE		: If set use unicode characters for some plugin definitions
+" $GIT_ROOT			: Used for repo specific bookmark file
+" $USER				: Used to filter file names for title formatting
+" $SRC_PATH_PREFIX	: Used to filter file names for title formatting
+
 if has("multi_byte")
 	if &termencoding == ""
 		let &termencoding = &encoding
@@ -188,7 +197,7 @@ set autoindent				" ---- autoindenting is good
 set smartindent				" ---- Recognize syntax for formatting
 set autoread				" ---- Autoread file when change is detected
 set shortmess=aIt
-set textwidth=140			" ---- Set default character width before autowrap
+set textwidth=0				" ---- Set default character width before autowrap
 set tags=${TAGFILES}
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
@@ -246,26 +255,26 @@ autocmd BufWinLeave * call clearmatches()
 if version >= 800
 
 	" Here are a couple unicode characters used for any formatted output
-	" E0A0 	Branch
-	" E0A1 	Line number
-	" E0A2 	Padlock (read-only)
-	" E0A3 	Column number
-	" E0B0 	Right angle solid
-	" E0B1 	Right angle line
-	" E0B2 	Left angle solid
-	" E0B3 	Left angle line
-	" E0B8 	Bottom-left angle solid
-	" E0B9 	Bottom-left angle line
-	" E0BA 	Bottom-right angle solid
-	" E0BB 	Bottom-right angle line
-	" E0BC 	Top-left angle solid
-	" E0BD 	Top-left angle line
-	" E0BE 	Top-right angle solid
-	" E0BF 	Top-right angle line
-	" 25BC ▼	Arrow Down
-	" 25B2 ▲	Arrow Up
-	" 25B6 ▶	Arrow Right
-	" 25C0 ◀	Arrow Left
+	" E0A0  Branch						25E2 ◢
+	" E0A1  Line number				25E3 ◣
+	" E0A2  Padlock (read-only)		25E4 ◤
+	" E0A3  Column number				25E5 ◥
+	" E0B0  Right angle solid			21B2 ↲ Enter
+	" E0B1  Right angle line			26A0 ⚠ Warning
+	" E0B2  Left angle solid			26A1 ⚡Lightning
+	" E0B3  Left angle line			2714 ✔ Checkmark
+	" E0B8  Bottom-left angle solid	2716 ✖ X-Mark
+	" E0B9  Bottom-left angle line		2718 ✘ X-Mark
+	" E0BA  Bottom-right angle solid	271A ✚ Plus-Mark
+	" E0BB  Bottom-right angle line	2260 ≠ Not Equals
+	" E0BC  Top-left angle solid		2264 ≤ Less-than or equal
+	" E0BD  Top-left angle line		2265 ≥ Greater-than or equal
+	" E0BE  Top-right angle solid		00A9 © Copyright
+	" E0BF  Top-right angle line		00AE ® Rights-Reserved
+	" 25BC ▼ Arrow Down					23F3 ⏳Timer
+	" 25B2 ▲ Arrow Up					23F0 ⏰Alarm Clock
+	" 25B6 ▶ Arrow Right
+	" 25C0 ◀ Arrow Left
 	"  NOTE: To enter unicode ctrl-v then u for 2 byte or U for 4 byte unicode
 	"  Ex: <Ctrl-V>u2714  for \u2714 (checkmark)
 
@@ -397,7 +406,7 @@ if version >= 800
 				\	'inactive': ['filename', 'modified'],
 				\ },
 				\ 'component': {
-				\	'lineinfo': g:charmap['column-num'] . '%3l:%-2v',
+				\	'lineinfo': g:charmap['line-num'] . '%3l:%-2v',
 				\ },
 				\ 'component_expand': {
 				\	'buffers': 'lightline#bufferline#buffers'
@@ -671,9 +680,9 @@ if version >= 800
 			endif
 		endif
 		let file_info = LastOpenFileName()
-		let file_info = substitute(file_info, '\/work\/dh404494', '', '')
-		let file_info = substitute(file_info, 'vobs\/projects\/springboard', '..', '')
-		let file_info = substitute(file_info, '\/home\/dh404494', '~', '')
+		let file_info = substitute(file_info, '\/work\/' . $USER, '', '')
+		let file_info = substitute(file_info, '\/home\/' . $USER, '~', '')
+		let file_info = substitute(file_info, $SRC_PATH_PREFIX, '..', '')
 		let &titlestring = 'VIM ' . branch_info . file_info
 	endfunction
 
