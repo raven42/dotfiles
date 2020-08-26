@@ -173,7 +173,6 @@ if [ "$git_repo" == "" ]; then
 	echo "Repo not specified."
 	echo ""
 	for path in ${workspace}; do
-		#cd ${path}
 		if [ $debug -eq 1 ]; then echo "Scanning ${path} for git repositories" ; fi
 		find ${path} -type d -exec test -e '{}/.git' ';' -print -prune
 	done
@@ -218,8 +217,8 @@ if [ ! ${git_path} ]; then
 	echo "Repository ${git_repo} not found. Existing repositories:"
 	echo ""
 	for path in ${workspace}; do
-		#cd ${path}
-		find ${path} -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
+		if [ $debug -eq 1 ]; then echo "Scanning ${path} for git repositories" ; fi
+		find ${path} -type d -exec test -e '{}/.git' ';' -print -prune
 	done
 	echo ""
 	while true; do
