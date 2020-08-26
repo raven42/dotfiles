@@ -195,9 +195,9 @@ function format_prompt() {
 		fi
 
 		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$TARGET" != "" ]; then
-			PLATFORM_STRING="${FG_YLW}${TARGET}${FG_RST} "
+			TARGET_STRING="${FG_YLW}${TARGET}${FG_RST} "
 		else
-			PLATFORM_STRING=""
+			TARGET_STRING=""
 		fi
 		# branch code $'\xee\x82\xa0'
 		PS_INFO="$GIT_REPO\$(__git_ps1)"
@@ -205,9 +205,9 @@ function format_prompt() {
 	else
 		PS_COLOR=${FG_GRN}
 		PS_INFO="${PS_HOST}${FG_YLW}\$(__git_ps1)${FG_RST}"
-		PLATFORM_STRING=""
+		TARGET_STRING=""
 	fi
-	export PS1="${PLATFORM_STRING}${PS_COLOR}${PS_INFO}${FG_RST} ${PS_DIR}${PS_SYMB} "
+	export PS1="${TARGET_STRING}${PS_COLOR}${PS_INFO}${FG_RST} ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
