@@ -1,5 +1,4 @@
 set solib-absolute-prefix oss
-# set directory /work/dh404494/dev01/vobs/projects/springboard/fabos/src/
 
 python
 sys.path.insert(0, '/home/dh404494/bin')
