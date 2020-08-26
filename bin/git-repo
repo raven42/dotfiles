@@ -174,7 +174,8 @@ if [ "$git_repo" == "" ]; then
 	echo ""
 	for path in ${workspace}; do
 		#cd ${path}
-		find ${path} . -type d -exec test -e '{}/.git' ';' -print -prune
+		if [ $debug -eq 1 ]; then echo "Scanning ${path} for git repositories" ; fi
+		find ${path} -type d -exec test -e '{}/.git' ';' -print -prune
 	done
 	echo ""
 	read -p "Specify repository: " full_path
