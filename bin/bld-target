@@ -1,0 +1,122 @@
+#!/bin/bash
+#
+
+user=${USER}
+orig_dir=`pwd`
+prog=`basename $0`
+
+usage="Target Usage: $prog [<options>]
+ Prerequisites:
+   * GIT_REPO/GIT_ROOT needs to be a bash env variable set to your /work workspace
+
+ Options:
+   -<platform>      compile platform(s): lando (harpoon), awing, gen6, dart
+   -swbd <#>        compile specific swbd
+   -pretend|-p      Show what commands would be run but don't execute
+   -verbose|-v      Use the verbose flags when running crave
+   -default         Show / Set the specified swbd as default for future operations
+
+ Examples
+   '$prog -lando'
+   '$prog -swbd 148'
+"
+
+shrt_opts=pvhs:
+long_opts=pretend,verbose,help,swbd:,skybolt,sb,lando,dcx,gen6,awing,dart
+
+exec=
+verbose=0
+target=
+
+if [ $GIT_ROOT ]; then
+	target_rc=${GIT_ROOT}/.rc/target
+else
+	target_rc=${HOME}/.default/target
+fi
+
+optarg=0
+opts=`getopt -n $prog -o $shrt_opts -ual $long_opts -- $@`
+
+eval set -- "$opts"
+
+while [ $1 != -- ]; do
+
+	case "$1" in
+# main options
+	--pretend | -p)
+		mkpretend=1
+		exec=echo
+		;;
+
+	--verbose | -v)
+		verbose=1
+		;;
+
+	--help)
+		echo "$usage"
+		exit 1
+		;;
+
+# platform types
+	-s | --swbd)
+		target=$2
+		shift
+		;;
+
+	--dcx)
+		target="swbd62"
+		;;
+
+	--skybolt | --sb)
+		target="swbd148"
+		;;
+
+	--lando)
+		target="swbd165"
+		;;
+
+	--awing)
+		target="swbd178"
+		;;
+
+	--dart)
+		target="swbd188"
+		;;
+
+	-h | --help)
+		echo "$usage"
+		exit 0
+		;;
+
+	--)
+		#ignore
+		;;
+
+	*)
+		makeflags="$makeflags $opt"
+		;;
+
+	esac
+	shift
+done
+shift # move past the '--' from the getopt call
+
+if [ $# -eq 1 ]; then
+	target=$1
+elif [ $# -gt 0 ]; then
+	echo "Invalid argument: $@"
+	echo ""
+	echo "$usage"
+	echo ""
+	exit 1
+fi
+
+# Handle default command to set or show the default
+if [ "${target}" == "" ]; then
+	echo "TARGET=${TARGET}"
+else
+	echo "export TARGET=${target}" > $target_rc
+	echo "Set new default ${target} in [${target_rc}]"
+	. $target_rc
+fi
+exit 0
