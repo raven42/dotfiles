@@ -174,7 +174,7 @@ if [ "$git_repo" == "" ]; then
 	echo ""
 	for path in ${workspace}; do
 		#cd ${path}
-		find ${path} -maxdepth ${find_depth} -name dyn_view_rstg -prune -o -name vobs -prune -o -name .git 2> /dev/null | grep "\.git" | sed -e 's|^\./||' -e 's|/\.git||'
+		find ${path} . -type d -exec test -e '{}/.git' ';' -print -prune
 	done
 	echo ""
 	read -p "Specify repository: " full_path
