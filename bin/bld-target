@@ -113,10 +113,10 @@ fi
 
 # Handle default command to set or show the default
 if [ "${target}" == "" ]; then
-	echo "TARGET=${TARGET}"
+	echo "Current build target is TARGET=${TARGET}"
 else
 	echo "export TARGET=${target}" > $target_rc
-	echo "Set new default ${target} in [${target_rc}]"
+	echo "Set new default TARGET=${target} in [${target_rc}]"
 	. $target_rc
 fi
 exit 0

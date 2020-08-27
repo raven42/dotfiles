@@ -45,19 +45,44 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 | --- | --- |
 | `.default/common_rc` | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
 | `${GIT_ROOT}/.rc/rc` | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
-| `${GIT_ROOT}/.rc/swbd` | This file is used to define a specific platform to set for the current command shell. See SWBD platform discussion below |
+| `${GIT_ROOT}/.rc/target` | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
 | `.default/post_rc` | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
 
-### SWBD Platform
-The `${GIT_ROOT}/.rc/swbd` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$SWBD` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable.
-
-This file should contain as little as possible. Ideally only exporting the $SWBD environment variable.
+## Environment Configurations Options
+There are a few environmental configuration options which can be toggled in a user private `.default/common_rc` script.
 ```
-export SWBD=swbd165
+# To disable unicode characters in VIM and bash prompts
+export USE_UNICODE=0
+
+# Setting this to 0 will not show the current $TARGET in the command prompt
+export SHOW_TARGET_IN_PROMPT=0
+
+# This env variable is used by the .vimrc to shorten path names for window title
+# Example: SRC_PATH_PREFIX="common/path/to/src" will result in truncating that
+# portion out of the window path title. So if for example you were in the path
+#     /<repo>/common/path/to/src/lib/
+# then the window title would show
+#     /<repo>/../lib/
+export SRC_PATH_PREFIX="<string>"
+```
+
+### Build Target
+The `${GIT_ROOT}/.rc/target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script
+```
+<git-repo> (master) proj$ bld-target
+Current build target is TARGET=some_target
+<git-repo> (master) proj$ bld-target another_target
+Set new default TARGET=another_target in [<git-repo>/.rc/target]
+<git-repo> (master) proj$
+```
+
+This file should contain as little as possible. Ideally only exporting the $TARGET environment variable.
+```
+export TARGET=<build-target>
 ```
 
 Example:
-`alias cp-img='cp ${GIT_ROOT}/<build-path>/${SWBD}/<path-to-image> <dest-path>'`
+`alias cp-img='cp ${GIT_ROOT}/<build-path>/${TARGET}/<path-to-image> <dest-path>'`
 
 ---
 
@@ -86,16 +111,6 @@ cd ctags
 ./configure --prefix=${HOME}
 make
 make install
-```
-
-## Environment Configurations Options
-There are a few environmental configuration options which can be toggled in a user private `.default/common_rc` script.
-```
-# To disable unicode characters in VIM and bash prompts
-export USE_UNICODE=0
-
-# To disable target platform compilation string in command prompt
-export SHOW_TARGET_IN_PROMPT=0
 ```
 
 ---
