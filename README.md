@@ -67,13 +67,13 @@ export SRC_PATH_PREFIX="<string>"
 ```
 
 ### Build Target
-The `${GIT_ROOT}/.rc/target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script
+The `${GIT_ROOT}/.rc/target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
 ```
-<git-repo> (master) proj$ bld-target
+some_target <git-repo> (master) proj$ bld-target
 Current build target is TARGET=some_target
-<git-repo> (master) proj$ bld-target another_target
+some_target <git-repo> (master) proj$ bld-target another_target
 Set new default TARGET=another_target in [<git-repo>/.rc/target]
-<git-repo> (master) proj$
+another_target <git-repo> (master) proj$
 ```
 
 This file should contain as little as possible. Ideally only exporting the $TARGET environment variable.
