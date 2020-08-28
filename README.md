@@ -32,9 +32,9 @@ githome submodule update
 ```
 
 > :warning: **Note:** You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
-
+>
 > :information\_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
-
+>
 > :information\_source: **SSH Keys:** If you wish to configure SSH keys to use with github as a different account, see the guide at [doc/ssh\_config.md](doc/ssh\_config.md).
 
 ---
@@ -51,10 +51,20 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 ## Environment Configurations Options
 There are a few environmental configuration options which can be toggled in a user private `.default/common_rc` script.
 ```
-# To disable unicode characters in VIM and bash prompts
+# .default/common_rc - Set user specific environment options
+# This file is sourced in the .bashrc script after defaults have been initialized
+# but before any processing of the env variables or execution of supporting scripts
+# This allows the user to override some defaults, or setup other parameters prior
+# to executing further env setup scripts.
+
+# To disable unicode characters in VIM and bash prompts. There are unicode characters used for the terminal window title,
+# and in VIM, unicode characters are used in the status line, buffer line, and window title.
 export USE_UNICODE=0
 
-# Setting this to 0 will not show the current $TARGET in the command prompt
+# Setting this to 0 will not show the current $TARGET in the command prompt. By default the prompt will look like this:
+#   $TARGET $GIT_REPO (<git-branch>) <directory>$ 
+# Setting this to 0 will result in the following:
+#   $GIT_REPO (<git-branch>) <directory>$
 export SHOW_TARGET_IN_PROMPT=0
 
 # This env variable is used by the .vimrc to shorten path names for window title
@@ -67,13 +77,13 @@ export SRC_PATH_PREFIX="<string>"
 ```
 
 ### Build Target
-The `${GIT_ROOT}/.rc/target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script
+The `${GIT_ROOT}/.rc/target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
 ```
-<git-repo> (master) proj$ bld-target
+some_target <git-repo> (master) proj$ bld-target
 Current build target is TARGET=some_target
-<git-repo> (master) proj$ bld-target another_target
+some_target <git-repo> (master) proj$ bld-target another_target
 Set new default TARGET=another_target in [<git-repo>/.rc/target]
-<git-repo> (master) proj$
+another_target <git-repo> (master) proj$
 ```
 
 This file should contain as little as possible. Ideally only exporting the $TARGET environment variable.
