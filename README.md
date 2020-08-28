@@ -110,6 +110,25 @@ make
 make install
 ```
 
+### VIM Clipboard Setup
+By default VIM uses its own clipboard. The [.vimrc](.vimrc) file does override this and uses the system clipboard for autoselect as well as copy/paste funcitonality. If you wish to enabled this for use across SSH connections, then X11 forwarding must be enabled on the SSH session. This can be done in one of two ways.
+
+Enable X11 forwarding per ssh session: This will enable X11 forwarding only for this specific session.
+```
+ssh -XY <hostname>
+```
+
+Enable X11 forwarding in the `.ssh/config` file: This will enable it for SSH connections as defined in the config file.
+```
+Host *.<trusted-network>
+    ForwardX11 yes
+    ForwardX11Trusted yes
+```
+
+> :warning: **Caution:** Only enable this for trusted hosts. Otherwise this will forward X11 parameters to all hosts.
+>
+> :warning: **Note:** Also special handling is needed when using visual mode selection. This is set to automatically copy to the system clipboard. If you select something using the mouse, and then while it is still selected use the scroll wheel to move the window down, additional content will be put in the clipboard other than just what was selected.
+
 ---
 
 ## Univeral CTAGS
