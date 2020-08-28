@@ -201,6 +201,7 @@ set textwidth=0				" ---- Set default character width before autowrap
 set tags=${TAGFILES}
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
+set clipboard=unnamed,autoselect,exclude:cons\|linux
 
 filetype plugin on
 filetype indent on
