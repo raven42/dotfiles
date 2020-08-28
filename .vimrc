@@ -698,6 +698,8 @@ if version >= 800
 
 	function! BufActivateNth(bufnr) abort
 		if winnr('#') > 1
+			" Find the main window... don't switch to another buffer while
+			" in a devpanel window
 			while &filetype =~# g:ignored_windows
 				execute 'wincmd w'
 			endwhile
