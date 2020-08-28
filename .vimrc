@@ -111,7 +111,7 @@ highlight DiffText		cterm=bold ctermbg=12 gui=bold guibg=Red
 highlight Directory		ctermfg=Yellow guifg=Yellow
 highlight Error			ctermfg=White guifg=White ctermbg=Red guibg=Red
 highlight ErrorMsg		ctermfg=Yellow guifg=Yellow
-highlight FoldColumn	ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
+highlight FoldColumn	ctermfg=Yellow ctermbg=Black guifg=Yellow guibg=Black
 highlight Folded		ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
 highlight GitGutterAdd			ctermfg=Green
 highlight GitGutterAddLine		ctermbg=235
@@ -856,6 +856,17 @@ function! FoldLevelLog(lnum)
 	return '0'
 endfunction
 
+function! FoldLevelDiff(lnum)
+	let line = getline(a:lnum)
+	if line =~ '^\(diff\) '
+		return 0
+	elseif line =~ '^\(---\|+++\|index\|@@\) '
+		return 1
+	else
+		return 2
+	endif
+endfunction
+
 function! FoldTextFmt(fmt) " {{{2
 	if a:fmt ==# 'tag' && g:have_tagbar
 		let text = tagbar#GetTagNearLine(v:foldend, '%s', 'p')
@@ -950,16 +961,28 @@ function! ToggleFold(fold_method)
 		set foldmethod=indent
 		set foldtext=FoldTextFmt('null')
 		set foldlevel=0
+	elseif a:fold_method ==# 'diff'
+		set foldmethod=expr
+		set foldexpr=FoldLevelDiff(v:lnum)
+		set foldtext=FoldTextFmt('null')
+		set foldlevel=0
+	elseif a:fold_method ==# 'manual'
+		set foldmethod=manual
+		set foldtext=FoldTextFmt('tag')
+		set foldlevel=0
+		zD
 	endif
 
 	let b:toggle_fold = a:fold_method
 endfunction
 
-nnoremap <silent> zw :call ToggleFold('search-word')<CR>
-nnoremap <silent> zs :call ToggleFold('search')<CR>
-nnoremap <silent> zl :call ToggleFold('log')<CR>
-nnoremap <silent> zg :call ToggleFold('git')<CR>
-nnoremap <silent> zi :call ToggleFold('indent')<CR>
+nnoremap <silent> <Leader>zw :call ToggleFold('search-word')<CR>
+nnoremap <silent> <Leader>zs :call ToggleFold('search')<CR>
+nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
+nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
+nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
+nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
+nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
 
 " Decrease / Increase fold level
 nmap z, zm

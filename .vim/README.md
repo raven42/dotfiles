@@ -35,11 +35,12 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 
 ### Folding Shortcuts
 ```
-zw   - Set **search** pattern to word under cursor and toggle search fold method
-zs   - Toggle **search** fold method to fold based on the current search pattern
-zl   - Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher
-zg   - Activate the **GIT** method to fold all text around the current changes in the open file
-zi   - Toggle **indent** fold method. Useful for showing only function names.
+<Leader>zw   - Set **search** pattern to word under cursor and toggle search fold method
+<Leader>zs   - Toggle **search** fold method to fold based on the current search pattern
+<Leader>zl   - Toggle **log-level** fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher
+<Leader>zg   - Activate the **GIT** method to fold all text around the current changes in the open file
+<Leader>zi   - Toggle **indent** fold method. Useful for showing only function names.
+<Leader>zd   - Toggle **diff-output** fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
 z,   - Decrease current foldlevel by one reducing the amount of context around a fold
 z.   - Increase current foldlevel by one increasing the amount of context around a fold
 z,,  - Set foldlevel to 0 (close all folds)
