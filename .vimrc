@@ -554,6 +554,7 @@ if version >= 800
 
 	" --- DevPanel Configuration
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
+	let g:devpanel_panel_max = 60
 
 	" --- Generic definitions used by functions for plugins
 	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree)'
