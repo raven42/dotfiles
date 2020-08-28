@@ -556,7 +556,7 @@ if version >= 800
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
 
 	" --- Generic definitions used by functions for plugins
-	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree|diff)'
+	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree)'
 	let g:branch_icon = g:charmap['branch']
 
 	packloadall
@@ -696,9 +696,11 @@ if version >= 800
 	endfunction
 
 	function! BufActivateNth(bufnr) abort
-		while &filetype =~# g:ignored_windows
-			execute 'wincmd w'
-		endwhile
+		if winnr('#') > 1
+			while &filetype =~# g:ignored_windows
+				execute 'wincmd w'
+			endwhile
+		endif
 		let l:buffers = FilteredBuffers()
 		if a:bufnr < len(l:buffers)
 			execute 'buffer ' . l:buffers[a:bufnr]
