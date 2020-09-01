@@ -281,7 +281,8 @@ if version >= 800
 
 	" Flags to disable some plugins
 	let g:loaded_nerdtree_git_status = 1
-	" let g:loaded_tagbar = 1
+	"let g:loaded_tagbar = 1
+	"let g:loaded_devpanel = 1
 
 	if $USE_UNICODE !=# ''
 		let g:use_unicode = $USE_UNICODE
@@ -701,7 +702,7 @@ if version >= 800
 		if winnr('#') > 1
 			" Find the main window... don't switch to another buffer while
 			" in a devpanel window
-			while &filetype =~# g:ignored_windows
+			while &readonly && &filetype =~# g:ignored_windows
 				execute 'wincmd w'
 			endwhile
 		endif
