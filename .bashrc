@@ -188,14 +188,14 @@ function format_prompt() {
 			PS_COLOR=${FG_CYAN}
 		fi
 
-		if [ -f ${GIT_RC_PATH}/target ]; then
-			. ${GIT_RC_PATH}/target
-		elif [ -f ${DEFAULT_RC_PATH}/target ]; then
-			. ${DEFAULT_RC_PATH}/target
+		if [ -f ${GIT_RC_PATH}/bld_target ]; then
+			. ${GIT_RC_PATH}/bld_target
+		elif [ -f ${DEFAULT_RC_PATH}/bld_target ]; then
+			. ${DEFAULT_RC_PATH}/bld_target
 		fi
 
-		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$TARGET" != "" ]; then
-			TARGET_STRING="${FG_YLW}${TARGET}${FG_RST} "
+		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
+			TARGET_STRING="${FG_YLW}${BLD_TARGET}${FG_RST} "
 		else
 			TARGET_STRING=""
 		fi

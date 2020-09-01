@@ -26,12 +26,12 @@ long_opts=pretend,verbose,help,swbd:,skybolt,sb,lando,dcx,gen6,awing,dart
 
 exec=
 verbose=0
-target=
+bld_target=
 
 if [ $GIT_ROOT ]; then
-	target_rc=${GIT_ROOT}/.rc/target
+	target_rc=${GIT_ROOT}/.rc/bld_target
 else
-	target_rc=${HOME}/.default/target
+	target_rc=${HOME}/.default/bld_target
 fi
 
 optarg=0
@@ -59,28 +59,28 @@ while [ $1 != -- ]; do
 
 # platform types
 	-s | --swbd)
-		target=$2
+		bld_target=$2
 		shift
 		;;
 
 	--dcx)
-		target="swbd62"
+		bld_target="swbd62"
 		;;
 
 	--skybolt | --sb)
-		target="swbd148"
+		bld_target="swbd148"
 		;;
 
 	--lando)
-		target="swbd165"
+		bld_target="swbd165"
 		;;
 
 	--awing)
-		target="swbd178"
+		bld_target="swbd178"
 		;;
 
 	--dart)
-		target="swbd188"
+		bld_target="swbd188"
 		;;
 
 	-h | --help)
@@ -102,7 +102,7 @@ done
 shift # move past the '--' from the getopt call
 
 if [ $# -eq 1 ]; then
-	target=$1
+	bld_target=$1
 elif [ $# -gt 0 ]; then
 	echo "Invalid argument: $@"
 	echo ""
@@ -112,11 +112,11 @@ elif [ $# -gt 0 ]; then
 fi
 
 # Handle default command to set or show the default
-if [ "${target}" == "" ]; then
-	echo "Current build target is TARGET=${TARGET}"
+if [ "${bld_target}" == "" ]; then
+	echo "Current build bld_target is BLD_TARGET=${BLD_TARGET}"
 else
-	echo "export TARGET=${target}" > $target_rc
-	echo "Set new default TARGET=${target} in [${target_rc}]"
+	echo "export BLD_TARGET=${bld_target}" > $target_rc
+	echo "Set new default BLD_TARGET=${bld_target} in [${target_rc}]"
 	. $target_rc
 fi
 exit 0
