@@ -201,6 +201,7 @@ set textwidth=0				" ---- Set default character width before autowrap
 set tags=${TAGFILES}
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
+set clipboard=unnamed,autoselect,exclude:cons\|linux
 
 filetype plugin on
 filetype indent on
@@ -280,7 +281,8 @@ if version >= 800
 
 	" Flags to disable some plugins
 	let g:loaded_nerdtree_git_status = 1
-	" let g:loaded_tagbar = 1
+	"let g:loaded_tagbar = 1
+	"let g:loaded_devpanel = 1
 
 	if $USE_UNICODE !=# ''
 		let g:use_unicode = $USE_UNICODE
@@ -554,6 +556,7 @@ if version >= 800
 
 	" --- DevPanel Configuration
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
+	let g:devpanel_panel_max = 60
 
 	" --- Generic definitions used by functions for plugins
 	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree)'
@@ -697,7 +700,9 @@ if version >= 800
 
 	function! BufActivateNth(bufnr) abort
 		if winnr('#') > 1
-			while &filetype =~# g:ignored_windows
+			" Find the main window... don't switch to another buffer while
+			" in a devpanel window
+			while &readonly && &filetype =~# g:ignored_windows
 				execute 'wincmd w'
 			endwhile
 		endif
