@@ -29,7 +29,7 @@ export SHOW_TARGET_IN_PROMPT=1
 export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
 export USE_UNICODE=1
-export VISUAL=/usr/bin/vim
+export VISUAL=vim
 
 shopt -s checkwinsize
 
