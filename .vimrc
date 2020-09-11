@@ -318,7 +318,10 @@ if version >= 800
                 \ 'dirty'					: '✗',
                 \ 'ignored'					: '!',
                 \ 'clean'					: ' ',
-                \ 'unknown'					: '?'
+                \ 'unknown'					: '?',
+				\ 'fold-fillchar'			: '═',
+				\ 'fold-leftchar'			: '╣',
+				\ 'fold-rightchar'			: '╠'
 				\ }
 
 	let g:charmap_normal = {
@@ -349,7 +352,10 @@ if version >= 800
                 \ 'dirty'					: 'x',
                 \ 'ignored'					: '!',
                 \ 'clean'					: ' ',
-                \ 'unknown'					: '?'
+                \ 'unknown'					: '?',
+				\ 'fold-fillchar'			: '-',
+				\ 'fold-leftchar'			: '|',
+				\ 'fold-rightchar'			: '|'
 				\ }	
 	
 	let g:nummap_unicode1 = {
@@ -556,7 +562,7 @@ if version >= 800
 
 	" --- DevPanel Configuration
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
-	let g:devpanel_panel_max = 60
+	let g:devpanel_panel_max = 45
 
 	" --- Generic definitions used by functions for plugins
 	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree)'
@@ -877,6 +883,9 @@ endfunction
 function! FoldTextFmt(fmt) " {{{2
 	if a:fmt ==# 'tag' && g:have_tagbar
 		let text = tagbar#GetTagNearLine(v:foldend, '%s', 'p')
+		if strlen(text) > 0
+			let text .= ' '
+		endif
 	elseif a:fmt ==# 'null'
 		let text = ''
 	else
@@ -886,27 +895,28 @@ function! FoldTextFmt(fmt) " {{{2
 		let suba = substitute(suba, '\s*$', '', '')
 		let text = suba
 	endif
-	let fillchar = matchstr(&fillchars, 'fold:\zs.')
-	if strlen(fillchar) == 0
-		let fillchar = "-"
-	endif
 	let lines = v:foldend - v:foldstart + 1
-	let lines = repeat(fillchar, 4).'| ' . lines . ' lines |'.repeat(fillchar, 3)
-	if has('float')
-		let nuw = max([float2nr(log10(line('$')))+3, &numberwidth])
+	let lines = ' ' . lines . ' lines '
+	let n_lines = strlen(lines) + 5
+	let lines = g:charmap['fold-leftchar'] . lines . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 3)
+	let set_number = &number
+	if set_number == 0
+		let nuw = 0
+	elseif has('float')
+		let nuw = max([float2nr(log10(line('$')))+2, &numberwidth])
 	else
 		let nuw = &numberwidth
 	endif
-	let n = winwidth(winnr()) - &foldcolumn - nuw - strlen(lines)
+	let n = winwidth(winnr()) - &foldcolumn - nuw - n_lines
 	let text = text[:min([strlen(text), n])]
 	if text[-1:] != ' '
 		if strlen(text) < n
-			let text .= ' '
+			let text .= ''
 		else
 			let text = substitute(text, '\s*.$', '', '')
 		endif
 	endif
-	let text .= repeat(fillchar, n - strlen(text))
+	let text .= repeat(g:charmap['fold-fillchar'], n - strlen(text))
 	let text .= lines
 	return text
 endfunction
@@ -932,7 +942,7 @@ function! ToggleFold(fold_method)
 				break
 			endif
 		endfor
-		echo 'Folding log-level - showing all logs ' . disp_level . ' or higher...'
+		echo 'Folding log-level - showing all logs ' . substitute(disp_level, '\', '', 'g') . ' (' . &foldlevel . ') or higher...'
 	elseif a:fold_method ==# 'git'
 		if !g:have_gitgutter
 			echo 'GitGutter plugin not installed...'
