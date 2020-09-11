@@ -45,7 +45,7 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 | --- | --- |
 | `.default/common_rc` | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
 | `${GIT_ROOT}/.rc/rc` | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
-| `${GIT_ROOT}/.rc/target` | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
+| `${GIT_ROOT}/.rc/bld_target` | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
 | `.default/post_rc` | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
 
 ## Environment Configurations Options
@@ -61,8 +61,8 @@ There are a few environmental configuration options which can be toggled in a us
 # and in VIM, unicode characters are used in the status line, buffer line, and window title.
 export USE_UNICODE=0
 
-# Setting this to 0 will not show the current $TARGET in the command prompt. By default the prompt will look like this:
-#   $TARGET $GIT_REPO (<git-branch>) <directory>$ 
+# Setting this to 0 will not show the current $BLD_TARGET in the command prompt. By default the prompt will look like this:
+#   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$ 
 # Setting this to 0 will result in the following:
 #   $GIT_REPO (<git-branch>) <directory>$
 export SHOW_TARGET_IN_PROMPT=0
@@ -77,22 +77,22 @@ export SRC_PATH_PREFIX="<string>"
 ```
 
 ### Build Target
-The `${GIT_ROOT}/.rc/target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
+The `${GIT_ROOT}/.rc/bld_target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$BLD_TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
 ```
 some_target <git-repo> (master) proj$ bld-target
-Current build target is TARGET=some_target
+Current build target is BLD_TARGET=some_target
 some_target <git-repo> (master) proj$ bld-target another_target
-Set new default TARGET=another_target in [<git-repo>/.rc/target]
+Set new default BLD_TARGET=another_target in [<git-repo>/.rc/bld_target]
 another_target <git-repo> (master) proj$
 ```
 
-This file should contain as little as possible. Ideally only exporting the $TARGET environment variable.
+This file should contain as little as possible. Ideally only exporting the $BLD_TARGET environment variable.
 ```
-export TARGET=<build-target>
+export BLD_TARGET=<build-target>
 ```
 
 Example:
-`alias cp-img='cp ${GIT_ROOT}/<build-path>/${TARGET}/<path-to-image> <dest-path>'`
+`alias cp-img='cp ${GIT_ROOT}/<build-path>/${BLD_TARGET}/<path-to-image> <dest-path>'`
 
 ---
 
