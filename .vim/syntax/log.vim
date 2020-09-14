@@ -9,18 +9,18 @@ if exists("b:current_syntax")
 endif
 
 " Define the various log levels
-syn	match		logEmerg		display ".*EMERG.*"
-syn match		logAlert		display ".*ALERT.*"
-syn match		logCrit			display ".*CRIT.*"
-syn match		logError		display ".*ERR.*"
-syn match		logWarn			display ".*WARN.*"
-syn match		logNotice		display ".*NOTICE.*"
-syn match		logInfo			display	".*INFO.*"
-syn match		logDebug		display ".*DEBUG.*"
-syn match		logVerbose		display ".*VERBOSE.*"
+syn	match		logEmerg		".*EMERG.*"		contains=logComment
+syn match		logAlert		".*ALERT.*"		contains=logComment
+syn match		logCrit			".*CRIT.*"		contains=logComment
+syn match		logError		".*ERR.*"		contains=logComment
+syn match		logWarn			".*WARN.*"		contains=logComment
+syn match		logNotice		".*NOTICE.*"	contains=logComment
+syn match		logInfo			".*INFO.*"		contains=logComment
+syn match		logDebug		".*DEBUG.*"		contains=logComment
+syn match		logVerbose		".*VERBOSE.*"	contains=logComment
 
 " Other syntax
-syn match		logComment		"^#.*$"
+syn match		logComment		"#.*$"
 
 "hi def link		logDebug		Comment
 "hi def link		logVerbose		Ignore

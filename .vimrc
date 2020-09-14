@@ -888,6 +888,15 @@ function! FoldTextFmt(fmt) " {{{2
 		endif
 	elseif a:fmt ==# 'null'
 		let text = ''
+	elseif a:fmt ==# 'log'
+		for [level, foldlevel] in items(g:LogLevelFoldMap)
+			if foldlevel == &foldlevel
+				let disp_level = level
+				break
+			endif
+		endfor
+		let text = substitute(disp_level, '[\[\]\\]', '', 'g')
+		let text = repeat(g:charmap['fold-fillchar'], 2) . g:charmap['fold-leftchar'] . ' ' . text . ' ' . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 2)
 	else
 		let suba = getline(v:foldstart)
 		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
@@ -897,8 +906,7 @@ function! FoldTextFmt(fmt) " {{{2
 	endif
 	let lines = v:foldend - v:foldstart + 1
 	let lines = ' ' . lines . ' lines '
-	let n_lines = strlen(lines) + 5
-	let lines = g:charmap['fold-leftchar'] . lines . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 3)
+	let lines = repeat(g:charmap['fold-fillchar'], 2) . g:charmap['fold-leftchar'] . lines . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 2)
 	let set_number = &number
 	if set_number == 0
 		let nuw = 0
@@ -907,16 +915,11 @@ function! FoldTextFmt(fmt) " {{{2
 	else
 		let nuw = &numberwidth
 	endif
-	let n = winwidth(winnr()) - &foldcolumn - nuw - n_lines
-	let text = text[:min([strlen(text), n])]
-	if text[-1:] != ' '
-		if strlen(text) < n
-			let text .= ''
-		else
-			let text = substitute(text, '\s*.$', '', '')
-		endif
+	let n = winwidth(winnr()) - &foldcolumn - nuw - strchars(lines)
+	if strchars(text) > n
+		let text = text[:n]
 	endif
-	let text .= repeat(g:charmap['fold-fillchar'], n - strlen(text))
+	let text .= repeat(g:charmap['fold-fillchar'], n - strchars(text))
 	let text .= lines
 	return text
 endfunction
@@ -935,7 +938,7 @@ function! ToggleFold(fold_method)
 		set foldmethod=expr
 		set foldexpr=FoldLevelLog(v:lnum)
 		set foldlevel=5
-		set foldtext=FoldTextFmt('null')
+		set foldtext=FoldTextFmt('log')
 		for [level, foldlevel] in items(g:LogLevelFoldMap)
 			if foldlevel == &foldlevel
 				let disp_level = level
