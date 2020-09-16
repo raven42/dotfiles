@@ -357,39 +357,24 @@ if version >= 800
 				\ 'fold-leftchar'			: '|',
 				\ 'fold-rightchar'			: '|'
 				\ }	
-	
-	let g:nummap_unicode1 = {
-				\ 1:  "\u3010" . '1' . "\u3011",  2:  "\u3010" . '2' . "\u3011",
-				\ 3:  "\u3010" . '3' . "\u3011",  4:  "\u3010" . '4' . "\u3011",
-				\ 5:  "\u3010" . '5' . "\u3011",  6:  "\u3010" . '6' . "\u3011",
-				\ 7:  "\u3010" . '7' . "\u3011",  8:  "\u3010" . '8' . "\u3011",
-				\ 9:  "\u3010" . '9' . "\u3011",  10: "\u3010" . '10' . "\u3011",
-				\ 11: "\u3010" . '11' . "\u3011", 12: "\u3010" . '12' . "\u3011",
-				\ 13: "\u3010" . '13' . "\u3011", 14: "\u3010" . '14' . "\u3011",
-				\ 15: "\u3010" . '15' . "\u3011", 16: "\u3010" . '16' . "\u3011",
-				\ 17: "\u3010" . '17' . "\u3011", 18: "\u3010" . '18' . "\u3011",
-				\ 19: "\u3010" . '19' . "\u3011", 20: "\u3010" . '20' . "\u3011",
-				\ }
 
-	let g:nummap_unicode2 = {
-				\ 1:  "\u2776", 2:  "\u2777", 3:  "\u2778", 4:  "\u2779",
-				\ 5:  "\u277a", 6:  "\u277b", 7:  "\u277c", 8:  "\u277d",
-				\ 9:  "\u277e", 10: "\u277f", 11: "\u2780", 12: "\u2781",
-				\ 13: "\u2782", 14: "\u2783", 15: "\u2784", 16: "\u2785",
-				\ 17: "\u2786", 18: "\u2787", 19: "\u2788", 20: "\u2789",
+	let g:nummap_unicode = {
+				\ 1:  '❶',  2: '❷', 3:  '❸',  4: '❹', 5:  '❺',
+				\ 6:  '❻',  7: '❼', 8:  '❽',  9: '❾', 10: '❿',
+				\ 11: '⓫', 12: '⓬', 13: '⓭', 14: '⓮', 15: '⓯',
+				\ 16: '⓰', 17: '⓱', 18: '⓲', 19: '⓳', 20: '⓴',
 				\ }
 
 	let g:nummap_normal = {
-				\ 1:  '1.',  2:  '2.',  3:  '3.',  4:  '4.',
-				\ 5:  '5.',  6:  '6.',  7:  '7.',  8:  '8.',
-				\ 9:  '9.',  10: '10.', 11: '11.', 12: '12.',
-				\ 13: '13.', 14: '14.', 15: '15.', 16: '16.',
-				\ 17: '17.', 18: '18.', 19: '19.', 20: '20.',
+				\ 1:  '1.',  2:  '2.',  3:  '3.',  4:  '4.',  5:  '5.',
+				\ 6:  '6.',  7:  '7.',  8:  '8.',  9:  '9.',  10: '10.',
+				\ 11: '11.', 12: '12.', 13: '13.', 14: '14.', 15: '15.',
+				\ 16: '16.', 17: '17.', 18: '18.', 19: '19.', 20: '20.',
 				\ }
 
 	if g:use_unicode
 		let g:charmap = g:charmap_unicode
-		let g:nummap = g:nummap_unicode2
+		let g:nummap = g:nummap_unicode
 	else
 		let g:charmap = g:charmap_normal
 		let g:nummap = g:nummap_normal
@@ -530,6 +515,7 @@ if version >= 800
 	" --- Tagbar Configuration
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
+	let g:tagbar_file_size_limit = 1000000
 
 	" --- Syntastic Configuration
 	let g:syntastic_always_populate_loc_list = 1
@@ -763,9 +749,16 @@ if version >= 800
 		if expand('%t') ==# ''
 			return
 		endif
-		let out = system("git --git-dir=$HOME/.cfg/ --work-tree $HOME ls-files")
-		if out =~# expand('%:t')
-			let g:gitgutter_git_args = '--git-dir=$HOME/.cfg/ --work-tree $HOME'
+		if exists('g:dotfiles_file_list')
+			let file_list = g:dotfiles_file_list
+		else
+			let git_home_args = '--git-dir=' . $HOME . '/.cfg/ --work-tree ' . $HOME
+			let cmd = 'git ' . git_home_args . ' ls-files ' . $HOME
+			let out = system(cmd)
+			let file_list = out
+		endif
+		if file_list =~# expand('%:t')
+			let g:gitgutter_git_args = git_home_args
 		else
 			let g:gitgutter_git_args = ''
 		endif

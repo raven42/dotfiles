@@ -35,6 +35,6 @@ highlight		logInfo			ctermfg=White
 highlight		logDebug		ctermfg=145
 highlight		logVerbose		ctermfg=242
 
-highlight		logComment		ctermfg=Magenta
+highlight		logComment		ctermfg=202
 
 let b:current_sytax = "log"
