@@ -5,6 +5,7 @@
 #fi
 
 # Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
+alias dirs='dirs -v'
 alias githome='/usr/bin/git --git-dir $HOME/.cfg/ --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
 alias rebash='source ~/.bashrc'
@@ -16,6 +17,11 @@ alias vi="vim"
 # Setup our environment:
 export EDITOR=/usr/bin/vim
 export HISTTIMEFORMAT='%m/%d/%Y-%T '
+export HISTCONTROL=ignoredups				# Don't save commands leading with a whitespace, or duplicated commands
+export HISTFILE=$HOME/.history-$HOSTNAME	# Specific history file per host
+export HISTIGNORE="pwd:ls:ls -al:ll:history:h:h[dh]:h [0-9]*:h[dh] [0-9]*"
+export HISTSIZE=999999
+export HISTFILESIZE=999999					# Enable huge history
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
@@ -225,12 +231,18 @@ function format_title() {
 }
 
 function set_prompt() {
+	# The following history commands allow us to track the history across different
+	# sessions and log them all to the same file
+	history -a	# write current history to the history file
+	history -c	# clear current in memory history
+	history -r	# read from history file into memory
+
 	format_prompt
 	format_title
 }
 
 if [ $TERM = xterm ]; then
-	PROMPT_COMMAND=set_prompt
+	export PROMPT_COMMAND=set_prompt
 fi
 
 # Source the post_rc file if needed
