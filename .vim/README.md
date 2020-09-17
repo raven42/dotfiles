@@ -41,12 +41,18 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>zg   - Activate the [GIT] method to fold all text around the current changes in the open file
 <Leader>zi   - Toggle [INDENT] fold method. Useful for showing only function names.
 <Leader>zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
+<Leader>zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.
 z,   - Decrease current foldlevel by one reducing the amount of context around a fold
 z.   - Increase current foldlevel by one increasing the amount of context around a fold
 z,,  - Set foldlevel to 0 (close all folds)
 z..  - Set foldlevel to 99 (open all folds to level 99)
-za   - Toggle a fold open / closed
+za   - Toggle a fold open / closed under the cursor
+zA   - Toggle all folds open / closed under the cursor
 z<#> - Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3
+zf   - Create a fold around the selected text (MANUAL only)
+zd   - Delete the fold under the cursor (MANUAL only)
+zE   - Deletes all folds (MANUAL only)
+
 ```
 
 ### Git Shortcuts

@@ -874,14 +874,11 @@ function! FoldLevelDiff(lnum)
 endfunction
 
 function! FoldTextFmt(fmt) " {{{2
-	if a:fmt ==# 'tag' && g:have_tagbar
-		let text = tagbar#GetTagNearLine(v:foldend, '%s', 'p')
-		if strlen(text) > 0
-			let text .= ' '
-		endif
-	elseif a:fmt ==# 'null'
+	if a:fmt ==# 'tag' && g:have_tagbar						" TAG fold text
+		let text = tagbar#GetTagNearLine(v:foldend, '%s', 'f')
+	elseif a:fmt ==# 'null'									" NULL fold text
 		let text = ''
-	elseif a:fmt ==# 'log'
+	elseif a:fmt ==# 'log'									" LOG fold text
 		for [level, foldlevel] in items(g:LogLevelFoldMap)
 			if foldlevel == &foldlevel
 				let disp_level = level
@@ -889,13 +886,17 @@ function! FoldTextFmt(fmt) " {{{2
 			endif
 		endfor
 		let text = substitute(disp_level, '[\[\]\\]', '', 'g')
-		let text = repeat(g:charmap['fold-fillchar'], 2) . g:charmap['fold-leftchar'] . ' ' . text . ' ' . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 2)
-	else
+	elseif a:fmt ==# 'search'								" SEARCH fold text
+		let text = 'search:' . @/		" Read contents of search register into text
+	else													" DEFAULT fold text
 		let suba = getline(v:foldstart)
 		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
 		let suba = substitute(suba, foldmarkerpat, '', 'g')
-		let suba = substitute(suba, '\s*$', '', '')
+		let suba = trim(substitute(suba, '\s*$', '', ''))
 		let text = suba
+	endif
+	if strchars(text) > 0
+		let text = repeat(g:charmap['fold-fillchar'], 2) . g:charmap['fold-leftchar'] . ' ' . text . ' ' . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 2)
 	endif
 	let lines = v:foldend - v:foldstart + 1
 	let lines = ' ' . lines . ' lines '
@@ -960,7 +961,11 @@ function! ToggleFold(fold_method)
 		endif
 		call SearchFold(0)				" --- Call SearchFold() for normal mode
 		set foldlevel=2					" --- Set to show a few lines of context
-		set foldtext=FoldTextFmt('tag')
+		if &filetype ==# 'log'
+			set foldtext=FoldTextFmt('search')
+		else
+			set foldtext=FoldTextFmt('tag')
+		endif
 	elseif a:fold_method ==# 'search-word'
 		if !g:have_searchfold
 			echo 'SearchFold plugin not installed...'
@@ -969,7 +974,11 @@ function! ToggleFold(fold_method)
 		let @/ = expand('<cword>')		" --- Set search pattern to current word
 		call SearchFold(0)				" --- Call SearchFold() for normal mode
 		set foldlevel=2					" --- Set to show a few lines of context
-		set foldtext=FoldTextFmt('tag')
+		if &filetype ==# 'log'
+			set foldtext=FoldTextFmt('search')
+		else
+			set foldtext=FoldTextFmt('tag')
+		endif
 	elseif a:fold_method ==# 'indent'
 		set foldmethod=indent
 		set foldtext=FoldTextFmt('null')
@@ -981,9 +990,8 @@ function! ToggleFold(fold_method)
 		set foldlevel=0
 	elseif a:fold_method ==# 'manual'
 		set foldmethod=manual
-		set foldtext=FoldTextFmt('tag')
+		set foldtext=FoldTextFmt('')
 		set foldlevel=0
-		zD
 	endif
 
 	let b:toggle_fold = a:fold_method
@@ -1012,6 +1020,8 @@ nmap z6 :set foldlevel=6<CR>
 nmap z7 :set foldlevel=7<CR>
 nmap z8 :set foldlevel=8<CR>
 nmap z9 :set foldlevel=9<CR>
+
+call ToggleFold('manual')		" Default to manual folding
 
 let w:hexmode = 0
 function! ToggleHex()
