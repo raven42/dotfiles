@@ -41,6 +41,7 @@ shopt -s checkwinsize
 
 # External resource / script files
 DEFAULT_RC_PATH=${HOME}/.default
+CHANGE_DIR_SCRIPT=${HOME}/bin/change_dir.sh
 COMMON_RC=${DEFAULT_RC_PATH}/common_rc
 POST_RC=${DEFAULT_RC_PATH}/post_rc
 DIRCOLORS=${HOME}/.dircolors
@@ -68,6 +69,10 @@ if [[ -f ${DIRCOLORS} ]]; then
 	eval `dircolors -b ${DIRCOLORS}`
 elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
+fi
+
+if [[ -f ${CHANGE_DIR_SCRIPT} ]]; then
+	. ${HOME}/bin/change_dir.sh
 fi
 
 # 030m - Black
