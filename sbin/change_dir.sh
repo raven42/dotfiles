@@ -18,7 +18,7 @@ change_dir()
 		# Extract dir N from dirs
 		idx=${new_dir:1}
 		[[ -z $idx ]] && idx=1
-		idx_dir=$(dirs +$idx)
+		idx_dir=$(dirs +$idx | awk '{ print $2 }')
 		[[ -z $idx_dir ]] && return 1
 		new_dir=$idx_dir
 	fi
