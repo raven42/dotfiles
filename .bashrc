@@ -6,7 +6,7 @@
 
 # Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias dirs='dirs -v'
-alias githome='/usr/bin/git --git-dir $HOME/.cfg/ --work-tree $HOME'
+alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
 alias rebash='source ~/.bashrc'
 alias scp="scp -oStrictHostKeyChecking=no"
@@ -15,7 +15,7 @@ alias telnet="telnet -e ^B"
 alias vi="vim"
 
 # Setup our environment:
-export EDITOR=/usr/bin/vim
+export EDITOR=vim
 export HISTTIMEFORMAT='%m/%d/%Y-%T '
 export HISTCONTROL=ignoredups				# Don't save commands leading with a whitespace, or duplicated commands
 export HISTFILE=$HOME/.history-$HOSTNAME	# Specific history file per host
@@ -29,7 +29,7 @@ export LD_LIBRARY_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib
 export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
 export MAKEFLAGS=-s
 export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
-export PATH=.:~/bin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:/tools/bsnbld/accupara/build
+export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:/tools/bsnbld/accupara/build
 export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export SHOW_TARGET_IN_PROMPT=1
 export TMOUT=0
@@ -41,7 +41,7 @@ shopt -s checkwinsize
 
 # External resource / script files
 DEFAULT_RC_PATH=${HOME}/.default
-CHANGE_DIR_SCRIPT=${HOME}/bin/change_dir.sh
+CHANGE_DIR_SCRIPT=${HOME}/sbin/change_dir.sh
 COMMON_RC=${DEFAULT_RC_PATH}/common_rc
 POST_RC=${DEFAULT_RC_PATH}/post_rc
 DIRCOLORS=${HOME}/.dircolors
@@ -49,11 +49,12 @@ GIT_DEFAULT_RC=${DEFAULT_RC_PATH}/repo_rc
 GIT_RC_PATH=${GIT_ROOT}/.rc
 GIT_RC=${GIT_RC_PATH}/rc
 GIT_TAGS_PATH=${GIT_RC_PATH}/tags
-GIT_COMPLETION=/tools/bsnbld/scripts/gittools/shell/git-completion.bash
-GIT_PROMPT=/tools/bsnbld/scripts/gittools/shell/git-prompt.sh
-NERDTREE_GEN_SCRIPT=${HOME}/bin/gen_nerdtree_bookmarks.py
+GIT_COMPLETION=${HOME}/sbin/git-completion.bash
+GIT_PROMPT=${HOME}/sbin/git-prompt.sh
+NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
 NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
 NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
+RETAG_SCRIPT=${HOME}/bin/retag
 USER_HOSTNAME="bsnvdga0120"
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
@@ -71,8 +72,9 @@ elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
 fi
 
+# If present, source ${CHANGE_DIR_SCRIPT} for directory tracking with 'cd'
 if [[ -f ${CHANGE_DIR_SCRIPT} ]]; then
-	. ${HOME}/bin/change_dir.sh
+	. ${CHANGE_DIR_SCRIPT}
 fi
 
 # 030m - Black
@@ -166,9 +168,9 @@ if [ $GIT_REPO ]; then
 		fi
 
 		# Look for TAG files and if none are found, generate new ones
-		if [ ! -f ${GIT_TAGS_PATH}/tags_fabos_src -a -f ${HOME}/bin/retag ]; then
+		if [ ! -f ${GIT_TAGS_PATH}/tags_fabos_src -a -f ${RETAG_SCRIPT} ]; then
 			echo ' No TAGFILES found. Generating new tags in the background...'
-			nohup ${HOME}/bin/retag -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/tag_gen_${GIT_REPO}.log &
+			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/retag_${GIT_REPO}.log &
 		fi
 	fi
 fi

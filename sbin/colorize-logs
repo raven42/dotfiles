@@ -1,0 +1,20 @@
+#!/bin/bash
+
+cccyan=$(echo -e "\033[0;36m")
+ccgray=$(echo -e  "\033[38;5;242m")
+cclightgray=$(echo -e "\033[38;5;250m")
+ccred=$(echo -e "\033[0;31m")
+ccbrightred=$(echo -e "\033[1;21m")
+ccyellow=$(echo -e "\033[0;33m")
+ccend=$(echo -e "\033[0m")
+
+sed -E \
+	-e "s/.*[Ee]rror[: ]/$ccred&$ccend/g" \
+	-e "s/.*[Ww]arning[: ]/$ccyellow&$ccend/g" \
+	-e "s/^.*\[VERBOSE\].*$/$ccgray&$ccend/g" \
+	-e "s/^.*\[DEBUG\].*$/$cclightgray&$ccend/g" \
+	-e "s/^.*\[INFO\].*$/$ccwhite&$ccend/g" \
+	-e "s/^.*\[NOTICE\].*$/$cccyan&$ccend/g" \
+	-e "s/^.*\[WARN\].*$/$ccyellow&$ccend/g" \
+	-e "s/^.*\[ERR\].*$/$ccred&$ccend/g" \
+	-e "s/^.*\[CRIT\].*$/$ccbrightred&$ccend/g"

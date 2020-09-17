@@ -1,0 +1,122 @@
+#!/bin/bash
+#
+
+user=${USER}
+orig_dir=`pwd`
+prog=`basename $0`
+
+usage="Target Usage: $prog [<options>]
+ Prerequisites:
+   * GIT_REPO/GIT_ROOT needs to be a bash env variable set to your /work workspace
+
+ Options:
+   -<platform>      compile platform(s): lando (harpoon), awing, gen6, dart
+   -swbd <#>        compile specific swbd
+   -pretend|-p      Show what commands would be run but don't execute
+   -verbose|-v      Use the verbose flags when running crave
+   -default         Show / Set the specified swbd as default for future operations
+
+ Examples
+   '$prog -lando'
+   '$prog -swbd 148'
+"
+
+shrt_opts=pvhs:
+long_opts=pretend,verbose,help,swbd:,skybolt,sb,lando,dcx,gen6,awing,dart
+
+exec=
+verbose=0
+bld_target=
+
+if [ $GIT_ROOT ]; then
+	target_rc=${GIT_ROOT}/.rc/bld_target
+else
+	target_rc=${HOME}/.default/bld_target
+fi
+
+optarg=0
+opts=`getopt -n $prog -o $shrt_opts -ual $long_opts -- $@`
+
+eval set -- "$opts"
+
+while [ $1 != -- ]; do
+
+	case "$1" in
+# main options
+	--pretend | -p)
+		mkpretend=1
+		exec=echo
+		;;
+
+	--verbose | -v)
+		verbose=1
+		;;
+
+	--help)
+		echo "$usage"
+		exit 1
+		;;
+
+# platform types
+	-s | --swbd)
+		bld_target=$2
+		shift
+		;;
+
+	--dcx)
+		bld_target="swbd62"
+		;;
+
+	--skybolt | --sb)
+		bld_target="swbd148"
+		;;
+
+	--lando)
+		bld_target="swbd165"
+		;;
+
+	--awing)
+		bld_target="swbd178"
+		;;
+
+	--dart)
+		bld_target="swbd188"
+		;;
+
+	-h | --help)
+		echo "$usage"
+		exit 0
+		;;
+
+	--)
+		#ignore
+		;;
+
+	*)
+		makeflags="$makeflags $opt"
+		;;
+
+	esac
+	shift
+done
+shift # move past the '--' from the getopt call
+
+if [ $# -eq 1 ]; then
+	bld_target=$1
+elif [ $# -gt 0 ]; then
+	echo "Invalid argument: $@"
+	echo ""
+	echo "$usage"
+	echo ""
+	exit 1
+fi
+
+# Handle default command to set or show the default
+if [ "${bld_target}" == "" ]; then
+	echo "Current build bld_target is BLD_TARGET=${BLD_TARGET}"
+else
+	echo "export BLD_TARGET=${bld_target}" > $target_rc
+	echo "Set new default BLD_TARGET=${bld_target} in [${target_rc}]"
+	. $target_rc
+fi
+exit 0

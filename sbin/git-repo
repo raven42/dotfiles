@@ -1,0 +1,286 @@
+#!/bin/bash
+#
+
+# git_path is the root location where this users git repositories are stored
+# change this as needed for each user, or can come up with a common method to
+# store local git repos for everybody
+
+usr=$USER
+prog=`basename $0`
+
+# Git server definitions
+git_server=git@github.gwd.broadcom.net
+repo=BSN/bsnfos.git
+
+swrel=/zzz/work00/swrel:/zwork/emake-bsn-203/stg1/swrel:/builds/bsn/Nightly/fos
+
+usage="Usage: $prog [<options>] [<repo>]
+
+ Options:
+   -usr <name>          - Search for name and use that users workspace
+   -remote-repo <repo>  - Specify the remote GIT repo (default:$repo) when cloning
+   -repo <path>         - Specify full path to workspace and repo to use
+   -nightly <pat>       - Look for repo matching <pat> in swrel nightly build path
+"
+
+find_depth=6
+debug=0
+
+sopts="u:h"
+lopts="usr:,user:,remote-repo:,repo:,nightly:,help,debug"
+
+optarg=0
+opts=`getopt -n $prog -o $sopts -ual $lopts -- $@`
+if [ $? != 0 ]; then
+	echo ""
+	echo "$Usage"
+	echo ""
+	exit 2
+fi
+
+eval set -- "$opts"
+
+# Read in command line options
+while [ $1 != -- ]; do
+
+	case "$1" in
+
+		-u | --usr | --user)
+			usr_srch=$2
+			shift
+			;;
+
+		--remote-repo)
+			repo=$2
+			if [ "${repo: -4}" != ".git" ]; then
+				repo="${repo}.git"
+			fi
+			shift
+			;;
+
+		--repo)
+			full_path=$2
+			shift
+			git_repo=`basename $full_path`
+			git_path=`dirname $full_path`
+			;;
+
+		--nightly)
+			pattern=$2
+			shift
+			;;
+
+		--debug)
+			debug=1
+			;;
+
+		-h | --help)
+			echo ""
+			echo "$usage"
+			echo ""
+			exit 0
+			;;
+	esac
+	shift
+done
+
+if [ $# -eq 2 ]; then
+	git_repo=$2
+fi
+
+# If searching for username
+if [ $usr_srch ]; then
+	# Usermap
+	usermap=/projects/bsnswtools/bin/fos/usermap
+	num_usr=0
+	usr_list=`$usermap -o $usr_srch`
+	for usr in $usr_list; do
+		let num_usr+=1
+	done
+
+	if [ $num_usr -eq 0 ]; then
+		echo "User $usr_srch not found"
+		exit 1
+	fi
+	if [ $num_usr -gt 1 ]; then
+		echo "Multiple users found matching name. Please specify which user."
+		echo ""
+		$usermap $usr_srch
+		read -p  "Please enter user OktaID: " usr
+	fi
+fi
+
+# If doing a nightly build search pattern
+if [ $pattern ]; then
+	num_paths=0
+	for swrel_path in `echo ${swrel} | sed -e 's/:/ /g'`; do
+		srch=`find ${swrel_path} -maxdepth ${find_depth} 2> /dev/null | grep ${pattern}`
+		for path in ${srch}; do
+			if [ -e ${path}/.git ]; then
+				echo "${path}"
+				full_path=${path}
+				let num_paths+=1
+			fi
+		done
+	done
+	if [ $num_paths -eq 0 ]; then
+		echo "Pattern ${pattern} not found"
+		exit 1
+	fi
+	if [ $num_paths -gt 1 ]; then
+		echo "Multiple repositories found matching:${pattern}. Please specify which repository."
+		echo ""
+		read -p "Please enter repository path: " full_path
+	fi
+	git_repo=`basename $full_path`
+	git_path=`dirname $full_path`
+fi
+
+# Define the workspace for the specified user
+workspace=`grep ${usr} /projects/devop_metadata/LATEST_ZZMAP | cut -d: -f 2`
+if [ -d "${HOME}/work" ]; then
+	if [ $debug -eq 1 ]; then echo "Adding ${HOME}/work to workspaces..."; fi
+	workspace+=$'\n'
+	workspace+="${HOME}/work"
+fi
+
+if [ -d "/work/${usr}" ]; then
+	if [ $debug -eq 1 ]; then echo "Adding /work/${usr} to workspaces..."; fi
+	workspace+=$'\n'
+	workspace+="/work/${usr}"
+fi
+
+if [ -d "/zshared/work01/${usr}" ]; then
+	if [ $debug -eq 1 ]; then echo "Adding /zshared/work01/${usr} to workspaces..."; fi
+	workspace+=$'\n'
+	workspace+="/zshared/work01/${usr}"
+fi
+remote_repo=${repo}
+
+# Look for default git root directory
+if [ ! ${workspace//[$'\r\n']/} ]; then
+	echo ""
+	echo "Workspace not defined for user:${usr}."
+	if [ "${usr}" == "${USER}" ]; then
+		echo "Please contact SRE to get a /zzz/work## workspace assigned."
+	fi
+	echo ""
+	exit 1
+fi
+
+# If local-repo not specified, list existing repositories and query for repo
+if [ "$git_repo" == "" ]; then
+	echo "Repo not specified."
+	echo ""
+	for path in ${workspace}; do
+		if [ $debug -eq 1 ]; then echo "Scanning ${path} for git repositories" ; fi
+		find ${path} -type d -exec test -e '{}/.git' ';' -print -prune
+	done
+	echo ""
+	read -p "Specify repository: " full_path
+	if [[ $full_path =~ "/" ]]; then
+		git_repo=`basename $full_path`
+		git_path=`dirname $full_path`
+	else
+		git_repo=$full_path
+	fi
+fi
+
+# Loop through directories in workspace looking for a match
+paths=0
+if [ ! ${git_path} ]; then
+	for path in ${workspace}; do
+		if [ $debug -eq 1 ]; then
+			echo "looking in path:$path"
+		fi
+		if  [ -d ${path}/${git_repo} ]; then
+			git_path=${path}
+			break;
+		fi
+		let paths+=1
+	done
+fi
+
+if [ $debug -eq 1 ]; then
+	echo ""
+	echo -n "workspace(s):"
+	echo "$workspace"
+	echo "paths:$paths"
+	echo "git_path:$git_path"
+	echo "git_repo:$git_repo"
+	echo "server:${git_server}"
+	echo "remote_repo:$remote_repo"
+	echo ""
+fi
+
+if [ ! ${git_path} ]; then
+	echo "Repository ${git_repo} not found. Existing repositories:"
+	echo ""
+	for path in ${workspace}; do
+		if [ $debug -eq 1 ]; then echo "Scanning ${path} for git repositories" ; fi
+		find ${path} -type d -exec test -e '{}/.git' ';' -print -prune
+	done
+	echo ""
+	while true; do
+		read -p "Would you like to create a new repository? [y/n]: " yn
+		case $yn in
+		[Yy]*) break;;
+		[Nn]*) exit 1;;
+		* ) echo "Please answer yes or no.";;
+		esac
+	done
+
+	if [ $paths -gt 1 ]; then
+		echo ""
+		echo "Available paths:"
+		echo ""
+		echo "${workspace}"
+		echo ""
+		read -p "Which path do you want to store the new repo: " git_path
+		echo ""
+	else
+		git_path=$path
+	fi
+
+	if [ ! -d ${git_path} ]; then
+		echo "GIT path:${git_path} does not exist. Unable to proceed."
+		exit 1
+	fi
+
+	mkdir ${git_path}/${git_repo}
+fi
+
+git_root=${git_path}/${git_repo}
+
+# Check if there is a repo already cloned here
+if [ ! -d ${git_root}/.git ]; then
+	echo "Did not find expected local repo. Suspect no repository has been cloned."
+	while true; do
+		read -p "Do you wish to clone a repo from ${git_server}? [y/n]: " yn
+		case $yn in
+
+		[Yy]*)
+			cd ${git_path}
+			echo ""
+			echo "Available branches:"
+			echo ""
+			git ls-remote --head ${git_server}:${remote_repo} | sed -e 's|.*refs/heads/||' | grep -v priv
+			echo ""
+			read -p "Which branch do you want to clone: " branch
+			echo ""
+			git clone -b ${branch} ${git_server}:${remote_repo} ${git_repo}
+			if [ $? -ne 0 ]; then
+				echo "Clone failed. Unable to create repository."
+				exit 1
+			fi
+			echo ""
+			break
+			;;
+
+		[Nn]*) break;;
+		* ) echo "Please answer yes or no.";;
+		esac
+	done
+fi
+
+env GIT_ROOT=${git_root} GIT_PATH=`dirname ${git_root}` GIT_REPO=`basename ${git_root}` GIT_DIR=${git_root}/.git GIT_WORK_TREE=${git_root} ${SHELL} ; exit
