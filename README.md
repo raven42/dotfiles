@@ -78,11 +78,17 @@ export SRC_PATH_PREFIX="<string>"
 
 ### GIT REPO Setup
 There is a script at `sbin/git-repo` which can be used to setup a new sub-shell environment to set repository specific environment variables and other such parameters. This script will set a few env variables and enter a new sub-shell with these variables defined. It can also be used to clone a new repository if needed. To use this script properly, there are a few key environment variables which should be set in `.default/common_rc`. These variables are as follows:
-| Environment Variable | Description | Example |
-| --- | --- | --- |
-| `WORKSPACES` | This is a `:` delimited list of paths to search for repositories in | `export WORKSPACES=${HOME}/projects:/public/${USER}/projects` |
-| `DEFAULT_GIT_SERVER` | This is used to set a URL to a git server from which to clone | `export DEFAULT_GIT_SERVER=git@github.com` |
-| `DEFAULT_GIT_REPO` | This is used to specify a default repository to clone from the server | `export DEFAULT_GIT_REPO=raven42/dotfiles.git` |
+```
+# WORKSPACES - This is a `:` delimited list of paths to search for repositories in. When used with the git-repo script, these paths
+# will be searched for any repo name specified on the command line
+export WORKSPACES=${HOME}/projects:/public/${USER}/projects
+
+# DEFAULT_GIT_SERVER - This is used to set a URL to a git server from which to clone
+export DEFAULT_GIT_SERVER=git@github.com
+
+# DEFAULT_GIT_REPO - This is used to specify a default repository to clone from the server
+export DEFAULT_GIT_REPO=raven42/dotfiles.git
+```
 
 ### Build Target
 The `${GIT_ROOT}/.rc/bld_target.sh` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$BLD_TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
