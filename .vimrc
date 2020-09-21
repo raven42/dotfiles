@@ -111,7 +111,7 @@ highlight DiffText		cterm=bold ctermbg=12 gui=bold guibg=Red
 highlight Directory		ctermfg=Yellow guifg=Yellow
 highlight Error			ctermfg=White guifg=White ctermbg=Red guibg=Red
 highlight ErrorMsg		ctermfg=Yellow guifg=Yellow
-highlight FoldColumn	ctermfg=Yellow ctermbg=Black guifg=Yellow guibg=Black
+highlight FoldColumn	ctermfg=Yellow ctermbg=237 guifg=Yellow guibg=DarkMagenta
 highlight Folded		ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
 highlight GitGutterAdd			ctermfg=Green
 highlight GitGutterAddLine		ctermbg=235
@@ -126,7 +126,7 @@ highlight LineNr		ctermfg=Gray guifg=Gray
 highlight ModeMsg		ctermfg=White guifg=White ctermbg=DarkRed guibg=DarkRed
 highlight MoreMsg		ctermfg=White guifg=White ctermbg=DarkRed guibg=DarkRed
 highlight NonText		ctermfg=LightGreen guifg=LightGreen
-highlight Normal		ctermfg=White guifg=White guibg=Black
+highlight Normal		ctermfg=White ctermbg=232 guifg=White guibg=Black
 highlight PreProc		ctermfg=Yellow guifg=Yellow
 highlight Question		ctermfg=Red guifg=Red
 highlight Search		ctermfg=White guifg=White ctermbg=DarkMagenta guibg=DarkBlue
@@ -516,6 +516,33 @@ if version >= 800
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 	let g:tagbar_file_size_limit = 1000000
+	" Override 'c' type that doesn't include unions to avoid issues with
+	" unions inside of functions messing up with display and scoping issues.
+	let g:tagbar_type_c = {
+		\ 'ctagstype'	: 'c',
+		\ 'kinds'		: [
+			\ 'h:header files:1:0',
+			\ 'd:macros:1:0',
+			\ 'p:prototypes:1:0',
+			\ 'g:enums:0:1',
+			\ 'e:enumerators:0:0',
+			\ 't:typedefs:0:0',
+			\ 's:structs:0:1',
+			\ 'm:members:0:0',
+			\ 'v:variables:0:0',
+			\ 'f:functions:0:1'
+		\ ],
+		\ 'sro'			: '::',
+		\ 'kind2scope'	: {
+			\ 'g' : 'enum',
+			\ 's' : 'struct',
+		\ },
+		\ 'scope2kind'	: {
+			\ 'enum'   : 'g',
+			\ 'struct' : 's',
+		\ }
+	\ }
+
 
 	" --- Syntastic Configuration
 	let g:syntastic_always_populate_loc_list = 1
@@ -551,7 +578,7 @@ if version >= 800
 	let g:devpanel_panel_max = 45
 
 	" --- Generic definitions used by functions for plugins
-	let g:ignored_windows = '\v(help|nerdtree|tagbar|qf|undotree)'
+	let g:ignored_windows = '\v(nerdtree|tagbar|undotree)'
 	let g:branch_icon = g:charmap['branch']
 
 	packloadall
@@ -840,26 +867,27 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding utilities
 
-let g:LogLevelFoldMap = {
-			\ '\[EMERG\]'	: 1,
-			\ '\[ALERT\]'	: 2,
-			\ '\[CRIT\]'	: 3,
-			\ '\[ERR\]'		: 4,
-			\ '\[WARN\]'	: 5,
-			\ '\[NOTICE\]'	: 6,
-			\ '\[INFO\]'	: 7,
-			\ '\[DEBUG\]'	: 8,
-			\ '\[VERBOSE\]'	: 9
-			\ }
+let g:LogLevelFoldMap = [
+			\ [ '###',			0 ],
+			\ [ '\[EMERG\]',	1 ],
+			\ [ '\[ALERT\]',	2 ],
+			\ [ '\[CRIT\]',		3 ],
+			\ [ '\[ERR\]',		4 ],
+			\ [ '\[WARN\]',		5 ],
+			\ [ '\[NOTICE\]',	6 ],
+			\ [ '\[INFO\]',		7 ],
+			\ [ '\[DEBUG\]',	8 ],
+			\ [ '\[VERBOSE\]',	9 ],
+			\ ]
 
 function! FoldLevelLog(lnum)
 	let line = getline(a:lnum)
-	for [level, foldlevel] in items(g:LogLevelFoldMap)
+	for [level, foldlevel] in g:LogLevelFoldMap
 		if line =~? level
 			return foldlevel
 		endif
 	endfor
-	return '0'
+	return len(g:LogLevelFoldMap)
 endfunction
 
 function! FoldLevelDiff(lnum)
@@ -879,7 +907,7 @@ function! FoldTextFmt(fmt) " {{{2
 	elseif a:fmt ==# 'null'									" NULL fold text
 		let text = ''
 	elseif a:fmt ==# 'log'									" LOG fold text
-		for [level, foldlevel] in items(g:LogLevelFoldMap)
+		for [level, foldlevel] in g:LogLevelFoldMap
 			if foldlevel == &foldlevel
 				let disp_level = level
 				break
@@ -919,13 +947,11 @@ function! FoldTextFmt(fmt) " {{{2
 endfunction
 
 function! ToggleFold(fold_method)
-	if exists('b:toggle_fold')
-		if b:toggle_fold ==# a:fold_method
-			set foldlevel=99
-			unlet b:toggle_fold
-			echo 'All folds disabled'
-			return
-		endif
+	if exists('b:toggle_fold') && b:toggle_fold ==# a:fold_method
+		set foldlevel=99
+		unlet b:toggle_fold
+		echo 'All folds disabled'
+		return
 	endif
 
 	if a:fold_method ==# 'log'
@@ -933,7 +959,7 @@ function! ToggleFold(fold_method)
 		set foldexpr=FoldLevelLog(v:lnum)
 		set foldlevel=5
 		set foldtext=FoldTextFmt('log')
-		for [level, foldlevel] in items(g:LogLevelFoldMap)
+		for [level, foldlevel] in g:LogLevelFoldMap
 			if foldlevel == &foldlevel
 				let disp_level = level
 				break
@@ -1006,20 +1032,20 @@ nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
 nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
 
 " Decrease / Increase fold level
-nmap z, zm
-nmap z. zr
-nmap z,, :set foldlevel=0 <CR>
-nmap z.. :set foldlevel=99 <CR>
-nmap z0 :set foldlevel=0<CR>
-nmap z1 :set foldlevel=1<CR>
-nmap z2 :set foldlevel=2<CR>
-nmap z3 :set foldlevel=3<CR>
-nmap z4 :set foldlevel=4<CR>
-nmap z5 :set foldlevel=5<CR>
-nmap z6 :set foldlevel=6<CR>
-nmap z7 :set foldlevel=7<CR>
-nmap z8 :set foldlevel=8<CR>
-nmap z9 :set foldlevel=9<CR>
+nmap z, zm \| :echo 'set foldlevel=' . &foldlevel <CR>
+nmap z. zr \| :echo 'set foldlevel=' . &foldlevel <CR>
+nmap z,, :set foldlevel=0  \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z.. :set foldlevel=99 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z0 :set foldlevel=0 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z1 :set foldlevel=1 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z2 :set foldlevel=2 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z3 :set foldlevel=3 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z4 :set foldlevel=4 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z5 :set foldlevel=5 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z6 :set foldlevel=6 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z7 :set foldlevel=7 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z8 :set foldlevel=8 \| echo 'set foldlevel=' . &foldlevel <CR>
+nmap z9 :set foldlevel=9 \| echo 'set foldlevel=' . &foldlevel <CR>
 
 call ToggleFold('manual')		" Default to manual folding
 
