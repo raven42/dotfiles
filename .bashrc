@@ -29,7 +29,7 @@ export LD_LIBRARY_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib
 export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
 export MAKEFLAGS=-s
 export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
-export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/tools/bsneng/bin:/projects/bsnswtools/bin/fos:/projects/bsnswtools/bin/extn:/tools/bsnbld/accupara/build
+export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export SHOW_TARGET_IN_PROMPT=1
 export TMOUT=0
@@ -40,12 +40,13 @@ export VISUAL=vim
 shopt -s checkwinsize
 
 # External resource / script files
+BLD_TARGET_SCRIPT=bld_target.sh
 DEFAULT_RC_PATH=${HOME}/.default
 CHANGE_DIR_SCRIPT=${HOME}/sbin/change_dir.sh
-COMMON_RC=${DEFAULT_RC_PATH}/common_rc
-POST_RC=${DEFAULT_RC_PATH}/post_rc
+COMMON_RC=${DEFAULT_RC_PATH}/common_rc.sh
+POST_RC=${DEFAULT_RC_PATH}/post_rc.sh
 DIRCOLORS=${HOME}/.dircolors
-GIT_DEFAULT_RC=${DEFAULT_RC_PATH}/repo_rc
+GIT_DEFAULT_RC=${DEFAULT_RC_PATH}/repo_rc.sh
 GIT_RC_PATH=${GIT_ROOT}/.rc
 GIT_RC=${GIT_RC_PATH}/rc
 GIT_TAGS_PATH=${GIT_RC_PATH}/tags
@@ -178,6 +179,12 @@ fi
 # Include the default alias / resource definitions
 if [ -f ${COMMON_RC} ]; then
 	. ${COMMON_RC}
+elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
+	echo "Deprecated resource script found... [${DEFAULT_RC_PATH}/common_rc]"
+	echo "Please move to the new location...  [${COMMON_RC}]"
+	echo "   mv ${DEFAULT_RC_PATH}/common_rc ${COMMON_RC}"
+	echo "Sourcing this for now..."
+	. ${DEFAULT_RC_PATH}/common_rc
 fi
 
 # Load repo / view specific resource definitions
@@ -201,9 +208,21 @@ function format_prompt() {
 			PS_COLOR=${FG_CYAN}
 		fi
 
-		if [ -f ${GIT_RC_PATH}/bld_target ]; then
+		if [ -f ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
+			. ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}
+		elif [ -f ${GIT_RC_PATH}/bld_target ]; then
+			echo "Deprecated resource script found... [${GIT_RC_PATH}/bld_target]"
+			echo "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
+			echo "  mv ${GIT_RC_PATH}/bld_target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
+			echo "Sourcing this for now..."
 			. ${GIT_RC_PATH}/bld_target
+		elif [ -f ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
+			. ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}
 		elif [ -f ${DEFAULT_RC_PATH}/bld_target ]; then
+			echo "Deprecated resource script found... [${DEFAULT_RC_PATH}/bld_target]"
+			echo "Please move to the new location...  [${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
+			echo "  mv ${DEFAULT_RC_PATH}/bld_target ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}"
+			echo "Sourcing this for now..."
 			. ${DEFAULT_RC_PATH}/bld_target
 		fi
 
@@ -255,4 +274,10 @@ fi
 # Source the post_rc file if needed
 if [ -f ${POST_RC} ]; then
 	. ${POST_RC}
+elif [ -f ${DEFAULT_RC_PATH}/post_rc ]; then
+	echo "Deprecated resource script found... [${DEFAULT_RC_PATH}/post_rc]"
+	echo "Please move to the new location...  [${POST_RC}]"
+	echo "   mv ${DEFAULT_RC_PATH}/post_rc ${POST_RC}"
+	echo "Sourcing this for now..."
+	. ${DEFAULT_RC_PATH}/post_rc
 fi

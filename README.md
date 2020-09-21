@@ -43,15 +43,15 @@ githome submodule update
 The [.bashrc](.bashrc) file is a generic resource file which defines some basics which should be compatible for any user. This script will reference the following user specific files.
 | File | Purpose |
 | --- | --- |
-| `.default/common_rc` | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
+| `.default/common_rc.sh` | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
 | `${GIT_ROOT}/.rc/rc` | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
-| `${GIT_ROOT}/.rc/bld_target` | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
+| `${GIT_ROOT}/.rc/bld_target.sh` | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
 | `.default/post_rc` | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
 
 ## Environment Configurations Options
-There are a few environmental configuration options which can be toggled in a user private `.default/common_rc` script.
+There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
 ```
-# .default/common_rc - Set user specific environment options
+# .default/common_rc.sh - Set user specific environment options
 # This file is sourced in the .bashrc script after defaults have been initialized
 # but before any processing of the env variables or execution of supporting scripts
 # This allows the user to override some defaults, or setup other parameters prior
@@ -77,12 +77,12 @@ export SRC_PATH_PREFIX="<string>"
 ```
 
 ### Build Target
-The `${GIT_ROOT}/.rc/bld_target` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$BLD_TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
+The `${GIT_ROOT}/.rc/bld_target.sh` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$BLD_TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
 ```
 some_target <git-repo> (master) proj$ bld-target
 Current build target is BLD_TARGET=some_target
 some_target <git-repo> (master) proj$ bld-target another_target
-Set new default BLD_TARGET=another_target in [<git-repo>/.rc/bld_target]
+Set new default BLD_TARGET=another_target in [<git-repo>/.rc/bld_target.sh]
 another_target <git-repo> (master) proj$
 ```
 
