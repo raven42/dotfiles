@@ -133,7 +133,9 @@ if [ $GIT_REPO ]; then
 	if [ ! -d ${GIT_ROOT} ]; then
 		echo "GIT_ROOT:${GIT_ROOT} not found."
 	else
-		if [ ! -f ${GIT_RC} ]; then
+		if [ -f ${GIT_RC} ]; then
+			rc_spec=${GIT_RC}
+		elif [ -f ${GIT_DEFAULT_RC} ]; then
 			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
 				echo "rc spec not found. Generating defaults at ${GIT_RC}..."
 				if [ ! -d ${GIT_RC_PATH} -a -w ${GIT_ROOT} ]; then
@@ -149,7 +151,7 @@ if [ $GIT_REPO ]; then
 				rc_spec=${GIT_DEFAULT_RC}
 			fi
 		else
-			rc_spec=${GIT_RC}
+			echo "rc spec [${GIT_DEFAULT_RC}] not found. No defaults to use."
 		fi
 	fi
 
@@ -259,9 +261,11 @@ function format_title() {
 function set_prompt() {
 	# The following history commands allow us to track the history across different
 	# sessions and log them all to the same file
-	history -a	# write current history to the history file
-	history -c	# clear current in memory history
-	history -r	# read from history file into memory
+	if [ $UNIFIED_HISTORY -eq 1 ]; then
+		history -a	# write current history to the history file
+		history -c	# clear current in memory history
+		history -r	# read from history file into memory
+	fi
 
 	format_prompt
 	format_title
