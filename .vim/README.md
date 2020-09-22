@@ -99,12 +99,10 @@ The DevPanel plugin will automatically open the NERDTree and Tagbar plugin windo
 
 ---
 
-## NERDTree
+## NERDTree (File Browser)
 The NERDTree plugin provides a file browser for any files. `<double-click>` or hit `<enter>` on any file to open it in a new buffer. `<single-click>` or hit `<enter>` on any directory to expand / collapse it. When a file is opened, it will open in a new buffer. The tabline will be updated to list that file name as well. Use `<Leader><#>` or `:n` / `:p` to move between opened buffers.
 
 If you do a `<middle-click>` on a file, then the current edit window will be split horizontally and the new file will be opened in the split.
-
-> :construction: **Example:** coming soon...
 
 ### Bookmarks
 The NERDTree plugin provides a bookmark feature which can provide a quick access to directories of your choice. One downside of this though is it cannot resolve any environment variables in the path name. To help facilitate this, a per-repository specific bookmark file can be generated using a defaults file. This functionality has been added to automatically generate the bookmarks file on sourcing the `[.bashrc](../.bashrc)` script. This is done by using the `[bin/gen_nerdtree_bookmarks.py](../bin/gen_nerdtree_bookmarks.py)` script along with a defaults file located at `${HOME}/.default/NERDTreeDefaultBookmarks` file.
@@ -127,7 +125,7 @@ projects /work/<user>/<repo>/projects
 
 ---
 
-## Tagbar
+## Tagbar (CTag Viewer)
 The Tagbar plugin will use ctags to populate a window with any tags from the current file. `<double-click>` or hit `<enter>` on any tag to jump to it. `<single-click>` or move the cursor over any function and the full prototype will be listed below the statusline. When the cursor is over a particular tag, you can open it in a preview window by hitting the `P` (`<shift>p`) key.
 
 ### Shortcuts
@@ -139,38 +137,42 @@ The following shortcuts all work in the Tagbar window.
 | `s` | Toggle tag sorting method between file order and name order |
 | `x` | Toggle zoom mode (increase the Tagbar window to full screen width or to normal size). |
 | `P` | Open the selected tag in the preview window. |
-> :construction: **Example:** coming soon...
 
 ---
 
 ## Lightbar
 The Lightbar plugin will display useful information about the currently opened file. It will display the file, the current function the cursor is located in (in the bottome status line), a list of the open buffers (on the left side of the tabline), and the current working GIT branch (on the right side of the tabline) if available.
-> :construction: **Example:** coming soon...
 
 ---
 
-## GitGutter
-The GitGutter plugin will display information about the added / modified / removed git hunks in the current file.
+## GitGutter / Fugitive
+The GitGutter and Fugitive plugins integrate with git to display information about the added / modified / removed git hunks in the current file, as well as provide utilities to perform git operations from within VIM.
+* Lines that have been added will be highlighted on the left side of the file window with a green left arrow.
+* Lines that have been modified will be highlighted on the left side of the file window with a blue left then right arrow.
+* Lines that have been deleted will be highlighted on the left side of the file window with a red right arrow (note: the highlight will occur on the line prior to the deletion).
+* The git hunk information is available in the top-right of the VIM window to show the added / modified / removed lines of code for the unstaged changes in the active file.
+* The git branch will be visible at the top-right of the VIM window next to the hunk information.
+* `:Gblame` can be used to view the `git blame <file>` for the active file in a new buffer next to the opened file. This allows for easy viewing of the blame history of the file. You can `<double-click>` the commit hash to jump to the commit log that introduced that change. Use `:q` to close the blame window if needed.
+* The `\gu` (`<Leader>gu`) shortcut can be used to undo the changes in the hunk under the cursor.
+* The `\gs` (`<Leader>gs`) shortcut can be used to stage the hunk under the cursor. This can be useful to stage only a subset of changes in a file instead of doing a `git add` for the entire file.
+* The `\zg` (`<Leader>zg`) shortcut can be used to fold away all code that is not part of the currently modified hunks. This is useful to view all unstaged changes in a given file.
 
-Lines that have been added will be highlighted on the left side of the file window with a green left arrow.
-> :construction: **Example:** coming soon...
+Example: In this example you can see the added / modified / deleted lines as well as the branch information and the git-folding method.
+![git_fold example](../img/git\_fold\_example.png?raw=true "GitFold Example:")
 
-Lines that have been modified will be highlighted on the left side of the file window with a blue left then right arrow.
-> :construction: **Example:** coming soon...
-
-Lines that have been deleted will be highlighted on the left side of the file window with a red right arrow (note: the highlight will occur on the line prior to the deletion).
-> :construction: **Example:** coming soon...
+Example: In this example, you can see the output from the `:Gblame` command to view the `git blame` history of the file.
+![git_blame example](../img/git\_blame\_example.png?raw=true "GitBlame Example:")
 
 ---
 
 ## NERDCommenter
 The NERDCommenter plugin allows for quickly commenting / uncommenting a block of code or lines of code. This is most easily done in `Visual` mode by selecting text with the mouse (with `set mouse=a` in your .vimrc), or by hitting the `v` key and using the cursor to select the desired text. The following key sequences will have various modes of commenting the code.
-| Key Sequence | Command | Description | Example |
+| Key Sequence | Command | Description |
 | --- | --- | --- | --- |
-| `<Leader>cc` | Comment Toggle | This will toggle a comment block. Either inserting the normal comments if not currently commented, or uncomment the block if it is already commented | :construction: coming soon... |
-| `<Leader>cm` | Minimal Comment | This will add a single comment start / end at the beginning / end of the selected block. | :construction: coming soon... |
-| `<Leader>ci` | Comment Invert | This will invert the commented code. The commented code selected will be uncommented, the uncommented code will be commented. | :construction: coming soon... |
-| `<Leader>cy` | Yank Comment | This will yank the selected code putting a copy of that code into the clipboard, and then comment out the selected code. | :construction: coming soon... |
+| `<Leader>cc` | Comment Toggle | This will toggle a comment block. Either inserting the normal comments if not currently commented, or uncomment the block if it is already commented |
+| `<Leader>cm` | Minimal Comment | This will add a single comment start / end at the beginning / end of the selected block. |
+| `<Leader>ci` | Comment Invert | This will invert the commented code. The commented code selected will be uncommented, the uncommented code will be commented. |
+| `<Leader>cy` | Yank Comment | This will yank the selected code putting a copy of that code into the clipboard, and then comment out the selected code. |
 
 ## Additional Plugins
 To add any additional plugins, you can automatically add / load them by doing the following:
@@ -192,7 +194,7 @@ git config --local user.email '<email>'
 ## Plugin Integrations
 > * [NERDTree](https://github.com/preservim/nerdtree) - File Browser
 > * [NERDCommenter](https://github.com/preservim/nerdcommenter) - Easy commenting
-> * [Tagbar](https://github.com/majutsushi/tagbar) - Tag Browser
+> * [Tagbar](https://github.com/preservim/tagbar) - Tag Browser
 > * [GitGutter](https://github.com/airblade/vim-gitgutter) - Git Integration
 > * [Fugitive](https://github.com/tpope/vim-fugitive) - Git Integration
 > * [EasyGrep](https://github.com/dkprice/vim-easygrep) - Grep functionality
