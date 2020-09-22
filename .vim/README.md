@@ -152,7 +152,7 @@ The GitGutter and Fugitive plugins integrate with git to display information abo
 * Lines that have been deleted will be highlighted on the left side of the file window with a red right arrow (note: the highlight will occur on the line prior to the deletion).
 * The git hunk information is available in the top-right of the VIM window to show the added / modified / removed lines of code for the unstaged changes in the active file.
 * The git branch will be visible at the top-right of the VIM window next to the hunk information.
-* `:Gblame` can be used to view the `git blame <file>` for the active file in a new buffer next to the opened file. This allows for easy viewing of the blame history of the file. You can `<double-click>` the commit hash to jump to the commit log that introduced that change. Use `:q` to close the blame window if needed.
+* `:Git blame` can be used to view the `git blame <file>` for the active file in a new buffer next to the opened file. This allows for easy viewing of the blame history of the file. You can `<double-click>` the commit hash to jump to the commit log that introduced that change. Use `:q` to close the blame window if needed.
 * The `\gu` (`<Leader>gu`) shortcut can be used to undo the changes in the hunk under the cursor.
 * The `\gs` (`<Leader>gs`) shortcut can be used to stage the hunk under the cursor. This can be useful to stage only a subset of changes in a file instead of doing a `git add` for the entire file.
 * The `\zg` (`<Leader>zg`) shortcut can be used to fold away all code that is not part of the currently modified hunks. This is useful to view all unstaged changes in a given file.
