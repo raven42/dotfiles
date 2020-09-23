@@ -2,7 +2,7 @@
 Linux .dotfiles, scripts, and configurations. This setup uses a bare repository to track linux .dotfiles and configuration files.
 
 ### Contents:
-- [Installation](dotfiles#installation)
+- [Installation](#installation)
 - [Bash Configuration](dotfiles#bash-configuration)
   - [Environment Variables](dotfiles#environment-variables)
   - [GIT REPO Setup](dotfiles#git-repo-setup)
