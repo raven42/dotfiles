@@ -7,7 +7,7 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
   - [Environment Variables](#environment-variables)
   - [GIT REPO Setup](#git-repo-setup)
   - [Build Target](#build-target)
-- [Vim Usage / Setup](#vim-usage-setup)
+- [Vim Usage / Setup](#vim-usage--setup)
   - [VIM Compilation](#vim-compilation)
   - [VIM Clipboard Setup](#vim-clipboard-setup)
 - [Univeral CTAGS](#univeral-ctags)
