@@ -3,15 +3,15 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
 
 ### Contents:
 - [Installation](#installation)
-- [Bash Configuration](dotfiles#bash-configuration)
-  - [Environment Variables](dotfiles#environment-variables)
-  - [GIT REPO Setup](dotfiles#git-repo-setup)
-  - [Build Target](dotfiles#build-target)
-- [Vim Usage / Setup](dotfiles#vim-usage-setup)
-  - [VIM Compilation](dotfiles#vim-compilation)
-  - [VIM Clipboard Setup](dotfiles#vim-clipboard-setup)
-- [Univeral CTAGS](dotfiles#univeral-ctags)
-- [Further Reading](dotfiles#further-reading)
+- [Bash Configuration](#bash-configuration)
+  - [Environment Variables](#environment-variables)
+  - [GIT REPO Setup](#git-repo-setup)
+  - [Build Target](#build-target)
+- [Vim Usage / Setup](#vim-usage-setup)
+  - [VIM Compilation](#vim-compilation)
+  - [VIM Clipboard Setup](#vim-clipboard-setup)
+- [Univeral CTAGS](#univeral-ctags)
+- [Further Reading](#further-reading)
 
 :information\_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
 
