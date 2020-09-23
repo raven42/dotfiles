@@ -10,6 +10,7 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
 - [Vim Usage / Setup](#vim-usage--setup)
   - [VIM Compilation](#vim-compilation)
   - [VIM Clipboard Setup](#vim-clipboard-setup)
+  - [Unicode Character Support](#unicode-character-support)
 - [Univeral CTAGS](#univeral-ctags)
 - [Further Reading](#further-reading)
 
@@ -175,6 +176,9 @@ Host *.<trusted-network>
 > :warning: **Caution:** Only enable this for trusted hosts. Otherwise this will forward X11 parameters to all hosts.
 >
 > :warning: **Note:** Also special handling is needed when using visual mode selection. This is set to automatically copy to the system clipboard. If you select something using the mouse, and then while it is still selected use the scroll wheel to move the window down, additional content will be put in the clipboard other than just what was selected.
+
+## Unicode Character Support
+While not strictly needed, the vim configuration can make use of unicode characters to make things look a little nicer. To make use of this, the `USE_UNICODE` environment variable needs to be set to `1` in your `.default/common_rc` or similar. You must also make sure to have a font installed that has unicode characters. All the examples in the vim usage and configuration are shown with unicode characters enabled.
 
 ---
 
