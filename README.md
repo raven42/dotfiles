@@ -1,13 +1,21 @@
 # .dotfiles
-Linux .dotfiles, scripts, and configurations
+Linux .dotfiles, scripts, and configurations. This setup uses a bare repository to track linux .dotfiles and configuration files.
 
-This setup uses a bare repository to track linux .dotfiles and configuration files.
+### Contents:
+- [Installation](#installation)
+- [Bash Configuration](#bash-configuration)
+  - [Environment Variables](#environment-variables)
+  - [GIT REPO Setup](#git-repo-setup)
+  - [Build Target](#build-target)
+- [Vim Usage / Setup](#vim-usage--setup)
+  - [VIM Compilation](#vim-compilation)
+  - [VIM Clipboard Setup](#vim-clipboard-setup)
+- [Univeral CTAGS](#univeral-ctags)
+- [Further Reading](#further-reading)
 
 :information\_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
 
-:information\_source: **VIM Usage/Configuration:** See the [.vim/](.vim/) for more information on the VIM setup and configuration or also the [VIM](#vim) section below
-
-## Setup
+## Installation
 To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest:
 ```
 git clone --bare <dotfiles-repo.git> $HOME/.cfg
@@ -51,7 +59,7 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 | ${GIT_ROOT}/.rc/bld_target.sh | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
 | .default/post_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
 
-## Environment Configurations Options
+## Environment Variables
 There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
 ```
 #!/bin/bash
@@ -136,8 +144,7 @@ Example:
 
 ---
 
-## VIM
-### VIM Configuration
+## VIM Usage / Setup
 See the [.vim/](.vim/) file for more information on the VIM setup and configuration.
 
 ### VIM Compilation
