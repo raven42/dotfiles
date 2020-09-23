@@ -34,6 +34,7 @@ export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export SHOW_TARGET_IN_PROMPT=1
 export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
+export UNIFIED_HISTORY=0
 export USE_UNICODE=1
 export VISUAL=vim
 
