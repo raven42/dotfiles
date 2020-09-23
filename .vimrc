@@ -139,6 +139,7 @@ highlight StatusLineNC	ctermfg=DarkMagenta guifg=DarkMagenta ctermbg=White guibg
 highlight TabLine		ctermbg=DarkMagenta ctermfg=DarkMagenta
 highlight TabLineFill	ctermbg=DarkGray ctermfg=White
 highlight TabLineSel	ctermbg=LightGray ctermfg=White
+highlight TagbarHighlight	ctermfg=White ctermbg=88
 highlight Title			ctermfg=Red guifg=Red
 highlight Todo			ctermfg=Yellow guifg=Yellow ctermbg=Black guibg=Black
 highlight Type			ctermfg=Magenta guifg=Magenta
