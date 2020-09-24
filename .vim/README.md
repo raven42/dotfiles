@@ -82,6 +82,9 @@ gq - Toggle the quickfix window and populate with all hunks
 :GrepRoot [+arg]                - Configure the location easygrep searches from
 :Git                            - Show summary window similar to git status
 :Git blame                      - Open the current files git blame history in a split window
+:Git diff                       - Open the git diff output in a split window
+:Git log                        - Open the git log output in a split window
+:Git <cmd>                      - Run git <cmd> and display the output in a split window
 ```
 
 :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
@@ -169,6 +172,7 @@ Example: In this example, you can see the output from the `:Gblame` command to v
 
 ## NERDCommenter
 The NERDCommenter plugin allows for quickly commenting / uncommenting a block of code or lines of code. This is most easily done in `Visual` mode by selecting text with the mouse (with `set mouse=a` in your .vimrc), or by hitting the `v` key and using the cursor to select the desired text. The following key sequences will have various modes of commenting the code.
+
 | Key Sequence | Command | Description |
 | --- | --- | --- | --- |
 | `<Leader>cc` | Comment Toggle | This will toggle a comment block. Either inserting the normal comments if not currently commented, or uncomment the block if it is already commented |
@@ -184,7 +188,7 @@ cd ~/.vim/pack/plugins/start
 githome submodule add <plugin-url>
 githome commit -m "Added plugin <plugin>"
 ```
-> :warning: **User Config:** After cloning the remote repo, you may want to set a specific username/email for that repository if using a different github server or account.
+:warning: **User Config:** After cloning the remote repo, you may want to set a specific username/email for that repository if using a different github server or account.
 ```
 cd <plugin>
 git config --local user.name '<user>'
@@ -194,18 +198,18 @@ git config --local user.email '<email>'
 ---
 
 ## Plugin Integrations
-> * [NERDTree](https://github.com/preservim/nerdtree) - File Browser
-> * [NERDCommenter](https://github.com/preservim/nerdcommenter) - Easy commenting
-> * [Tagbar](https://github.com/preservim/tagbar) - Tag Browser
-> * [GitGutter](https://github.com/airblade/vim-gitgutter) - Git Integration
-> * [Fugitive](https://github.com/tpope/vim-fugitive) - Git Integration
-> * [EasyGrep](https://github.com/dkprice/vim-easygrep) - Grep functionality
-> * [Autoformat](https://github.com/Chiel92/vim-autoformat) - Syntax formatting
-> * [Flake8](https://github.com/nvie/vim-flake8) - Python syntax checker
-> * [IndentPython](https://github.com/vim-scripts/indentpython.vim) - Python indentation syntax formatter
-> * [DevPanel](https://github.com/raven42/devpanel-vim) - IDE Window Manager
-> * [Lightline](https://github.com/itchyny/lightline.vim) - Status line information
-> * [Lightline-Bufferline](https://github.com/mengelbrecht/lightline-bufferline) - Adds buffer line to top of Vim window
-> * [SeachFold](https://github.com/vim-scripts/searchfold.vim) - Folding based on search patterns
-> * [UndoTree](https://github.com/mbbill/undotree) - Undo / Redo history tree browser
-> * [PasteEasy](https://github.com/roxma/vim-paste-easy) - Better pasting while in insert mode
+* [NERDTree](https://github.com/preservim/nerdtree) - File Browser
+* [NERDCommenter](https://github.com/preservim/nerdcommenter) - Easy commenting
+* [Tagbar](https://github.com/preservim/tagbar) - Tag Browser
+* [GitGutter](https://github.com/airblade/vim-gitgutter) - Git Integration
+* [Fugitive](https://github.com/tpope/vim-fugitive) - Git Integration
+* [EasyGrep](https://github.com/dkprice/vim-easygrep) - Grep functionality
+* [Autoformat](https://github.com/Chiel92/vim-autoformat) - Syntax formatting
+* [Flake8](https://github.com/nvie/vim-flake8) - Python syntax checker
+* [IndentPython](https://github.com/vim-scripts/indentpython.vim) - Python indentation syntax formatter
+* [DevPanel](https://github.com/raven42/devpanel-vim) - IDE Window Manager
+* [Lightline](https://github.com/itchyny/lightline.vim) - Status line information
+* [Lightline-Bufferline](https://github.com/mengelbrecht/lightline-bufferline) - Adds buffer line to top of Vim window
+* [SeachFold](https://github.com/vim-scripts/searchfold.vim) - Folding based on search patterns
+* [UndoTree](https://github.com/mbbill/undotree) - Undo / Redo history tree browser
+* [PasteEasy](https://github.com/roxma/vim-paste-easy) - Better pasting while in insert mode
