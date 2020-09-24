@@ -4,7 +4,7 @@ VIM resource and configuration directory.
 This directory sets up and configures vim using various plugins. It integrates them all together.
 
 # Basic usage
-Basic usage and navigation uses the standard vim movement keys and also uses the mouse to move between windows, select text in visual mode, and move the cursor. There are also some useful key mappings to move between windows.
+Basic usage and navigation uses the standard vim movement keys and also uses the mouse to move between windows, select text in visual mode, and move the cursor. There are also some useful key mappings to move between windows. This vim configuration is optimized for 175 character wide screens or more using the DevPanel plugin will yield about 120 characters in the active edit window.
 
 ### Key Shortcuts
 ```
@@ -64,7 +64,7 @@ gu - Undo the hunk under the cursor, reverting it to the unmodified state
 gp - Toggle the preview window and populate with the hunk under the cursor
 gq - Toggle the quickfix window and populate with all hunks
 ```
-> **More Info:** See the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin for more details
+:information\_source: **More Info:** See the [GitGutter](https://github.com/airblade/vim-gitgutter.git) plugin for more details
 
 ### Other Shortcuts
 ```
@@ -84,9 +84,9 @@ gq - Toggle the quickfix window and populate with all hunks
 :Git blame                      - Open the current files git blame history in a split window
 ```
 
-> :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
+:information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
   
-> :warning: **Folding:** Activating some foldmethods might take a while to activate.
+:warning: **Folding:** Activating some foldmethods might take a while to activate.
 
 ### More Info
 For more information, see the documentation for list of plugins at the bottom. The complete list of integrated plugins can be found in the vim [plugins](.vim/pack/plugins/start/) directory
@@ -105,7 +105,7 @@ The NERDTree plugin provides a file browser for any files. `<double-click>` or h
 If you do a `<middle-click>` on a file, then the current edit window will be split horizontally and the new file will be opened in the split.
 
 ### Bookmarks
-The NERDTree plugin provides a bookmark feature which can provide a quick access to directories of your choice. One downside of this though is it cannot resolve any environment variables in the path name. To help facilitate this, a per-repository specific bookmark file can be generated using a defaults file. This functionality has been added to automatically generate the bookmarks file on sourcing the `[.bashrc](../.bashrc)` script. This is done by using the `[bin/gen_nerdtree_bookmarks.py](../bin/gen_nerdtree_bookmarks.py)` script along with a defaults file located at `${HOME}/.default/NERDTreeDefaultBookmarks` file.
+The NERDTree plugin provides a bookmark feature which can provide a quick access to directories of your choice. One downside of this though is it cannot resolve any environment variables in the path name. To help facilitate this, a per-repository specific bookmark file can be generated using a defaults file. This functionality has been added to automatically generate the bookmarks file on sourcing the [`.bashrc`](../.bashrc) script. This is done by using the [`bin/gen_nerdtree_bookmarks.py`](../bin/gen_nerdtree_bookmarks.py) script along with a defaults file located at `${HOME}/.default/NERDTreeDefaultBookmarks` file.
 
 To add bookmarks, modify the `.default/NERDTreeDefaultBookmarks` file to include any bookmarks you want to add. The format should be the name of your bookmark (cannot include spaces), then a single space followed by the path to the file. If an environment variable is needed, you can add that in with a `${<env-var>}` type syntax. The path should be an absolute path.
 
@@ -116,7 +116,7 @@ build-directory ${HOME}/build
 projects ${GIT_ROOT}/projects
 ```
 
-This will generate a file at `${GIT_ROOT}/.rc/NERDTreeBookmarks` which will contain the following:
+This will generate a file at `${GIT_ROOT}/.rc/NERDTreeBookmarks` which will contain the following (assuming your `$GIT_ROOT` is located at `/work/<user>/<repo>`):
 ```
 source-directory /home/<user>/project/source
 build-directory /home/<user>/build
@@ -128,15 +128,15 @@ projects /work/<user>/<repo>/projects
 ## Tagbar (CTag Viewer)
 The Tagbar plugin will use ctags to populate a window with any tags from the current file. `<double-click>` or hit `<enter>` on any tag to jump to it. `<single-click>` or move the cursor over any function and the full prototype will be listed below the statusline. When the cursor is over a particular tag, you can open it in a preview window by hitting the `P` (`<shift>p`) key.
 
-### Shortcuts
+### Tagbar Shortcuts
 The following shortcuts all work in the Tagbar window.
-| Tagbar Shortcuts | Description |
-| --- | --- |
-| `<enter>` | Go to tag under cursor |
-| `<double-click>` | Go to tag under cursor |
-| `s` | Toggle tag sorting method between file order and name order |
-| `x` | Toggle zoom mode (increase the Tagbar window to full screen width or to normal size). |
-| `P` | Open the selected tag in the preview window. |
+```
+<enter>        - Jump to tag under cursor in the active window
+<double-click> - Jump to tag under cursor in the active window
+s              - Toggle tag sorting method between file order and name order
+x              - Toggle zoom mode (increase the Tagbar window to full screen width or to normal size).
+P              - Open the selected tag in the preview window.
+```
 
 ---
 
@@ -158,9 +158,11 @@ The GitGutter and Fugitive plugins integrate with git to display information abo
 * The `\zg` (`<Leader>zg`) shortcut can be used to fold away all code that is not part of the currently modified hunks. This is useful to view all unstaged changes in a given file.
 
 Example: In this example you can see the added / modified / deleted lines as well as the branch information and the git-folding method.
+
 ![git_fold example](../img/git\_fold\_example.png?raw=true "GitFold Example:")
 
 Example: In this example, you can see the output from the `:Gblame` command to view the `git blame` history of the file.
+
 ![git_blame example](../img/git\_blame\_example.png?raw=true "GitBlame Example:")
 
 ---
