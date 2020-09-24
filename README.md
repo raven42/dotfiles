@@ -14,9 +14,10 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
 - [Univeral CTAGS](#univeral-ctags)
 - [Further Reading](#further-reading)
 
-:information\_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes.
-
 ## Installation
+
+:information\_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes. There are plenty of options to override the default behavior, but if further customization is needed, then forking your own repo would be best.
+
 To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest:
 ```
 git clone --bare <dotfiles-repo.git> $HOME/.cfg
