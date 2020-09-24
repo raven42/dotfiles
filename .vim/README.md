@@ -174,11 +174,11 @@ Example: In this example, you can see the output from the `:Gblame` command to v
 The NERDCommenter plugin allows for quickly commenting / uncommenting a block of code or lines of code. This is most easily done in `Visual` mode by selecting text with the mouse (with `set mouse=a` in your .vimrc), or by hitting the `v` key and using the cursor to select the desired text. The following key sequences will have various modes of commenting the code.
 
 | Key Sequence | Command | Description |
-| --- | --- | --- | --- |
-| `<Leader>cc` | Comment Toggle | This will toggle a comment block. Either inserting the normal comments if not currently commented, or uncomment the block if it is already commented |
-| `<Leader>cm` | Minimal Comment | This will add a single comment start / end at the beginning / end of the selected block. |
-| `<Leader>ci` | Comment Invert | This will invert the commented code. The commented code selected will be uncommented, the uncommented code will be commented. |
-| `<Leader>cy` | Yank Comment | This will yank the selected code putting a copy of that code into the clipboard, and then comment out the selected code. |
+| --- | --- | --- |
+| <Leader>cc | Comment Toggle | This will toggle a comment block. Either inserting the normal comments if not currently commented, or uncomment the block if it is already commented |
+| <Leader>cm | Minimal Comment | This will add a single comment start / end at the beginning / end of the selected block. |
+| <Leader>ci | Comment Invert | This will invert the commented code. The commented code selected will be uncommented, the uncommented code will be commented. |
+| <Leader>cy | Yank Comment | This will yank the selected code putting a copy of that code into the clipboard, and then comment out the selected code. |
 
 ## Additional Plugins
 To add any additional plugins, you can automatically add / load them by doing the following:
