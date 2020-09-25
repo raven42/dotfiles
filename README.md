@@ -63,7 +63,7 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 
 ## Environment Variables
 There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
-```
+```bash
 #!/bin/bash
 
 # Default resource file
@@ -116,7 +116,7 @@ export UNIFIED_HISTORY=1
 There is a script at `sbin/git-repo` which can be used to setup a new sub-shell environment to set repository specific environment variables and other such parameters. This script will set a few env variables and enter a new sub-shell with these variables defined and change directories to the root level of that repository. This script will use the `$WORKSPACES` environment variable to scan for valid git repositories matching the given name, or if no repository is specified, it will list all respositories.
 
 The `git-repo` script can also be used to clone a new repository if needed. To use this script properly, there are a few key environment variables which should be set in `.default/common_rc`. These variables are as follows:
-```
+```bash
 # WORKSPACES - This is a `:` delimited list of paths to search for repositories in. When used with the git-repo script, these paths
 # will be searched for any repo name specified on the command line
 export WORKSPACES=${HOME}/projects:/public/${USER}/projects
@@ -182,7 +182,7 @@ another_target <git-repo> (master) proj$
 ```
 
 This file should contain as little as possible. Ideally only exporting the $BLD_TARGET environment variable.
-```
+```bash
 export BLD_TARGET=<build-target>
 ```
 
