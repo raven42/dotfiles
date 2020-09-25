@@ -29,9 +29,9 @@ verbose=0
 bld_target=
 
 if [ $GIT_ROOT ]; then
-	target_rc=${GIT_ROOT}/.rc/bld_target
+	target_rc=${GIT_ROOT}/.rc/bld_target.sh
 else
-	target_rc=${HOME}/.default/bld_target
+	target_rc=${HOME}/.default/bld_target.sh
 fi
 
 optarg=0
