@@ -116,9 +116,6 @@ find_repo()
 	else
 		search_param=""
 	fi
-	if [ "$search_param" == "" ]; then
-		search_param="."
-	fi
 
 	# Check if the search_param is a valid repo itself
 	if [ -e ${search_param}/.git ]; then
@@ -136,14 +133,17 @@ find_repo()
 
 	# If full repo path now found, search for this path in the available workspaces
 	for path in `echo $workspaces | tr ':' '\n'`; do
-		cd $path
 		[ $debug -eq 1 ] && echo "Scanning for [${search_param}] in workspace [${path}]..."
-		search=`find ${search_param} -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | sed -e 's|^./||g'`
-		for subpath in ${search}; do
-			[ $debug -eq 1 ] && echo " Found path ${path}/${subpath}..."
+		if [[ $search_param == "" ]]; then
+			matches=$(find $path -maxdepth 5 -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null)
+		else
+			matches=$(find $path -maxdepth 5 -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | grep "/${search_param}$")
+		fi
+		for match in ${matches}; do
+			[ $debug -eq 1 ] && echo " Found path ${match}..."
 			[ $num_paths -gt 0 ] && repo_match+=":"
 			let num_paths+=1
-			repo_match+="${path}/${subpath}"
+			repo_match+="${match}"
 		done
 	done
 
