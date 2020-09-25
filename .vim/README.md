@@ -85,6 +85,8 @@ gq - Toggle the quickfix window and populate with all hunks
 :Git diff                       - Open the git diff output in a split window
 :Git log                        - Open the git log output in a split window
 :Git <cmd>                      - Run git <cmd> and display the output in a split window
+:ToggleUnicode                  - This will toggle the `g:use_unicode` flag on/off and update the character map in VIM accordinly. This will
+                                  only affect the text loaded in the edit window, not the plugin character mappings
 ```
 
 :information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.

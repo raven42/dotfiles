@@ -1114,6 +1114,24 @@ function! GenerateUnicode(first, last)
 	endwhile
 endfunction
 
+" --- Toggle Unicode {{{2
+"  This function can be used to toggle the character maps to set them to
+"  unicode or normal. This can be useful if doing a copy/paste of folded text
+"  so the unicode characters don't end up getting copied.
+function! ToggleUnicode()
+	if g:use_unicode
+		let g:charmap = g:charmap_normal
+		let g:nummap = g:nummap_normal
+		let g:use_unicode = 0
+	else
+		let g:charmap = g:charmap_unicode
+		let g:nummap = g:nummap_unicode
+		let g:use_unicode = 1
+	endif
+	redraw!
+endfunction
+command! -nargs=0 ToggleUnicode call ToggleUnicode()
+
 " }}}1
 
 " --- Modeline {{{1
