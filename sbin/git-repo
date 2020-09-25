@@ -108,6 +108,9 @@ fi
 
 find_repo()
 {
+	num_paths=0
+	repo_match=""
+
 	if [ $# -gt 0 ]; then
 		search_param=$1
 	else
@@ -135,7 +138,7 @@ find_repo()
 	for path in `echo $workspaces | tr ':' '\n'`; do
 		cd $path
 		[ $debug -eq 1 ] && echo "Scanning for [${search_param}] in workspace [${path}]..."
-		search=`find ${search_param} -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | sed -e 's|./||g'`
+		search=`find ${search_param} -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | sed -e 's|^./||g'`
 		for subpath in ${search}; do
 			[ $debug -eq 1 ] && echo " Found path ${path}/${subpath}..."
 			[ $num_paths -gt 0 ] && repo_match+=":"
@@ -143,6 +146,8 @@ find_repo()
 			repo_match+="${path}/${subpath}"
 		done
 	done
+
+	[ $debug -eq 1 ] && echo " repo_match[$num_paths]: [$repo_match]"
 }
 
 find_repo $git_repo
@@ -155,11 +160,24 @@ if [ $num_paths -eq 1 ]; then
 
 elif [ $num_paths -gt 1 ]; then
 
-	echo "Multiple repositories found. Please specify which repository."
-	echo ""
-	echo "${repo_match}" | tr ':' '\n'
-	echo ""
-	read -p "Please entry repository path: " repo_path
+	while true; do
+		echo "Multiple repositories found. Please specify which repository."
+		echo ""
+		echo "${repo_match}" | tr ':' '\n'
+		echo ""
+		read -p "Please entry repository path: " repo_path
+
+		if [[ ${repo_path:0:1} != / ]]; then
+			find_repo $repo_path
+			if [[ $num_paths > 1 ]]; then
+				echo "Still found multiple repositories matching [$repo_path]."
+				echo "Please specify a full path name if multiple duplicate repos exist"
+			elif [[ $num_paths == 1 ]]; then
+				repo_path=$repo_match
+				break
+			fi
+		fi
+	done
 
 elif [ $num_paths -eq 0 ]; then
 
@@ -249,6 +267,11 @@ else
 fi
 
 git_root=${git_path}/${git_repo}
+
+if [ ! -d $git_root ]; then
+	echo "GIT repository [$git_root] not found..."
+	exit 1
+fi
 
 env_args="GIT_ROOT=${git_root} GIT_PATH=`dirname ${git_root}` GIT_REPO=`basename ${git_root}` GIT_DIR=${git_root}/.git GIT_WORK_TREE=${git_root} ${SHELL}"
 
