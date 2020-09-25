@@ -119,11 +119,54 @@ There is a script at `sbin/git-repo` which can be used to setup a new sub-shell 
 # will be searched for any repo name specified on the command line
 export WORKSPACES=${HOME}/projects:/public/${USER}/projects
 
+# WORKSPACE_SEARCH_DEPTH - This variable defines the search depth in the available WORKSPACES paths in which
+# to look for valid git repositories. This means the script will search for valid git repositories a maximum
+# of WORKSPACE_SEARCH_DEPTH directories deep from each workspace. If not set, this will default to a search
+# depth of 5. The larger the value, the more time it will take to actually search for repositories.
+# Example:
+export WORKSPACE_SEARCH_DEPTH=5
+
 # DEFAULT_GIT_SERVER - This is used to set a URL to a git server from which to clone
 export DEFAULT_GIT_SERVER=git@github.com
 
 # DEFAULT_GIT_REPO - This is used to specify a default repository to clone from the server
 export DEFAULT_GIT_REPO=raven42/dotfiles.git
+```
+
+##### Example Usage:
+```
+dev-server ~$ echo $WORKSPACES
+/home/raven42/.vim/pack/plugins/start:/home/raven42/projects
+dev-server ~$ echo $WORKSPACE_SEARCH_DEPTH
+1
+dev-server ~$ git-repo
+Multiple repositories found. Please specify which repository.
+
+/home/raven42/.vim/pack/plugins/start/nerdtree
+/home/raven42/.vim/pack/plugins/start/tagbar
+/home/raven42/.vim/pack/plugins/start/devpanel-vim
+/home/raven42/projects/dotfiles
+/home/raven42/projects/vim-src
+/home/raven42/projects/ctags
+
+Please entry repository path: dotfiles
+Setting up GIT environment variables for dotfiles...
+  RC SPEC:/home/raven42/projects/dotfiles/.rc/rc
+  TAGDIR:/home/raven42/projects/dotfiles/.rc/tags
+dotfiles (master) dotfiles$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+dotfiles (master) dotfiles$ exit
+exit
+dev-server ~$ git-repo dotfiles
+Setting up GIT environment variables for dotfiles...
+  RC SPEC:/home/raven42/projects/dotfiles/.rc/rc
+  TAGDIR:/home/raven42/projects/dotfiles/.rc/tags
+dotfiles (master) dotfiles$ exit
+exit
+dev-server ~$
 ```
 
 ### Build Target

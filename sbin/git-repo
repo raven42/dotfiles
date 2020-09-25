@@ -18,6 +18,13 @@
 # Example:
 #		export WORKSPACES=${HOME}:${HOME}/projects:/public/${USER}/projects
 #
+# WORKSPACE_SEARCH_DEPTH - This variable defines the search depth in the available WORKSPACES paths in which
+# to look for valid git repositories. This means the script will search for valid git repositories a maximum
+# of WORKSPACE_SEARCH_DEPTH directories deep from each workspace. If not set, this will default to a search
+# depth of 5. The larger the value, the more time it will take to actually search for repositories.
+# Example:
+#		export WORKSPACE_SEARCH_DEPTH=5
+#
 # DEFAULT_GIT_SERVER - This is used when cloning a new repository. If not set, the script will query
 # for the git server to connect to.
 # Example:
@@ -42,6 +49,7 @@ usage="Usage: $prog [<options>] [<repo>]
    -remote-server <url>           - Specify the remote GIT server (default:$remote_server) when cloning
    -remote-repo <repo>            - Specify the remote GIT repo (default:$remote_repo) when cloning
    -workspaces <delimited-paths>  - Specify the workspaces to search for repositories in.
+   -depth <depth>                 - Specify the depth to search in workspaces for. Larger value yeilds longer search times.
 "
 
 # Initialize some defaults
@@ -49,9 +57,15 @@ debug=0
 repo_match=""
 num_paths=0
 
+if [ ${WORKSPACE_SEARCH_DEPTH} ]; then
+	search_depth=${WORKSPACE_SEARCH_DEPTH}
+else
+	search_depth=5
+fi
+
 # Setup our command line options
 sopts="hd"
-lopts="help,debug,remote-server:,remote-repo:,workspaces:"
+lopts="help,debug,remote-server:,remote-repo:,workspaces:,depth:"
 
 optarg=0
 opts=`getopt -n $prog -o $sopts -ual $lopts -- $@`
@@ -84,6 +98,11 @@ while [ $1 != -- ]; do
 		shift
 		;;
 
+	--depth)
+		search_depth=$2
+		shift
+		;;
+
 	-d | --debug)
 		debug=1
 		;;
@@ -100,10 +119,10 @@ done
 
 # Read in optional arguments
 if [ $# -eq 2 ]; then
-	git_repo=$2
+	repo_path=$2
 fi
 
-[ $debug -eq 1 ] && echo "Using git_repo search [${git_repo}]..."
+[ $debug -eq 1 ] && echo "Using git_repo search [${repo_path}]..."
 [ $debug -eq 1 ] && echo "Using workspaces [${workspaces}]..."
 
 find_repo()
@@ -132,152 +151,137 @@ find_repo()
 	fi
 
 	# If full repo path now found, search for this path in the available workspaces
-	for path in `echo $workspaces | tr ':' '\n'`; do
-		[ $debug -eq 1 ] && echo "Scanning for [${search_param}] in workspace [${path}]..."
-		if [[ $search_param == "" ]]; then
-			matches=$(find $path -maxdepth 5 -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null)
-		else
-			matches=$(find $path -maxdepth 5 -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | grep "/${search_param}$")
-		fi
-		for match in ${matches}; do
-			[ $debug -eq 1 ] && echo " Found path ${match}..."
-			[ $num_paths -gt 0 ] && repo_match+=":"
-			let num_paths+=1
-			repo_match+="${match}"
-		done
+	path=$(echo $workspaces | tr ':' '\n')
+	[ $debug -eq 1 ] && echo "Scanning for [${search_param}] in workspace [${path}] with depth [${search_depth}]..."
+	if [[ $search_param == "" ]]; then
+		matches=$(find $path -maxdepth $search_depth -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null)
+	else
+		matches=$(find $path -maxdepth $search_depth -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | grep "/${search_param}$")
+	fi
+	for match in ${matches}; do
+		[ $debug -eq 1 ] && echo " Found path ${match}..."
+		[ $num_paths -gt 0 ] && repo_match+=":"
+		let num_paths+=1
+		repo_match+="${match}"
 	done
 
 	[ $debug -eq 1 ] && echo " repo_match[$num_paths]: [$repo_match]"
 }
 
-find_repo $git_repo
 
-[ $debug -eq 1 ] && echo "Found ${num_paths} matching repo locations"
+while true; do
 
-if [ $num_paths -eq 1 ]; then
+	find_repo $repo_path
 
-	repo_path=$repo_match
+	if [ $num_paths -eq 1 ]; then
 
-elif [ $num_paths -gt 1 ]; then
+		repo_path=$repo_match
+		break
 
-	while true; do
+	elif [ $num_paths -gt 1 ]; then
+
 		echo "Multiple repositories found. Please specify which repository."
 		echo ""
 		echo "${repo_match}" | tr ':' '\n'
 		echo ""
 		read -p "Please entry repository path: " repo_path
 
-		if [[ ${repo_path:0:1} != / ]]; then
-			find_repo $repo_path
-			if [[ $num_paths > 1 ]]; then
-				echo "Still found multiple repositories matching [$repo_path]."
-				echo "Please specify a full path name if multiple duplicate repos exist"
-			elif [[ $num_paths == 1 ]]; then
-				repo_path=$repo_match
-				break
-			fi
-		fi
-	done
+	elif [ $num_paths -eq 0 ]; then
 
-elif [ $num_paths -eq 0 ]; then
-
-	echo ""
-	echo "Repository [$git_repo] not found"
-	echo ""
-	echo "Available repositories:"
-	find_repo
-	echo "${repo_match}" | tr ':' '\n'
-	echo ""
-	while true; do
-		read -p "Would you like to create a new repository? [y/n]: " yn
-		case $yn in
-		[Yy]*) break;;
-		[Nn]*) exit 1;;
-		* ) echo "Please answer yes or no.";;
-		esac
-	done
-
-	if [ $num_paths -gt 1 ]; then
 		echo ""
-		echo "Available paths:"
+		echo "Repository [$repo_path] not found"
+		echo ""
+		while true; do
+			read -p "Would you like to create a new repository? [y/n]: " yn
+			case $yn in
+				[Yy]*)
+					break
+					;;
+
+				[Nn]*) 
+					echo "Available repositories:"
+					find_repo
+					echo "${repo_match}" | tr ':' '\n'
+					echo ""
+					exit 1
+					;;
+
+				* )
+					echo "Please answer yes or no."
+					;;
+			esac
+		done
+
+		echo ""
+		echo "Available workspaces:"
 		echo ""
 		echo "${workspaces}" | tr ':' '\n'
 		echo ""
-		read -p "Which path do you want to store the new repo: " git_path
+		read -p "Which path do you want to store the new repo: " workspace_path
 		echo ""
+
+		if [ ! -d ${workspace_path} ]; then
+			echo "GIT path:${workspace_path} does not exist. Unable to proceed."
+			exit 1
+		elif [ -d ${workspace_path}/${repo_path} ]; then
+			echo "GIT repo directory [${workspace_path}/${repo_path}] already exists, but does not have a valid git repository."
+			echo "Directory must not exist to create a new repository. Please specify a different path."
+			exit 1
+		fi
+
+		if [ "${remote_server}" == "" ]; then
+			read -p 'Please specify remote git server: ' remote_server
+		fi
+
+		if [ "${remote_repo}" == "" ]; then
+			read -p 'Please specify remote git repository: ' remote_repo
+		fi
+
+		cd ${workspace_path}
+		[ $debug -eq 1 ] && echo "Retrieving remote branches from [${remote_server}:${remote_repo}]..."
+		branches=$(git ls-remote --head ${remote_server}:${remote_repo} | sed -e 's|.*refs/heads/||' | grep -v priv)
+		if [ $? -ne 0 ]; then
+			echo "Error retrieving branch list from remote [${remote_server}:${remote_repo}]"
+			echo "Please ensure you have the proper DEFAULT_GIT_SERVER and DEFAULT_GIT_REPO environment variables defined."
+			echo ""
+			exit 1
+		fi
+		echo ""
+		echo "Available branches:"
+		echo ""
+		echo "${branches}"
+		echo ""
+		read -p "Which branch do you want to clone: " branch
+		echo ""
+		git clone -b ${branch} ${remote_server}:${remote_repo} ${repo_path}
+		if [ $? -ne 0 ]; then
+			echo "Clone failed. Unable to create repository."
+			exit 1
+		fi
+		echo ""
+		repo_path=${workspace_path}/${repo_path}
+
 	else
-		git_path=$path
-	fi
 
-	if [ ! -d ${git_path} ]; then
-		echo "GIT path:${git_path} does not exist. Unable to proceed."
+		echo "Fatal error: Unknown error occured"
 		exit 1
-	elif [ -d ${git_path}/${git_repo} ]; then
-		echo "GIT repo directory [${git_path}/${git_repo}] already exists, but does not have a valid git repository."
-		echo "Directory must not exist to create a new repository. Please specify a different path."
-		exit 1
+
 	fi
 
-	if [ "${remote_server}" == "" ]; then
-		read -p 'Please specify remote git server: ' remote_server
-	fi
-
-	if [ "${remote_repo}" == "" ]; then
-		read -p 'Please specify remote git repository: ' remote_repo
-	fi
-
-	cd ${git_path}
-	[ $debug -eq 1 ] && echo "Retrieving remote branches from [${remote_server}:${remote_repo}]..."
-	branches=$(git ls-remote --head ${remote_server}:${remote_repo} | sed -e 's|.*refs/heads/||' | grep -v priv)
-	if [ $? -ne 0 ]; then
-		echo "Error retrieving branch list from remote [${remote_server}:${remote_repo}]"
-		echo "Please ensure you have the proper DEFAULT_GIT_SERVER and DEFAULT_GIT_REPO environment variables defined."
-		echo ""
-		exit 1
-	fi
-	echo ""
-	echo "Available branches:"
-	echo ""
-	echo "${branches}"
-	echo ""
-	read -p "Which branch do you want to clone: " branch
-	echo ""
-	git clone -b ${branch} ${remote_server}:${remote_repo} ${git_repo}
-	if [ $? -ne 0 ]; then
-		echo "Clone failed. Unable to create repository."
-		exit 1
-	fi
-	echo ""
-	repo_path=${git_path}/${git_repo}
-
-else
-
-	echo "Fatal error: Unknown error occured"
-	exit 1
-
-fi
+done
 
 [ $debug -eq 1 ] && echo "git_repo specified [${repo_path}]..."
 
-if [[ $repo_path =~ "/" ]]; then
-	git_repo=`basename $repo_path`
-	git_path=`dirname $repo_path`
-else
-	git_repo=$repo_path
-fi
-
-git_root=${git_path}/${git_repo}
-
-if [ ! -d $git_root ]; then
-	echo "GIT repository [$git_root] not found..."
+if [ ! -d $repo_path ]; then
+	echo "GIT repository [$repo_path] not found..."
 	exit 1
 fi
 
-env_args="GIT_ROOT=${git_root} GIT_PATH=`dirname ${git_root}` GIT_REPO=`basename ${git_root}` GIT_DIR=${git_root}/.git GIT_WORK_TREE=${git_root} ${SHELL}"
+env_args="GIT_ROOT=${repo_path} GIT_PATH=$(dirname ${repo_path}) GIT_REPO=$(basename ${repo_path}) GIT_DIR=${repo_path}/.git GIT_WORK_TREE=${repo_path} ${SHELL}"
 
 [ $debug -eq 1 ] && echo "env_args [$env_args]"
 
-cd $git_root
+cd $repo_path
 env $env_args ; exit
 
 exit 0
