@@ -1,11 +1,9 @@
-"----- David Hegland's .vimrc file
-"----- designed for vim 8.2
-"----- 2020
+" --- David Hegland's .vimrc file
+" --- designed for vim 8.2
+" --- 2020
 
-"---- Default /etc/vimrc contents
-if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
-	set fileencodings=utf-8
-endif
+" --- Initialization {{{1
+" --- Envinroment varaiables information {{{2
 
 " The following envinronment variables are used in this resource script
 " $CSCOPE_DB		: looks for a cscope database
@@ -16,6 +14,14 @@ endif
 " $USER				: Used to filter file names for title formatting
 " $SRC_PATH_PREFIX	: Used to filter file names for title formatting
 
+" --- End Envonrment Variables
+
+" --- Default /etc/vimrc contents {{{2
+if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+	set fileencodings=utf-8
+endif
+
+" --- Encoding Setup {{{2
 if has("multi_byte")
 	if &termencoding == ""
 		let &termencoding = &encoding
@@ -26,7 +32,7 @@ if has("multi_byte")
 	set fileencodings=ucs-bom,utf-8,latin1
 endif
 
-" Only do this part when compiled with support for autocommands
+" --- Setup textwidth for text files {{{2
 if has("autocmd")
 	augroup redhat
 		" In text files, always limit the width of text to 78 characters
@@ -39,6 +45,7 @@ if has("autocmd")
 	augroup END
 endif
 
+" --- Setup cscope {{{2
 if has("cscope") && filereadable("/usr/bin/cscope")
 	set csprg=/usr/bin/cscope
 	set csto=0
@@ -54,20 +61,14 @@ if has("cscope") && filereadable("/usr/bin/cscope")
 	set csverb
 endif
 
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
-	syntax on
-	set hlsearch
-endif
-
+" --- Setup GUI parameters {{{2
 if has("gui_running")
 	set guifont=Monospace\ 8
 	set mouse=a
 	set ttymouse=sgr
 endif
 
-"----- set up the stuff for color highlighing in an xterm
+" --- setup xterm parameters {{{2
 if &term =~ "xterm"
 	if has("terminfo")
 		set t_Co=16
@@ -92,12 +93,14 @@ if &term =~ "xterm"
 	set t_TE=
 endif
 
-" ---- Syntax Highlighting Defintions
-" ---- For more colors, see 256 color pallet in ~/.vim/sample-256.colors
+" --- Syntax Highlighting Defintions {{{2
+
+" --- For more colors, see 256 color pallet in ~/.vim/sample-256.colors
 
 "colorscheme desert
 syntax on					" ---- turn on syntax highlighting
 set background=dark
+set hlsearch
 
 highlight Comment		ctermfg=Red guifg=Red
 highlight Constant		ctermfg=Gray guifg=Gray
@@ -152,6 +155,8 @@ highlight Whitespace	ctermbg=DarkRed guibg=DarkRed
 highlight WildMenu		ctermfg=Black ctermbg=Yellow guifg=Black guibg=Yellow
 highlight lCursor		guifg=bg guibg=fg
 
+"
+" --- Setup VIM defaults {{{2
 " --- GNU Coding Standards
 " setlocal cindent
 " setlocal cinoptions=>4,n-2,{2,^-2,:2,=2,g0,h2,p5,t0,+2,(0,u0,w1,m1
@@ -213,21 +218,21 @@ autocmd FileType c,cpp
 			\	cindent
 			\	comments=sr:/*,mb:*,ex:*/,://
 
-"----- We need real tabs for Makefiles.
+" --- We need real tabs for Makefiles.
 autocmd FileType make set noexpandtab
 autocmd FileType make set nosmarttab
 
-"----- have java highlight our functions
+" --- have java highlight our functions
 "let java_highlight_functions=1
 
-"----- have php3 highlight SQL, and keep in better sync.
+" --- have php3 highlight SQL, and keep in better sync.
 let php3_sql_query = 1
 let php3_minlines = 3000
 let php3_baselib = 1
 
 nnoremap ; :
 
-" ---- :help cinoptions-values
+" --- :help cinoptions-values
 " NOTE: additional formatting options specified in .vim/after/ftplugin.vim
 autocmd FileType c,cpp setlocal cinoptions=>4,t0,#0,:0,l1,p2,+2s,c0,(0,m1,)50,J1,#N
 "                                          |  |  |  |  |  |  |   |  |  |  |   |  + Recognize shell/perl script comment style
@@ -251,11 +256,14 @@ autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
 autocmd BufWinEnter *.py set fileformat=unix
 autocmd BufWinLeave * call clearmatches()
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" PLUGIN Configuration
 
+" }}}1
+
+" --- PLUGIN Configurations {{{1
+" ---- Only load plugins if VIM version 8 or higher {{{2
 if version >= 800
 
+    " ---- Character Map {{{2
 	" Here are a couple unicode characters used for any formatted output
 	" E0A0  Branch						25E2 ◢
 	" E0A1  Line number				25E3 ◣
@@ -373,6 +381,7 @@ if version >= 800
 				\ 16: '16.', 17: '17.', 18: '18.', 19: '19.', 20: '20.',
 				\ }
 
+	" ---- SetUnicode() {{{2
 	if g:use_unicode
 		let g:charmap = g:charmap_unicode
 		let g:nummap = g:nummap_unicode
@@ -381,7 +390,7 @@ if version >= 800
 		let g:nummap = g:nummap_normal
 	endif
 
-	"----- Lightline Plugin Configuration
+	" ---- Lightline Plugin Configuration {{{2
 	let g:lightline = {
 				\ 'active': {
 				\	'left': [['mode', 'paste', 'modified'], ['readonly', 'filename'], ['functionName']],
@@ -444,16 +453,15 @@ if version >= 800
 				\ 't': 'T',
 				\ }
 
+	" ---- Lightline#Bufferline Configuration {{{2
 	let g:lightline#bufferline#composed_number_map = g:nummap
-
-	" --- Lightline#Bufferline Configuration
 	let g:lightline#bufferline#show_number = 2
 	let g:lightline#bufferline#unicode_symbols = 1
 	let g:lightline#bufferline#filename_modifier = ':t'
 	let g:lightline#bufferline#unnamed = 'No Name'
 	let g:lightline#bufferline#number_separator = ' '
 
-	" --- NERDTree Configuration
+	" ---- NERDTree Configuration {{{2
 	let NERDTreeMouseMode = 2			" --- Open/Close dirs on single mouse click
 	let NERDTreeNaturalSort = 1			" --- Sort order of files more natural
 	let NERDTreeShowHidden = 1			" --- Show hidden files/folders by default
@@ -461,6 +469,8 @@ if version >= 800
 				\ '\.o$', '\.d$', '\~$', '\.pyc$',
 				\ '\.swp$', '\.swo$', '\.swn$',
 				\ '\.swm$', '\.swl$', '\.swk$', ]
+	let g:NERDTreeDirArrowExpandable = g:charmap['arrow-right']
+	let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-down']
 	if $GIT_ROOT !=# ''
 		let BookmarksFile = $GIT_ROOT . '/.rc/NERDTreeBookmarks'
 		if filereadable(BookmarksFile)
@@ -471,27 +481,24 @@ if version >= 800
 		endif
 	endif
 
-	" --- NERDTree Git Configuration
+	" ---- NERDTree Git Configuration {{{2
 	let g:NERDTreeGitStatusShowClean = 0
 	let g:NERDTreeGitStatusConcealBrackets = 1
 	let g:NERDTreeStatusUpdateOnCursorHold = 0
 	let g:NERDTreeGitStatusIndicatorMapCustom = {
 				\ 'Modified'  : g:charmap['modified'],
-                \ 'Staged'    : g:charmap['staged'],
-                \ 'Untracked' : g:charmap['untracked'],
-                \ 'Renamed'   : g:charmap['renamed'],
-                \ 'Unmerged'  : g:charmap['unmerged'],
-                \ 'Deleted'   : g:charmap['deleted'],
-                \ 'Dirty'     : g:charmap['dirty'],
-                \ 'Ignored'   : g:charmap['ignored'],
-                \ 'Clean'     : g:charmap['clean'],
-                \ 'Unknown'   : g:charmap['unknown']
-                \ }
+				\ 'Staged'    : g:charmap['staged'],
+				\ 'Untracked' : g:charmap['untracked'],
+				\ 'Renamed'   : g:charmap['renamed'],
+				\ 'Unmerged'  : g:charmap['unmerged'],
+				\ 'Deleted'   : g:charmap['deleted'],
+				\ 'Dirty'     : g:charmap['dirty'],
+				\ 'Ignored'   : g:charmap['ignored'],
+				\ 'Clean'     : g:charmap['clean'],
+				\ 'Unknown'   : g:charmap['unknown']
+				\ }
 
-	let g:NERDTreeDirArrowExpandable = g:charmap['arrow-right']
-	let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-down']
-
-	" --- NERDCommenter Configuration
+	" ---- NERDCommenter Configuration {{{2
 	let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
 	let g:NERDSpaceDelims = 1				" --- add space after delimiter
 	let g:NERDCompactSexyComs = 1			" --- use compact syntax for multi-line
@@ -503,7 +510,7 @@ if version >= 800
 	let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
 	let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
 
-	" --- GitGutter Configuration
+	" ---- GitGutter Configuration {{{2
 	let g:gitgutter_highlight_lines = 1
 	let g:gitgutter_preview_win_location = 'rightbelow'
 	let g:gitgutter_sign_added = g:charmap['line-added']
@@ -513,60 +520,59 @@ if version >= 800
 	let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
 	let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
 
-	" --- Tagbar Configuration
+	" ---- Tagbar Configuration {{{2
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 	let g:tagbar_file_size_limit = 1000000
 	" Override 'c' type that doesn't include unions to avoid issues with
 	" unions inside of functions messing up with display and scoping issues.
 	let g:tagbar_type_c = {
-		\ 'ctagstype'	: 'c',
-		\ 'kinds'		: [
-			\ 'h:header files:1:0',
-			\ 'd:macros:1:0',
-			\ 'p:prototypes:1:0',
-			\ 'g:enums:0:1',
-			\ 'e:enumerators:0:0',
-			\ 't:typedefs:0:0',
-			\ 's:structs:0:1',
-			\ 'm:members:0:0',
-			\ 'v:variables:0:0',
-			\ 'f:functions:0:1'
-		\ ],
-		\ 'sro'			: '::',
-		\ 'kind2scope'	: {
-			\ 'g' : 'enum',
-			\ 's' : 'struct',
-		\ },
-		\ 'scope2kind'	: {
-			\ 'enum'   : 'g',
-			\ 'struct' : 's',
-		\ }
-	\ }
+				\ 'ctagstype'	: 'c',
+				\ 'kinds'		: [
+				\ 'h:header files:1:0',
+				\ 'd:macros:1:0',
+				\ 'p:prototypes:1:0',
+				\ 'g:enums:0:1',
+				\ 'e:enumerators:0:0',
+				\ 't:typedefs:0:0',
+				\ 's:structs:0:1',
+				\ 'm:members:0:0',
+				\ 'v:variables:0:0',
+				\ 'f:functions:0:1'
+				\ ],
+				\ 'sro'			: '::',
+				\ 'kind2scope'	: {
+				\ 'g' : 'enum',
+				\ 's' : 'struct',
+				\ },
+				\ 'scope2kind'	: {
+				\ 'enum'   : 'g',
+				\ 'struct' : 's',
+				\ }
+				\ }
 
-
-	" --- Syntastic Configuration
+	" ---- Syntastic Configuration {{{2
 	let g:syntastic_always_populate_loc_list = 1
 	let g:syntastic_auto_loc_list = 1
 	let g:syntastic_check_on_open = 1
 	let g:syntastic_check_on_wq = 0
 
-	" --- AnyFold Configuration
+	" ---- AnyFold Configuration {{{2
 	let g:anyfold_fold_comments=1
 	let g:anyfold_fold_display=1
 
-	" --- Flake8 Configuration
+	" ---- Flake8 Configuration {{{2
 	let g:flake8_show_quickfix = 1
 	let g:flake8_show_in_gutter = 1
 	let g:flake8_show_in_file = 0
 	let g:flake8_quickfix_height = 10
 	let g:flake8_always_visible = 1
 
-	" --- Auto-pairs Configuration
+	" ---- Auto-pairs Configuration {{{2
 	let g:AutoPairsShortcutToggle = ''
 	let g:AutoPairsShortcutFastWrap = '<Leader>)'
 
-	" --- UndoTree Configuration
+	" ---- UndoTree Configuration {{{2
 	let g:undotree_WindowLayout = 3
 	let g:undotree_SplitWidth = 30
 	let g:undotree_DiffpanelHeight = 20
@@ -574,14 +580,14 @@ if version >= 800
 	let g:undotree_HighlightChangedWithSign = 0
 	let g:undotree_DiffAutoOpen = 0
 
-	" --- DevPanel Configuration
+	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
 	let g:devpanel_panel_max = 45
 
-	" --- Generic definitions used by functions for plugins
+	" ---- Generic definitions used by functions for plugins {{{2
 	let g:ignored_windows = '\v(nerdtree|tagbar|undotree)'
-	let g:branch_icon = g:charmap['branch']
 
+    " ---- Load Plugins {{{2
 	packloadall
 
 	" --- https://github.com/majutsushi/tagbar
@@ -613,31 +619,37 @@ if version >= 800
 	" --- https://github.com/vim-scripts/searchfold.vim.git
 	let g:have_searchfold = &runtimepath =~# 'searchfold' ? 1 : 0
 
+    " ---- LightlineFileEncoding() {{{2
 	function! LightlineFileEncoding()
 		return &filetype =~# g:ignored_windows ? '' :
 					\ &fenc !=# '' ? &fenc : &enc
 	endfunction
 
+    " ---- LightlineFileFormat() {{{2
 	function! LightlineFileFormat()
 		return winwidth(0) < 90 ? '' :
 					\ &filetype =~# g:ignored_windows ? '' :
 					\ &fileformat
 	endfunction
 
+    " ---- LightlineFilename() {{{2
 	function! LightlineFilename()
 		return &filetype =~# g:ignored_windows ? '' :
 					\ expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
 	endfunction
 
+    " ---- LightlineFileType() {{{2
 	function! LightlineFileType()
 		return &filetype !~# g:ignored_windows ? &filetype : ''
 	endfunction
 
+    " ---- LightlineGitgutterHunks() {{{2
 	function! LightlineGitgutterHunks()
 		let [a, m, r] = GitGutterGetHunkSummary()
 		return printf('+%d ~%d -%d', a, m, r)
 	endfunction
 
+    " ---- LightlineMode() {{{2
 	function! LightlineMode()
 		return &filetype ==# 'nerdtree' ? 'File Explorer' :
 					\ &filetype ==# 'tagbar' ? 'Tags' :
@@ -648,26 +660,30 @@ if version >= 800
 					\ lightline#mode()
 	endfunction
 
+    " ---- LightlineModified() {{{2
 	function! LightlineModified()
 		return !&modified ? '' :
 					\ &filetype =~# g:ignored_windows ? '' :
 					\ g:charmap['write']
 	endfunction
 
+    " ---- LightlineReadonly() {{{2
 	function! LightlineReadonly()
 		return !&readonly ? '' :
 					\ &filetype =~# g:ignored_windows ? '' :
 					\ g:charmap['lock']
 	endfunction
 
+    " ---- LightlineBranchInfo() {{{2
 	function! LightlineBranchInfo()
 		if !g:have_fugitive || &filetype =~# g:ignored_windows
 			return ''
 		endif
 		let branch = fugitive#head()
-		return branch !=# '' ? ' '. g:branch_icon . branch : ''
+		return branch !=# '' ? ' '. g:charmap['branch'] . branch : ''
 	endfunction
 
+    " ---- LightlineFunctionName() {{{2
 	function! LightlineFunctionName()
 		if !g:have_tagbar || &filetype =~# g:ignored_windows
 			return ''
@@ -675,10 +691,12 @@ if version >= 800
 		return tagbar#currenttag("%s", "", 'f')
 	endfunction
 
+    " ---- LightlineCloseBuffer() {{{2
 	function! LightlineCloseBuffer()
 		echom 'Closing buffer ' . % . '...'
 	endfunction
 
+    " ---- LastOpenFileNmae() {{{2
 	function! LastOpenFileName() abort
 		if !exists('t:lastfilename')
 			let t:lastfilename = fnamemodify(bufname('%'), ':p')
@@ -693,13 +711,14 @@ if version >= 800
 		return t:lastfilename
 	endfunction
 
+    " ---- UpdateTitle() {{{2
 	function! UpdateTitle()
 		let &titlestring = 'VIM - ' . expand("%:t")
 		let branch_info = ''
 		if g:have_fugitive
 			let branch = fugitive#head()
 			if branch !=# ''
-				let branch_info = ' '. g:branch_icon . ' (' . branch . ') '
+				let branch_info = ' '. g:charmap['branch'] . ' (' . branch . ') '
 			endif
 		endif
 		let file_info = LastOpenFileName()
@@ -709,15 +728,18 @@ if version >= 800
 		let &titlestring = 'VIM ' . branch_info . file_info
 	endfunction
 
+    " ---- FilterBuffer() {{{2
 	function! FilterBuffer(i)
 		return bufexists(a:i) && buflisted(a:i) && !(getbufvar(a:i, '&filetype') =~# g:ignored_windows)
 	endfunction
 
+    " ---- FilteredBuffers() {{{2
 	function! FilteredBuffers()
 		let l:buffers = filter(range(1, bufnr('$')), 'FilterBuffer(v:val)')
 		return l:buffers
 	endfunction
 
+    " ---- BufActivateNth() {{{2
 	function! BufActivateNth(bufnr) abort
 		if winnr('#') > 1
 			" Find the main window... don't switch to another buffer while
@@ -732,6 +754,7 @@ if version >= 800
 		endif
 	endfunction
 
+    " ---- BufCloseNth() {{{2
 	function! BufCloseNth(bufnr) abort
 		let l:buffers = FilteredBuffers()
 		if a:bufnr < len(l:buffers)
@@ -739,6 +762,7 @@ if version >= 800
 		endif
 	endfunction
 
+    " ---- BufClose() {{{2
 	function! BufClose() abort
 		" If only one buffer open and listed (ignoring hidden buffers) don't close
 		let l:buffers = FilteredBuffers()
@@ -751,6 +775,7 @@ if version >= 800
 		execute 'bdelete ' . bufnr
 	endfunction
 
+    " ---- ToggleGitHunkPreview() {{{2
 	function! ToggleGitHunkPreview() abort
 		for winnr in range(1, winnr('#'))
 			if getwinvar(winnr, '&filetype') ==# 'diff'
@@ -762,6 +787,7 @@ if version >= 800
 		GitGutterPreviewHunk
 	endfunction
 
+    " ---- ToggleGitQuickFix() {{{2
 	function! ToggleGitQuickFix() abort
 		if exists('g:quickfix_window')
 			unlet g:quickfix_window
@@ -773,6 +799,7 @@ if version >= 800
 		let g:quickfix_window = 1
 	endfunction
 
+    " ---- CheckForDotFiles() {{{2
 	function! CheckForDotFiles() abort
 		if expand('%t') ==# ''
 			return
@@ -792,7 +819,7 @@ if version >= 800
 		endif
 	endfunction
 
-	" --- Key Mappings for all plugins
+	" ---- Key Mappings for all plugins {{{2
 	nmap <Leader>cc <plug>NERDCommenterToggle
 	vmap <Leader>cc <plug>NERDCommenterToggle
 	nmap <Leader>cm <plug>NERDCommenterMinimal
@@ -828,7 +855,7 @@ if version >= 800
 	nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
 	nnoremap <silent> gq :call ToggleGitQuickFix()<CR>
 
-	" --- Autocmds for all plugins
+	" ---- Autocmds for all plugins {{{2
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
 	autocmd BufEnter * call UpdateTitle()
 	autocmd BufWritePost *.py call flake8#Flake8()
@@ -862,12 +889,10 @@ if version >= 800
 
 endif
 
-" End PLUGIN Configurations
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }}}1
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Folding utilities
-
+" --- Folding utilities {{{1
+" --- LogLevelFolding Setup {{{2
 let g:LogLevelFoldMap = [
 			\ [ '###',			0 ],
 			\ [ '\[EMERG\]',	1 ],
@@ -881,6 +906,7 @@ let g:LogLevelFoldMap = [
 			\ [ '\[VERBOSE\]',	9 ],
 			\ ]
 
+" --- FoldLevelLog() {{{2
 function! FoldLevelLog(lnum)
 	let line = getline(a:lnum)
 	for [level, foldlevel] in g:LogLevelFoldMap
@@ -891,6 +917,7 @@ function! FoldLevelLog(lnum)
 	return len(g:LogLevelFoldMap)
 endfunction
 
+" --- FoldLevelDiff() {{{2
 function! FoldLevelDiff(lnum)
 	let line = getline(a:lnum)
 	if line =~ '^\(diff\) '
@@ -902,7 +929,8 @@ function! FoldLevelDiff(lnum)
 	endif
 endfunction
 
-function! FoldTextFmt(fmt) " {{{2
+" --- FoldTextFmt() {{{2
+function! FoldTextFmt(fmt)
 	if a:fmt ==# 'tag' && g:have_tagbar						" TAG fold text
 		let text = tagbar#GetTagNearLine(v:foldend, '%s', 'f')
 	elseif a:fmt ==# 'null'									" NULL fold text
@@ -947,6 +975,7 @@ function! FoldTextFmt(fmt) " {{{2
 	return text
 endfunction
 
+" --- ToggleFold() {{{2
 function! ToggleFold(fold_method)
 	if exists('b:toggle_fold') && b:toggle_fold ==# a:fold_method
 		set foldlevel=99
@@ -1024,6 +1053,7 @@ function! ToggleFold(fold_method)
 	let b:toggle_fold = a:fold_method
 endfunction
 
+" --- Folding keymaps {{{2
 nnoremap <silent> <Leader>zw :call ToggleFold('search-word')<CR>
 nnoremap <silent> <Leader>zs :call ToggleFold('search')<CR>
 nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
@@ -1049,7 +1079,10 @@ nmap z8 :set foldlevel=8 \| echo 'set foldlevel=' . &foldlevel <CR>
 nmap z9 :set foldlevel=9 \| echo 'set foldlevel=' . &foldlevel <CR>
 
 call ToggleFold('manual')		" Default to manual folding
+" }}}1
 
+" --- Utility Functions {{{1
+" --- ToggleHex Setup {{{2
 let w:hexmode = 0
 function! ToggleHex()
 	if (w:hexmode == 0)
@@ -1063,6 +1096,7 @@ endfunction
 "<Ctrl-H> - convert file to hex
 map <silent>  :call ToggleHex()<CR>
 
+" --- GenerateUnicode() {{{2
 function! GenerateUnicode(first, last)
 	let i = a:first
 	while i <= a:last
@@ -1079,3 +1113,8 @@ function! GenerateUnicode(first, last)
 		$put =c
 	endwhile
 endfunction
+
+" }}}1
+
+" --- Modeline {{{1
+" vim: foldenable foldmethod=marker foldlevel=1
