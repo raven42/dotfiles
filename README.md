@@ -18,6 +18,8 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
 
 :information\_source: **Personal Copy:** If you wish to modify any of the base scripts, it is recommended to fork your own copy of this repo so you can make your own changes. There are plenty of options to override the default behavior, but if further customization is needed, then forking your own repo would be best.
 
+:warning: **Warning:** This process may overwrite existing scripts and resource files such as `~/.bashrc` and `~/.vimrc` as well as others if they are the same as what you already have. It is a good idea to backup any existing scripts you have before doing this process.
+
 To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest:
 ```
 git clone --bare <dotfiles-repo.git> $HOME/.cfg
@@ -43,11 +45,9 @@ To update submodules if they are updated:
 githome submodule update
 ```
 
-> :warning: **Note:** You may need to remove any existing conflicting files (such as .bashrc) if there is any default file on the system. Either remove or backup these files.
->
-> :information\_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
->
-> :information\_source: **SSH Keys:** If you wish to configure SSH keys to use with github as a different account, see the guide at [doc/ssh\_config.md](doc/ssh\_config.md).
+:information\_source: **Further Reading:** For more info on bare repository setup, see the further reading section below.
+
+:information\_source: **SSH Keys:** If you wish to configure SSH keys to use with github as a different account, see the guide at [doc/ssh\_config.md](doc/ssh\_config.md).
 
 ---
 
@@ -63,7 +63,7 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 
 ## Environment Variables
 There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
-```
+```bash
 #!/bin/bash
 
 # Default resource file
@@ -116,7 +116,7 @@ export UNIFIED_HISTORY=1
 There is a script at `sbin/git-repo` which can be used to setup a new sub-shell environment to set repository specific environment variables and other such parameters. This script will set a few env variables and enter a new sub-shell with these variables defined and change directories to the root level of that repository. This script will use the `$WORKSPACES` environment variable to scan for valid git repositories matching the given name, or if no repository is specified, it will list all respositories.
 
 The `git-repo` script can also be used to clone a new repository if needed. To use this script properly, there are a few key environment variables which should be set in `.default/common_rc`. These variables are as follows:
-```
+```bash
 # WORKSPACES - This is a `:` delimited list of paths to search for repositories in. When used with the git-repo script, these paths
 # will be searched for any repo name specified on the command line
 export WORKSPACES=${HOME}/projects:/public/${USER}/projects
@@ -182,7 +182,7 @@ another_target <git-repo> (master) proj$
 ```
 
 This file should contain as little as possible. Ideally only exporting the $BLD_TARGET environment variable.
-```
+```bash
 export BLD_TARGET=<build-target>
 ```
 
