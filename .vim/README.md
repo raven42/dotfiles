@@ -39,6 +39,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>zs   - Toggle [SEARCH] fold method to fold based on the current search pattern
 <Leader>zl   - Toggle [LOG-LEVEL] fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher
 <Leader>zg   - Activate the [GIT] method to fold all text around the current changes in the open file
+<Leader>zy   - Toggle [SYNTAX] fold method. Useful for showing only function names or other block level folds. Better folding for matching blocks than indent.
 <Leader>zi   - Toggle [INDENT] fold method. Useful for showing only function names.
 <Leader>zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
 <Leader>zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.

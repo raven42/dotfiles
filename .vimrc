@@ -115,7 +115,7 @@ highlight Directory		ctermfg=Yellow guifg=Yellow
 highlight Error			ctermfg=White guifg=White ctermbg=Red guibg=Red
 highlight ErrorMsg		ctermfg=Yellow guifg=Yellow
 highlight FoldColumn	ctermfg=Yellow ctermbg=237 guifg=Yellow guibg=DarkMagenta
-highlight Folded		ctermfg=Magenta ctermbg=Black guifg=Magenta guibg=Black
+highlight Folded		ctermfg=Magenta ctermbg=232 guifg=Magenta guibg=Black
 highlight GitGutterAdd			ctermfg=Green
 highlight GitGutterAddLine		ctermbg=235
 highlight GitGutterChange		ctermfg=Blue
@@ -261,6 +261,7 @@ autocmd BufWinLeave * call clearmatches()
 
 " --- PLUGIN Configurations {{{1
 " ---- Only load plugins if VIM version 8 or higher {{{2
+
 if version >= 800
 
     " ---- Character Map {{{2
@@ -945,6 +946,15 @@ function! FoldTextFmt(fmt)
 		let text = substitute(disp_level, '[\[\]\\]', '', 'g')
 	elseif a:fmt ==# 'search'								" SEARCH fold text
 		let text = 'search:' . @/		" Read contents of search register into text
+	elseif a:fmt ==# 'block'								" BLOCK fold text
+		let suba = getline(v:foldstart)
+		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
+		let suba = substitute(suba, foldmarkerpat, '', 'g')
+		let suba = trim(substitute(suba, '\s*$', '', ''))
+		let text = suba
+		if text =~ '{$'
+			let text .= ' ... }'
+		endif
 	else													" DEFAULT fold text
 		let suba = getline(v:foldstart)
 		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
@@ -1039,12 +1049,23 @@ function! ToggleFold(fold_method)
 		set foldmethod=indent
 		set foldtext=FoldTextFmt('null')
 		set foldlevel=0
+		echo 'Indent fold...'
 	elseif a:fold_method ==# 'diff'
 		set foldmethod=expr
 		set foldexpr=FoldLevelDiff(v:lnum)
 		set foldtext=FoldTextFmt('null')
 		set foldlevel=0
+	elseif a:fold_method ==# 'syntax'
+		set foldmethod=syntax
+		set foldtext=FoldTextFmt('block')
+		set foldlevel=0
+		echo 'Syntax fold...'
 	elseif a:fold_method ==# 'manual'
+		set foldmethod=manual
+		set foldtext=FoldTextFmt('')
+		set foldlevel=0
+		echo 'Manual fold...'
+	elseif a:fold_method ==# 'default'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
 		set foldlevel=0
@@ -1053,9 +1074,12 @@ function! ToggleFold(fold_method)
 	let b:toggle_fold = a:fold_method
 endfunction
 
+let c_no_comment_fold = 1
+
 " --- Folding keymaps {{{2
 nnoremap <silent> <Leader>zw :call ToggleFold('search-word')<CR>
 nnoremap <silent> <Leader>zs :call ToggleFold('search')<CR>
+nnoremap <silent> <Leader>zy :call ToggleFold('syntax')<CR>
 nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
 nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
 nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
@@ -1078,7 +1102,7 @@ nmap z7 :set foldlevel=7 \| echo 'set foldlevel=' . &foldlevel <CR>
 nmap z8 :set foldlevel=8 \| echo 'set foldlevel=' . &foldlevel <CR>
 nmap z9 :set foldlevel=9 \| echo 'set foldlevel=' . &foldlevel <CR>
 
-call ToggleFold('manual')		" Default to manual folding
+call ToggleFold('default')		" Default to manual folding
 " }}}1
 
 " --- Utility Functions {{{1
