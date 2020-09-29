@@ -1,8 +1,9 @@
-# Terminal type tweaking...
-#if [ $TERM = rxvt ]; then
-#	TERM=xterm
-#	export TERM
-#fi
+#
+# .bashrc - Basic env setup and resource script file
+#
+
+# If not an interactive shell, don't proceed any further (ex. SCP commands)
+[ -z "$PS1" ] && return
 
 # Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias dirs='dirs -v'
