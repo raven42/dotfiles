@@ -2,9 +2,6 @@
 # .bashrc - Basic env setup and resource script file
 #
 
-# If not an interactive shell, don't proceed any further (ex. SCP commands)
-[ -z "$PS1" ] && return
-
 # Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
@@ -38,6 +35,10 @@ export TZ=/usr/share/zoneinfo/US/Central
 export UNIFIED_HISTORY=0
 export USE_UNICODE=1
 export VISUAL=vim
+
+# If not an interactive shell, don't proceed any further (ex. SCP commands)
+# need to do at least basic PATH setup and other common env vars
+[ -z "$PS1" ] && return
 
 shopt -s checkwinsize
 
