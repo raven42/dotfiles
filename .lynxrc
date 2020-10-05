@@ -1,0 +1,6 @@
+# lynx web-browser configuration
+
+INCLUDE:/usr/local/lib/lynx.cfg
+
+KEYMAP:0x104:DOWN_HALF		# Page-down by half screen
+KEYMAP:0x105:UP_HALF		# Page-up by half screen
