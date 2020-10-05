@@ -552,6 +552,11 @@ if version >= 800
 				\ }
 				\ }
 
+	" Tagbar Debug Options:
+	" Note: when using the logfile, don't VI the file or it will overwrite what is there
+	" let g:tagbar_ctags_bin = '/usr/bin/ctags' # XXX: To test with exhuberant ctags
+	" let g:tagbar_logfile = $HOME . '/tagbar.log'
+
 	" ---- Syntastic Configuration {{{2
 	let g:syntastic_always_populate_loc_list = 1
 	let g:syntastic_auto_loc_list = 1
@@ -619,6 +624,10 @@ if version >= 800
 	let g:have_undotree = &runtimepath =~# 'undotree' ? 1 : 0
 	" --- https://github.com/vim-scripts/searchfold.vim.git
 	let g:have_searchfold = &runtimepath =~# 'searchfold' ? 1 : 0
+
+	if g:have_tagbar && exists('g:tagbar_logfile')
+		execute 'TagbarDebug ' . g:tagbar_logfile
+	endif
 
     " ---- LightlineFileEncoding() {{{2
 	function! LightlineFileEncoding()
@@ -951,7 +960,7 @@ function! FoldTextFmt(fmt)
 		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
 		let suba = substitute(suba, foldmarkerpat, '', 'g')
 		let suba = trim(substitute(suba, '\s*$', '', ''))
-		let text = suba
+		let text = repeat(' ', indent(v:foldstart) - 4) . suba
 		if text =~ '{$'
 			let text .= ' ... }'
 		endif
@@ -962,12 +971,21 @@ function! FoldTextFmt(fmt)
 		let suba = trim(substitute(suba, '\s*$', '', ''))
 		let text = suba
 	endif
+
 	if strchars(text) > 0
-		let text = repeat(g:charmap['fold-fillchar'], 2) . g:charmap['fold-leftchar'] . ' ' . text . ' ' . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 2)
+		let text = repeat(g:charmap['fold-fillchar'], 2)
+					\ . g:charmap['fold-leftchar']
+					\ . ' ' . text . ' '
+					\ . g:charmap['fold-rightchar']
+					\ . repeat(g:charmap['fold-fillchar'], 2)
 	endif
 	let lines = v:foldend - v:foldstart + 1
 	let lines = ' ' . lines . ' lines '
-	let lines = repeat(g:charmap['fold-fillchar'], 2) . g:charmap['fold-leftchar'] . lines . g:charmap['fold-rightchar'] . repeat(g:charmap['fold-fillchar'], 2)
+	let lines = repeat(g:charmap['fold-fillchar'], 2)
+				\ . g:charmap['fold-leftchar']
+				\ . lines
+				\ . g:charmap['fold-rightchar']
+				\ . repeat(g:charmap['fold-fillchar'], 2)
 	let set_number = &number
 	if set_number == 0
 		let nuw = 0
@@ -985,27 +1003,22 @@ function! FoldTextFmt(fmt)
 	return text
 endfunction
 
-" --- ToggleFold() {{{2
-function! ToggleFold(fold_method)
-	if exists('b:toggle_fold') && b:toggle_fold ==# a:fold_method
-		set foldlevel=99
-		unlet b:toggle_fold
-		echo 'All folds disabled'
-		return
-	endif
-
+" --- SetFoldMethod() {{{2
+function! SetFoldMethod(fold_method, set_level)
+	let current_foldlevel = &foldlevel
+	let new_foldlevel = current_foldlevel
 	if a:fold_method ==# 'log'
 		set foldmethod=expr
 		set foldexpr=FoldLevelLog(v:lnum)
-		set foldlevel=5
+		let new_foldlevel = a:set_level ? 5 : current_foldlevel
 		set foldtext=FoldTextFmt('log')
-		for [level, foldlevel] in g:LogLevelFoldMap
-			if foldlevel == &foldlevel
+		for [level, loglevel] in g:LogLevelFoldMap
+			if loglevel == new_foldlevel
 				let disp_level = level
 				break
 			endif
 		endfor
-		echo 'Folding log-level - showing all logs ' . substitute(disp_level, '\', '', 'g') . ' (' . &foldlevel . ') or higher...'
+		echo 'Folding log-level - showing all logs ' . substitute(disp_level, '\', '', 'g') . ' (' . new_foldlevel . ') or higher...'
 	elseif a:fold_method ==# 'git'
 		if !g:have_gitgutter
 			echo 'GitGutter plugin not installed...'
@@ -1017,7 +1030,7 @@ function! ToggleFold(fold_method)
 		else
 			set foldtext=gitgutter#fold#foldtext()
 		endif
-		set foldlevel=1
+		let new_foldlevel = 1
 		let [a,m,r] = GitGutterGetHunkSummary()
 		echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
 	elseif a:fold_method ==# 'search'
@@ -1026,7 +1039,7 @@ function! ToggleFold(fold_method)
 			return
 		endif
 		call SearchFold(0)				" --- Call SearchFold() for normal mode
-		set foldlevel=2					" --- Set to show a few lines of context
+		let new_foldlevel=2
 		if &filetype ==# 'log'
 			set foldtext=FoldTextFmt('search')
 		else
@@ -1039,7 +1052,7 @@ function! ToggleFold(fold_method)
 		endif
 		let @/ = expand('<cword>')		" --- Set search pattern to current word
 		call SearchFold(0)				" --- Call SearchFold() for normal mode
-		set foldlevel=2					" --- Set to show a few lines of context
+		let new_foldlevel=2
 		if &filetype ==# 'log'
 			set foldtext=FoldTextFmt('search')
 		else
@@ -1048,35 +1061,51 @@ function! ToggleFold(fold_method)
 	elseif a:fold_method ==# 'indent'
 		set foldmethod=indent
 		set foldtext=FoldTextFmt('null')
-		set foldlevel=0
+		let new_foldlevel=0
 		echo 'Indent fold...'
 	elseif a:fold_method ==# 'diff'
 		set foldmethod=expr
 		set foldexpr=FoldLevelDiff(v:lnum)
 		set foldtext=FoldTextFmt('null')
-		set foldlevel=0
+		let new_foldlevel=0
 	elseif a:fold_method ==# 'syntax'
 		set foldmethod=syntax
 		set foldtext=FoldTextFmt('block')
-		set foldlevel=0
+		let new_foldlevel=0
 		echo 'Syntax fold...'
 	elseif a:fold_method ==# 'manual'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
-		set foldlevel=0
+		let new_foldlevel=0
 		echo 'Manual fold...'
 	elseif a:fold_method ==# 'default'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
-		set foldlevel=0
+		let new_foldlevel=0
 	endif
 
-	let b:toggle_fold = a:fold_method
+	if a:set_level
+		execute 'set foldlevel=' . new_foldlevel
+	else
+		execute 'set foldlevel=' . current_foldlevel
+	endif
+
+	let b:fold_method = a:fold_method
 endfunction
 
-let c_no_comment_fold = 1
+" --- ToggleFold() {{{2
+function! ToggleFold(fold_method)
+	if exists('b:fold_method') && b:fold_method ==# a:fold_method
+		set foldlevel=99
+		unlet b:fold_method
+		echo 'All folds disabled'
+		return
+	endif
 
-" --- Folding keymaps {{{2
+	call SetFoldMethod(a:fold_method, 1)
+endfunction
+
+" --- Folding keymaps and other fold init {{{2
 nnoremap <silent> <Leader>zw :call ToggleFold('search-word')<CR>
 nnoremap <silent> <Leader>zs :call ToggleFold('search')<CR>
 nnoremap <silent> <Leader>zy :call ToggleFold('syntax')<CR>
@@ -1085,6 +1114,7 @@ nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
 nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
 nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
 nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
+nnoremap <silent> <Leader>zz :call SetFoldMethod(exists('b:fold_method') ? b:fold_method : 'default', 0)<CR>
 
 " Decrease / Increase fold level
 nmap z, zm \| :echo 'set foldlevel=' . &foldlevel <CR>
@@ -1102,7 +1132,8 @@ nmap z7 :set foldlevel=7 \| echo 'set foldlevel=' . &foldlevel <CR>
 nmap z8 :set foldlevel=8 \| echo 'set foldlevel=' . &foldlevel <CR>
 nmap z9 :set foldlevel=9 \| echo 'set foldlevel=' . &foldlevel <CR>
 
-call ToggleFold('default')		" Default to manual folding
+let c_no_comment_fold = 1
+call SetFoldMethod('default', 1)		" Default to manual folding
 " }}}1
 
 " --- Utility Functions {{{1

@@ -43,6 +43,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>zi   - Toggle [INDENT] fold method. Useful for showing only function names.
 <Leader>zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
 <Leader>zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.
+<Leader>zz   - Recompute current fold method. Does not change fold level, but updates current fold method to recompute for any changes.
 z,   - Decrease current foldlevel by one reducing the amount of context around a fold
 z.   - Increase current foldlevel by one increasing the amount of context around a fold
 z,,  - Set foldlevel to 0 (close all folds)
