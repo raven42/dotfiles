@@ -214,13 +214,13 @@ filetype indent on
 
 "----- Let's try the following settings for C/C++
 autocmd FileType c,cpp
-			\	set formatoptions=croql
+			\	setlocal formatoptions=croql
 			\	cindent
 			\	comments=sr:/*,mb:*,ex:*/,://
 
 " --- We need real tabs for Makefiles.
-autocmd FileType make set noexpandtab
-autocmd FileType make set nosmarttab
+autocmd FileType make setlocal noexpandtab
+autocmd FileType make setlocal nosmarttab
 
 " --- have java highlight our functions
 "let java_highlight_functions=1
