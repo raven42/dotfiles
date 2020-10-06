@@ -179,6 +179,18 @@ if [ $GIT_REPO ]; then
 			echo ' No TAGFILES found. Generating new tags in the background...'
 			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/retag_${GIT_REPO}.log &
 		fi
+
+		# Look for deprecated build target scripts
+		if [ -f ${GIT_RC_PATH}/bld_target ]; then
+			echo "Deprecated resource script found... [${GIT_RC_PATH}/bld_target]"
+			echo "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
+			echo "  mv ${GIT_RC_PATH}/bld_target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
+		fi
+		if [ -f ${GIT_RC_PATH}/target ]; then
+			echo "Deprecated resource script found... [${GIT_RC_PATH}/target]"
+			echo "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
+			echo "  mv ${GIT_RC_PATH}/target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
+		fi
 	fi
 fi
 
@@ -216,20 +228,8 @@ function format_prompt() {
 
 		if [ -f ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
 			. ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}
-		elif [ -f ${GIT_RC_PATH}/bld_target ]; then
-			echo "Deprecated resource script found... [${GIT_RC_PATH}/bld_target]"
-			echo "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
-			echo "  mv ${GIT_RC_PATH}/bld_target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
-			echo "Sourcing this for now..."
-			. ${GIT_RC_PATH}/bld_target
 		elif [ -f ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
 			. ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}
-		elif [ -f ${DEFAULT_RC_PATH}/bld_target ]; then
-			echo "Deprecated resource script found... [${DEFAULT_RC_PATH}/bld_target]"
-			echo "Please move to the new location...  [${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
-			echo "  mv ${DEFAULT_RC_PATH}/bld_target ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}"
-			echo "Sourcing this for now..."
-			. ${DEFAULT_RC_PATH}/bld_target
 		fi
 
 		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
