@@ -7,7 +7,7 @@
 
 " The following envinronment variables are used in this resource script
 " $CSCOPE_DB		: looks for a cscope database
-" $TAGFILES			: Defines the VIM tag files to use for ctags
+" $TAGDIR			: Defines the VIM tag directory to look for ctags
 " $HOME				: Used to define 'makeprg' for make tasks
 " $USE_UNICODE		: If set use unicode characters for some plugin definitions
 " $GIT_ROOT			: Used for repo specific bookmark file
@@ -204,10 +204,19 @@ set smartindent				" ---- Recognize syntax for formatting
 set autoread				" ---- Autoread file when change is detected
 set shortmess=aIt
 set textwidth=0				" ---- Set default character width before autowrap
-set tags=${TAGFILES}
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
 set clipboard=unnamed,autoselect,exclude:cons\|linux
+
+let tagfiles = ''
+for tagfile in split(globpath($TAGDIR, '*'), '\n')
+	if tagfiles ==# ''
+		let tagfiles=tagfile
+	else
+		let tagfiles .= ',' . tagfile
+	endif
+endfor
+execute 'set tags=' . tagfiles
 
 filetype plugin on
 filetype indent on

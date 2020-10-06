@@ -175,7 +175,7 @@ if [ $GIT_REPO ]; then
 		fi
 
 		# Look for TAG files and if none are found, generate new ones
-		if [ ! -f ${GIT_TAGS_PATH}/tags_fabos_src -a -f ${RETAG_SCRIPT} ]; then
+		if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
 			echo ' No TAGFILES found. Generating new tags in the background...'
 			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/retag_${GIT_REPO}.log &
 		fi
