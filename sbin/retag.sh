@@ -147,7 +147,9 @@ else
 	echo "Using Exuberant CTAGS"
 fi
 echo "  TAGDIR: ${TAGDIR}"
-echo "  TAG_PATH: [$TAG_PATH]"
+echo "  TAG_PATH:"
+echo "    Def TagFile         Path:"
+echo "$(echo $TAG_PATH | tr ' ' '\n' | tr ':' '\t' | sed -e 's/^\([01]\)/    \1/')"
 echo ""
 echo "Rebuilding ctag definitions..."
 echo ""

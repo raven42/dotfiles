@@ -71,6 +71,7 @@ gq - Toggle the quickfix window and populate with all hunks
 ### Other Shortcuts
 ```
 <Ctrl-h> - Toggle Hex mode.
+//       - Search for the text that is visually selected.
 ```
 
 ### Commands

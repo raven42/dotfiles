@@ -13,6 +13,7 @@ alias telnet="telnet -e ^B"
 alias vi="vim"
 
 # Setup our environment:
+export AUTOSAVE=0							# by default, don't autosave in vim
 export EDITOR=vim
 export HISTTIMEFORMAT='%m/%d/%Y-%T '
 export HISTCONTROL=ignoredups				# Don't save commands leading with a whitespace, or duplicated commands

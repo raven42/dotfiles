@@ -13,6 +13,7 @@
 " $GIT_ROOT			: Used for repo specific bookmark file
 " $USER				: Used to filter file names for title formatting
 " $SRC_PATH_PREFIX	: Used to filter file names for title formatting
+" $AUTOSAVE			: Set to 0|1 to Disable|Enable autosave for all files
 
 " --- End Envonrment Variables
 
@@ -216,6 +217,9 @@ for tagfile in split(globpath($TAGDIR, '*'), '\n')
 		let tagfiles .= ',' . tagfile
 	endif
 endfor
+echom 'TAGDIR: [' . $TAGDIR . ']'
+echom 'globpath: [' . globpath($TAGDIR, '*') . ']'
+echom 'using tags: [' . tagfiles . ']'
 execute 'set tags=' . tagfiles
 
 filetype plugin on
@@ -265,6 +269,8 @@ autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
 autocmd BufWinEnter *.py set fileformat=unix
 autocmd BufWinLeave * call clearmatches()
 
+" Hit // to search for visually selected text
+vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 
 " }}}1
 
@@ -594,6 +600,9 @@ if version >= 800
 	let g:undotree_HighlightChangedText = 0
 	let g:undotree_HighlightChangedWithSign = 0
 	let g:undotree_DiffAutoOpen = 0
+
+	" ---- AutoSave Configuration {{{2
+	let g:auto_save = $AUTOSAVE
 
 	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'

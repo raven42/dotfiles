@@ -26,6 +26,9 @@
 # and in VIM, unicode characters are used in the status line, buffer line, and window title.
 export USE_UNICODE=1
 
+# Set autosave option for vim
+export AUTOSAVE=0
+
 # Setting this to 0 will not show the current $BLD_TARGET in the command prompt. By default the prompt will look like this:
 #   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$ 
 # Setting this to 0 will result in the following:
