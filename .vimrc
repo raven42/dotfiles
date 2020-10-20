@@ -217,9 +217,6 @@ for tagfile in split(globpath($TAGDIR, '*'), '\n')
 		let tagfiles .= ',' . tagfile
 	endif
 endfor
-echom 'TAGDIR: [' . $TAGDIR . ']'
-echom 'globpath: [' . globpath($TAGDIR, '*') . ']'
-echom 'using tags: [' . tagfiles . ']'
 execute 'set tags=' . tagfiles
 
 filetype plugin on

@@ -32,6 +32,7 @@ export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
 export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export SHOW_TARGET_IN_PROMPT=1
+export TAGDIR=$HOME/.default/tags
 export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
 export UNIFIED_HISTORY=0
