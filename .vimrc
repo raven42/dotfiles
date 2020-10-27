@@ -537,6 +537,11 @@ if version >= 800
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 	let g:tagbar_file_size_limit = 1000000
+	" let g:tagbar_show_tag_linenumbers = 2
+	let g:tagbar_show_tag_count = 1
+	" let g:tagbar_long_help = 1
+	" let g:tagbar_compact = 1
+	" let g:tagbar_autoshowtag = 0
 	" Override 'c' type that doesn't include unions to avoid issues with
 	" unions inside of functions messing up with display and scoping issues.
 	let g:tagbar_type_c = {
@@ -549,7 +554,7 @@ if version >= 800
 				\ 'e:enumerators:0:0',
 				\ 't:typedefs:0:0',
 				\ 's:structs:0:1',
-				\ 'm:members:0:0',
+				\ 'm:members:1:0',
 				\ 'v:variables:0:0',
 				\ 'f:functions:0:1'
 				\ ],
@@ -603,7 +608,9 @@ if version >= 800
 
 	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
-	let g:devpanel_panel_max = 45
+	let g:devpanel_panel_min = 45
+	let g:devpanel_panel_max = 55
+	let g:devpanel_open_min_width = 120
 
 	" ---- Generic definitions used by functions for plugins {{{2
 	let g:ignored_windows = '\v(nerdtree|tagbar|undotree)'
@@ -880,17 +887,6 @@ if version >= 800
 	nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
 	nnoremap <silent> gq :call ToggleGitQuickFix()<CR>
 
-	" ---- Autocmds for all plugins {{{2
-	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
-	autocmd BufEnter * call UpdateTitle()
-	autocmd BufWritePost *.py call flake8#Flake8()
-	autocmd BufEnter * call CheckForDotFiles()
-
-	augroup quickfixclose
-		autocmd!
-		autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
-	augroup END
-
 	" <CTRL-UP> - Switch to window above
 	" <CTRL-DOWN> - Switch to window below
 	" <CTRL-LEFT> - Switch to window to the left
@@ -909,8 +905,19 @@ if version >= 800
 
 	nmap <silent> <Leader>= :resize +5<CR>
 	nmap <silent> <Leader>- :resize -5<CR>
-	nmap <silent> <Leader>_ :vertical resize +5<CR>
-	nmap <silent> <Leader>+ :vertical resize -5<CR>
+	nmap <silent> <Leader>+ :vertical resize +5<CR>
+	nmap <silent> <Leader>_ :vertical resize -5<CR>
+
+	" ---- Autocmds for all plugins {{{2
+	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
+	autocmd BufEnter * call UpdateTitle()
+	autocmd BufWritePost *.py call flake8#Flake8()
+	autocmd BufEnter * call CheckForDotFiles()
+
+	augroup quickfixclose
+		autocmd!
+		autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+	augroup END
 
 endif
 
@@ -1022,7 +1029,8 @@ endfunction
 function! SetFoldMethod(fold_method, set_level)
 	let current_foldlevel = &foldlevel
 	let new_foldlevel = current_foldlevel
-	if a:fold_method ==# 'log'
+	let new_foldmethod = a:fold_method
+	if new_foldmethod ==# 'log'
 		set foldmethod=expr
 		set foldexpr=FoldLevelLog(v:lnum)
 		let new_foldlevel = a:set_level ? 5 : current_foldlevel
@@ -1034,7 +1042,7 @@ function! SetFoldMethod(fold_method, set_level)
 			endif
 		endfor
 		echo 'Folding log-level - showing all logs ' . substitute(disp_level, '\', '', 'g') . ' (' . new_foldlevel . ') or higher...'
-	elseif a:fold_method ==# 'git'
+	elseif new_foldmethod ==# 'git'
 		if !g:have_gitgutter
 			echo 'GitGutter plugin not installed...'
 			return
@@ -1048,7 +1056,7 @@ function! SetFoldMethod(fold_method, set_level)
 		let new_foldlevel = 1
 		let [a,m,r] = GitGutterGetHunkSummary()
 		echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
-	elseif a:fold_method ==# 'search'
+	elseif new_foldmethod ==# 'search'
 		if !g:have_searchfold
 			echo 'SearchFold plugin not installed...'
 			return
@@ -1060,7 +1068,7 @@ function! SetFoldMethod(fold_method, set_level)
 		else
 			set foldtext=FoldTextFmt('tag')
 		endif
-	elseif a:fold_method ==# 'search-word'
+	elseif new_foldmethod ==# 'search-word'
 		if !g:have_searchfold
 			echo 'SearchFold plugin not installed...'
 			return
@@ -1068,32 +1076,33 @@ function! SetFoldMethod(fold_method, set_level)
 		let @/ = expand('<cword>')		" --- Set search pattern to current word
 		call SearchFold(0)				" --- Call SearchFold() for normal mode
 		let new_foldlevel=2
+		let new_foldmethod='search'		" --- 'search-word' is really the same as 'search'
 		if &filetype ==# 'log'
 			set foldtext=FoldTextFmt('search')
 		else
 			set foldtext=FoldTextFmt('tag')
 		endif
-	elseif a:fold_method ==# 'indent'
+	elseif new_foldmethod ==# 'indent'
 		set foldmethod=indent
 		set foldtext=FoldTextFmt('null')
 		let new_foldlevel=0
 		echo 'Indent fold...'
-	elseif a:fold_method ==# 'diff'
+	elseif new_foldmethod ==# 'diff'
 		set foldmethod=expr
 		set foldexpr=FoldLevelDiff(v:lnum)
 		set foldtext=FoldTextFmt('null')
 		let new_foldlevel=0
-	elseif a:fold_method ==# 'syntax'
+	elseif new_foldmethod ==# 'syntax'
 		set foldmethod=syntax
 		set foldtext=FoldTextFmt('block')
 		let new_foldlevel=0
 		echo 'Syntax fold...'
-	elseif a:fold_method ==# 'manual'
+	elseif new_foldmethod ==# 'manual'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
 		echo 'Manual fold...'
-	elseif a:fold_method ==# 'default'
+	elseif new_foldmethod ==# 'default'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
@@ -1105,7 +1114,7 @@ function! SetFoldMethod(fold_method, set_level)
 		execute 'set foldlevel=' . current_foldlevel
 	endif
 
-	let b:fold_method = a:fold_method
+	let b:fold_method = new_foldmethod
 endfunction
 
 " --- ToggleFold() {{{2
