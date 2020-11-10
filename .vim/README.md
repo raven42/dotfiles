@@ -44,6 +44,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
 <Leader>zC   - Toggle [CHEATSHEET] fold method. See .vim/syntax/cheatsheet.vim for syntax details.
 <Leader>zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.
+<Leader>zM   - Toggle [MARKER] fold method.
 <Leader>zz   - Recompute current fold method. Does not change fold level, but updates current fold method to recompute for any changes.
 z,   - Decrease current foldlevel by one reducing the amount of context around a fold
 z.   - Increase current foldlevel by one increasing the amount of context around a fold
