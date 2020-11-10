@@ -42,6 +42,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>zy   - Toggle [SYNTAX] fold method. Useful for showing only function names or other block level folds. Better folding for matching blocks than indent.
 <Leader>zi   - Toggle [INDENT] fold method. Useful for showing only function names.
 <Leader>zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
+<Leader>zC   - Toggle [CHEATSHEET] fold method. See .vim/syntax/cheatsheet.vim for syntax details.
 <Leader>zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.
 <Leader>zz   - Recompute current fold method. Does not change fold level, but updates current fold method to recompute for any changes.
 z,   - Decrease current foldlevel by one reducing the amount of context around a fold

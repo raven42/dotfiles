@@ -208,6 +208,7 @@ set textwidth=0				" ---- Set default character width before autowrap
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
 set clipboard=unnamed,autoselect,exclude:cons\|linux
+set modelineexpr
 
 let tagfiles = ''
 for tagfile in split(globpath($TAGDIR, '*'), '\n')
@@ -533,46 +534,55 @@ if version >= 800
 	let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
 	let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
 
+	autocmd VimEnter * call gitgutter#all(0)
+
 	" ---- Tagbar Configuration {{{2
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 	let g:tagbar_file_size_limit = 1000000
-	" let g:tagbar_show_tag_linenumbers = 2
+	let g:tagbar_scrolloff = 5
+	let g:tagbar_jump_offset = winheight(0) / 4
+	let g:tagbar_show_data_type = 1
+	" let g:tagbar_show_tag_linenumbers = 1
 	let g:tagbar_show_tag_count = 1
+	let g:tagbar_case_insensitive = 1
 	" let g:tagbar_long_help = 1
 	" let g:tagbar_compact = 1
 	" let g:tagbar_autoshowtag = 0
+
 	" Override 'c' type that doesn't include unions to avoid issues with
 	" unions inside of functions messing up with display and scoping issues.
 	let g:tagbar_type_c = {
 				\ 'ctagstype'	: 'c',
 				\ 'kinds'		: [
-				\ 'h:header files:1:0',
-				\ 'd:macros:1:0',
-				\ 'p:prototypes:1:0',
-				\ 'g:enums:0:1',
-				\ 'e:enumerators:0:0',
-				\ 't:typedefs:0:0',
-				\ 's:structs:0:1',
-				\ 'm:members:1:0',
-				\ 'v:variables:0:0',
-				\ 'f:functions:0:1'
+					\ 'h:header files:1:0',
+					\ 'd:macros:1:0',
+					\ 'p:prototypes:1:0',
+					\ 'g:enums:0:1',
+					\ 'e:enumerators:0:0',
+					\ 't:typedefs:0:0',
+					\ 's:structs:0:1',
+					\ 'm:members:1:0',
+					\ 'v:variables:0:0',
+					\ 'f:functions:0:1:{:}'
 				\ ],
 				\ 'sro'			: '::',
 				\ 'kind2scope'	: {
-				\ 'g' : 'enum',
-				\ 's' : 'struct',
+					\ 'g' : 'enum',
+					\ 's' : 'struct',
 				\ },
 				\ 'scope2kind'	: {
-				\ 'enum'   : 'g',
-				\ 'struct' : 's',
+					\ 'enum'   : 'g',
+					\ 'struct' : 's',
 				\ }
-				\ }
+			\ }
 
 	" Tagbar Debug Options:
 	" Note: when using the logfile, don't VI the file or it will overwrite what is there
-	" let g:tagbar_ctags_bin = '/usr/bin/ctags' # XXX: To test with exhuberant ctags
+	" let g:tagbar_ctags_bin = '/usr/bin/ctags' " XXX: To test with exhuberant ctags
 	" let g:tagbar_logfile = $HOME . '/tagbar.log'
+	" let g:tagbar_no_autocmds = 1
+	" let g:tagbar_width = max([25, winwidth(0) / 5])
 
 	" ---- Syntastic Configuration {{{2
 	let g:syntastic_always_populate_loc_list = 1
@@ -606,11 +616,18 @@ if version >= 800
 	" ---- AutoSave Configuration {{{2
 	let g:auto_save = $AUTOSAVE
 
+	" ---- Minimap Configuration {{{2
+	let g:minimap_block_filetypes = ['fugitive', 'nerdtree', 'tagbar', 'qf', 'preview', 'diff']
+
 	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
 	let g:devpanel_panel_min = 45
 	let g:devpanel_panel_max = 55
 	let g:devpanel_open_min_width = 120
+	let g:devpanel_use_nerdtree = 1
+	let g:devpanel_use_tagbar = 1
+	let g:devpanel_use_minimap = 0
+	let g:devpanel_use_flake8 = 1
 
 	" ---- Generic definitions used by functions for plugins {{{2
 	let g:ignored_windows = '\v(nerdtree|tagbar|undotree)'
@@ -646,6 +663,8 @@ if version >= 800
 	let g:have_undotree = &runtimepath =~# 'undotree' ? 1 : 0
 	" --- https://github.com/vim-scripts/searchfold.vim.git
 	let g:have_searchfold = &runtimepath =~# 'searchfold' ? 1 : 0
+	" --- https://github.com/wfxr/minimap.vim
+	let g:have_minimap = &runtimepath =~# 'minimap' ? 1 : 0
 
 	if g:have_tagbar && exists('g:tagbar_logfile')
 		execute 'TagbarDebug ' . g:tagbar_logfile
@@ -720,7 +739,7 @@ if version >= 800
 		if !g:have_tagbar || &filetype =~# g:ignored_windows
 			return ''
 		endif
-		return tagbar#currenttag("%s", "", 'f')
+		return tagbar#currenttag("%s", "", 'f', 'nearest-stl')
 	endfunction
 
     " ---- LightlineCloseBuffer() {{{2
@@ -961,6 +980,28 @@ function! FoldLevelDiff(lnum)
 	endif
 endfunction
 
+" --- FoldLevelCheatsheet {{{2
+function! FoldLevelCheatsheet(lnum)
+	let line = getline(a:lnum)
+	let nextline = a:lnum < line('$') ? getline(a:lnum + 1) : ''
+	let lvl = '='
+	if line =~# '^#####'
+		let lvl = '>1'
+	elseif line =~# '^###'
+		let lvl = '>2'
+	elseif line =~# '^---'
+		let lvl = '>3'
+	elseif nextline =~# '^#####'
+		let lvl = '<1'
+	elseif nextline =~# '^###'
+		let lvl = '<2'
+	elseif nextline =~# '^---'
+		let lvl = '<2'
+	endif
+	" echom 'line ' . a:lnum . ' [' . line . '] lvl [' . lvl . ']'
+	return lvl
+endfunction
+
 " --- FoldTextFmt() {{{2
 function! FoldTextFmt(fmt)
 	if a:fmt ==# 'tag' && g:have_tagbar						" TAG fold text
@@ -1047,6 +1088,9 @@ function! SetFoldMethod(fold_method, set_level)
 			echo 'GitGutter plugin not installed...'
 			return
 		endif
+		let [a,m,r] = GitGutterGetHunkSummary()
+		echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
+					\ . ' (may take a while depending on size of changes)'
 		call gitgutter#fold#enable()
 		if g:have_tagbar
 			set foldtext=FoldTextFmt('tag')
@@ -1054,8 +1098,7 @@ function! SetFoldMethod(fold_method, set_level)
 			set foldtext=gitgutter#fold#foldtext()
 		endif
 		let new_foldlevel = 1
-		let [a,m,r] = GitGutterGetHunkSummary()
-		echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
+		redraw | echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
 	elseif new_foldmethod ==# 'search'
 		if !g:have_searchfold
 			echo 'SearchFold plugin not installed...'
@@ -1097,11 +1140,22 @@ function! SetFoldMethod(fold_method, set_level)
 		set foldtext=FoldTextFmt('block')
 		let new_foldlevel=0
 		echo 'Syntax fold...'
+	elseif new_foldmethod ==# 'cheatsheet'
+		set foldmethod=expr
+		set foldexpr=FoldLevelCheatsheet(v:lnum)
+		set foldtext=FoldTextFmt('')
+		let new_foldlevel=1
+		echo 'Cheatsheet fold...'
 	elseif new_foldmethod ==# 'manual'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
 		echo 'Manual fold...'
+	elseif new_foldmethod ==# 'marker'
+		set foldmethod=marker
+		set foldtext=FoldTextFmt('')
+		let new_foldlevel=1
+		echo 'Marker fold...'
 	elseif new_foldmethod ==# 'default'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
@@ -1137,7 +1191,9 @@ nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
 nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
 nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
 nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
+nnoremap <silent> <Leader>zC :call ToggleFold('cheatsheet')<CR>
 nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
+nnoremap <silent> <Leader>zM :call ToggleFold('marker')<CR>
 nnoremap <silent> <Leader>zz :call SetFoldMethod(exists('b:fold_method') ? b:fold_method : 'default', 0)<CR>
 
 " Decrease / Increase fold level
