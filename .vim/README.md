@@ -3,7 +3,7 @@ VIM resource and configuration directory.
 
 This directory sets up and configures vim using various plugins. It integrates them all together.
 
-> Contents:
+Contents:
 > * [Basic Usage](https://github.com/raven42/dotfiles/tree/master/.vim#basic-usage)
 >   * [Key Shortcuts](https://github.com/raven42/dotfiles/tree/master/.vim#key-shortcuts)
 >   * [Folding Shortcuts](https://github.com/raven42/dotfiles/tree/master/.vim#folding-shortcuts)
@@ -59,6 +59,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>va   - Like vv, but add to existing list
 <Leader>vr   - Perform a global search on the word under the cursor and prompt for a pattern with which to replace it.
 ```
+:information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
 
 ### Folding Shortcuts
 ```
@@ -122,8 +123,7 @@ gq - Toggle the quickfix window and populate with all hunks
                                   only affect the text loaded in the edit window, not the plugin character mappings
 ```
 
-:information\_source: **Leader:** All these `<Leader>` commands are done using the `\` key by default. Example `\1` will jump to the first open buffer. This can be changed in your .vimrc if you wish to use a different `<Leader>` character by adding a `:let mapleader = "<character>"`.
-  
+ 
 :warning: **Folding:** Activating some foldmethods might take a while to activate.
 
 ### More Info
