@@ -4,10 +4,12 @@
 " Last Change:	2020 Nov 10
 "
 " Basic syntax is as follows:
-"	Line starts with '##### some string'	This is a header line
-"	Line starts with '### some string'		This is a section line
-"	Line starts with '--- some string'		This is an unused section line
-"	Line contains '# some string'			This is a comment string except where previously defined
+"	Line starts with '##### some string'	This is a header line - fold level 1
+"	Line starts with '### some string'		This is a section line - fold level 2
+"	Line starts with '--- some string'		This is an unused section line - fold level 3
+"	Line contains '# some string'			This is a comment except where previously defined
+"
+" See FoldLevelCheatsheet() for determining fold levels.
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
@@ -16,20 +18,21 @@ endif
 
 let valid_title = "[a-zA-Z0-9 \t\\-]\+"
 " Define the various log levels
-syntax	match	HEADER			"^##### .*"						contains=HEADER_TITLE containedin=COMMENT
-syntax	match	HEADER_TITLE	"[a-zA-Z0-9 \t\\/\(\).,:;]\+"	contained
-syntax	match	SECTION			"^### .*"						contains=SECTION_TITLE containedin=COMMENT
-syntax	match	SECTION_TITLE	"[a-zA-Z0-9 \t\\/\(\).,;:]\+"	contained
-syntax	match	UNUSED			"^--- .*"						contains=UNUSED_TITLE containedin=COMMENT
-syntax	match	UNUSED_TITLE	"[a-zA-Z0-9 \t\\/\(\).,;:]\+"	contained
-syntax	match	COMMENT			"#.*$"
+syntax	match	CHEATSHEET_HEADER			"^##### .*"						contains=CHEATSHEET_HEADER_TITLE containedin=CHEATSHEET_COMMENT
+syntax	match	CHEATSHEET_HEADER_TITLE		"[a-zA-Z0-9 \t\\/\(\).,:;]\+"	contained
+syntax	match	CHEATSHEET_SECTION			"^### .*"						contains=CHEATSHEET_SECTION_TITLE containedin=CHEATSHEET_COMMENT
+syntax	match	CHEATSHEET_SECTION_TITLE	"[a-zA-Z0-9 \t\\/\(\).,;:]\+"	contained
+syntax	match	CHEATSHEET_UNUSED			"^--- .*"						contains=CHEATSHEET_UNUSED_TITLE containedin=CHEATSHEET_COMMENT
+syntax	match	CHEATSHEET_UNUSED_TITLE		"[a-zA-Z0-9 \t\\/\(\).,;:]\+"	contained
+syntax	match	CHEATSHEET_COMMENT			"#.*$"
+syntax	match	CHEATSHEET_COMMENT			"^-.*$"
 
-highlight		HEADER			ctermfg=Red
-highlight		HEADER_TITLE	ctermfg=Yellow
-highlight		SECTION			ctermfg=Red
-highlight		SECTION_TITLE	ctermfg=DarkYellow
-highlight		UNUSED			ctermfg=DarkRed
-highlight		UNUSED_TITLE	ctermfg=Grey
-highlight		COMMENT			ctermfg=202
+highlight		CHEATSHEET_HEADER			ctermfg=Red
+highlight		CHEATSHEET_HEADER_TITLE		ctermfg=Yellow
+highlight		CHEATSHEET_SECTION			ctermfg=Red
+highlight		CHEATSHEET_SECTION_TITLE	ctermfg=DarkYellow
+highlight		CHEATSHEET_UNUSED			ctermfg=DarkRed
+highlight		CHEATSHEET_UNUSED_TITLE		ctermfg=Grey
+highlight		CHEATSHEET_COMMENT			ctermfg=202
 
 let b:current_sytax = "cheatsheet"
