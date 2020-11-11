@@ -3,6 +3,33 @@ VIM resource and configuration directory.
 
 This directory sets up and configures vim using various plugins. It integrates them all together.
 
+> Contents:
+> * [Basic Usage](ihttps://github.com/raven42/dotfiles/tree/master/.vim#basic-usage)
+>   * [Key Shortcuts](ihttps://github.com/raven42/dotfiles/tree/master/.vim#key-shortcuts)
+>   * [Folding Shortcuts](ihttps://github.com/raven42/dotfiles/tree/master/.vim#folding-shortcuts)
+>   * [Git Shortcuts](ihttps://github.com/raven42/dotfiles/tree/master/.vim#git-shortcuts)
+>   * [Other Shortcuts](ihttps://github.com/raven42/dotfiles/tree/master/.vim#other-shortcuts)
+>   * [Commands](ihttps://github.com/raven42/dotfiles/tree/master/.vim#commands)
+>   * [More Info](ihttps://github.com/raven42/dotfiles/tree/master/.vim#more-info)
+> * [Vim Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#vim-folding)
+>   * [Search Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#search-folding)
+>   * [Git Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#git-folding)
+>   * [Syntax Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#syntax-folding)
+>   * [Indent Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#indent-folding)
+>   * [Diff Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#diff-folding)
+>   * [Log Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#log-folding)
+>   * [Cheatsheet Folding](ihttps://github.com/raven42/dotfiles/tree/master/.vim#cheatsheet-folding)
+> * [DevPanel](ihttps://github.com/raven42/dotfiles/tree/master/.vim#devpanel)
+> * [NerdTree](ihttps://github.com/raven42/dotfiles/tree/master/.vim#nertree-file-browser)
+> *   [Bookmarks](ihttps://github.com/raven42/dotfiles/tree/master/.vim#bookmarks)
+> * [Tagbar](ihttps://github.com/raven42/dotfiles/tree/master/.vim#tagbar-ctag-viewer)
+>   * [Tagbar Shortcuts](ihttps://github.com/raven42/dotfiles/tree/master/.vim#tagbar-shortcuts)
+> * [Lightline](ihttps://github.com/raven42/dotfiles/tree/master/.vim#lightline)
+> * [GitGutter / Fugitive](ihttps://github.com/raven42/dotfiles/tree/master/.vim#gitgutter--fugitive)
+> * [NerdCommenter](ihttps://github.com/raven42/dotfiles/tree/master/.vim#nerdcommenter)
+> * [Additional Plugins](ihttps://github.com/raven42/dotfiles/tree/master/.vim#additional-plugins)
+> * [Plugin Integrations](ihttps://github.com/raven42/dotfiles/tree/master/.vim#plugin-integrations)
+
 # Basic usage
 Basic usage and navigation uses the standard vim movement keys and also uses the mouse to move between windows, select text in visual mode, and move the cursor. There are also some useful key mappings to move between windows. This vim configuration is optimized for 175 character wide screens or more using the DevPanel plugin will yield about 120 characters in the active edit window.
 
@@ -207,8 +234,8 @@ P              - Open the selected tag in the preview window.
 
 ---
 
-## Lightbar
-The Lightbar plugin will display useful information about the currently opened file. It will display the file, the current function the cursor is located in (in the bottome status line), a list of the open buffers (on the left side of the tabline), and the current working GIT branch (on the right side of the tabline) if available.
+## Lightline
+The Lightline plugin will display useful information about the currently opened file. It will display the file, the current function the cursor is located in (in the bottome status line), a list of the open buffers (on the left side of the tabline), and the current working GIT branch (on the right side of the tabline) if available.
 
 ---
 
