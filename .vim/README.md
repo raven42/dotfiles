@@ -194,7 +194,7 @@ The DevPanel plugin will automatically open the NERDTree and Tagbar plugin windo
 ---
 
 ## NERDTree (File Browser)
-The NERDTree plugin provides a file browser for any files. `<double-click>` or hit `<enter>` on any file to open it in a new buffer. `<single-click>` or hit `<enter>` on any directory to expand / collapse it. When a file is opened, it will open in a new buffer. The tabline will be updated to list that file name as well. Use `<Leader><#>` or `:n` / `:p` to move between opened buffers.
+The NERDTree plugin provides a file browser for any files. `<double-click>` or hit `<enter>` on any file to open it in a new buffer. `<single-click>` or hit `<enter>` on any directory to expand / collapse it. When a file is opened, it will open in a new buffer. The tabline will be updated to list that file name as well. Use `<Leader><#>` or `<Leader>n` / `<Leader>p` to move between opened buffers.
 
 If you do a `<middle-click>` on a file, then the current edit window will be split horizontally and the new file will be opened in the split.
 
