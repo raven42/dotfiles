@@ -20,7 +20,7 @@ This directory sets up and configures vim using various plugins. It integrates t
 >   * [Log Folding](https://github.com/raven42/dotfiles/tree/master/.vim#log-folding)
 >   * [Cheatsheet Folding](https://github.com/raven42/dotfiles/tree/master/.vim#cheatsheet-folding)
 > * [DevPanel](https://github.com/raven42/dotfiles/tree/master/.vim#devpanel)
-> * [NerdTree](https://github.com/raven42/dotfiles/tree/master/.vim#nertree-file-browser)
+> * [NerdTree](https://github.com/raven42/dotfiles/tree/master/.vim#nerdtree-file-browser)
 > *   [Bookmarks](https://github.com/raven42/dotfiles/tree/master/.vim#bookmarks)
 > * [Tagbar](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-ctag-viewer)
 >   * [Tagbar Shortcuts](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-shortcuts)
