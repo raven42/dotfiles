@@ -255,7 +255,7 @@ Example: In this example you can see the added / modified / deleted lines as wel
 
 ![git_fold example](../img/git\_fold\_example.png?raw=true "GitFold Example:")
 
-Example: In this example, you can see the output from the `:Gblame` command to view the `git blame` history of the file.
+Example: In this example, you can see the output from the `:Git blame` command to view the `git blame` history of the file.
 
 ![git_blame example](../img/git\_blame\_example.png?raw=true "GitBlame Example:")
 
