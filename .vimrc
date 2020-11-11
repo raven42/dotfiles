@@ -1134,7 +1134,7 @@ function! SetFoldMethod(fold_method, set_level)
 		set foldmethod=expr
 		set foldexpr=FoldLevelDiff(v:lnum)
 		set foldtext=FoldTextFmt('null')
-		let new_foldlevel=0
+		let new_foldlevel=1
 	elseif new_foldmethod ==# 'syntax'
 		set foldmethod=syntax
 		set foldtext=FoldTextFmt('block')

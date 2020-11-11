@@ -110,30 +110,35 @@ There are numerous folding methods pre-defined in this .vimrc implementation. Th
 The `search` folding method can be used in two ways. Either by a `<Leader>zs` (z-search) or <Leader>zw` (z-word) shortcut. The difference is the z-word short cut will search for the vim word under the cursor, and then perform the `search` fold method. The z-search method simply performs the `search` fold method on whatever the current search pattern is.
 
 Example:
+
 ![search-folding example](../img/search\_folding.png?raw=true "Search Fold Example:")
 
 ##### GIT Folding
 The `git` folding method can be used with the `<Leader>zg` (z-git) shortcut to view the current git hunks that have been modified in a file. This can be useful for previewing all the changes in your file before you stage it. Only unstaged changes will be shown.
 
 Example:
+
 ![git-folding example](../img/git\_folding.png?raw=true "Git Fold Example:")
 
 ##### Syntax Folding
 The `syntax` folding method can be used with the `<Leader>zy (z-syntax) shortcut to view the file in recognized syntax blocks. This can be useful to fold away all functions for example and expand the entire function only as needed. This also works on known blocks within the function such as `if` statements, and `switch` statements.
 
 Example:
+
 ![syntax-folding example](../img/syntax\_folding.png?raw=true "Syntax Fold Example:")
 
 ##### Indent Folding
 The `indent` folding methods is very similar to the `syntax` folding method and is activated with `<Leader>zi` (z-indent). The `indent method is quicker to process and operates strictly based on indentation blocks. This is useful for filetypes which don't have a known syntax. If you are working on a filetype which does have a known syntax, then the `syntax` folding method will probably be more beneficial.
 
 Example:
+
 ![indent-folding example](../img/indent\_folding.png?raw=true "Indent Fold Example:")
 
 ##### DIFF Folding
 The `diff` folding method can be used with the `<Leader>zd` (z-diff) shortcut. This can be used when looking at `diff <file1> <file2>` output, or from the output of `git diff`. It can limit the view to show only the files (level 1), or the files and line numbers where changes occurred (level 2), or everything (level 3).
 
 Example:
+
 ![diff-folding example](../img/diff\_folding.png?raw=true "Diff Fold Example:")
 
 ##### LOG Folding
