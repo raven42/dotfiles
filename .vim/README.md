@@ -24,6 +24,7 @@ Contents:
 >   * [Bookmarks](https://github.com/raven42/dotfiles/tree/master/.vim#bookmarks)
 > * [Tagbar](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-ctag-viewer)
 >   * [Tagbar Shortcuts](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-shortcuts)
+>   * [Tagbar Cheatsheet Format](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-cheetsheet-format)
 > * [Lightline](https://github.com/raven42/dotfiles/tree/master/.vim#lightline)
 > * [GitGutter / Fugitive](https://github.com/raven42/dotfiles/tree/master/.vim#gitgutter--fugitive)
 > * [NerdCommenter](https://github.com/raven42/dotfiles/tree/master/.vim#nerdcommenter)
@@ -232,7 +233,8 @@ x              - Toggle zoom mode (increase the Tagbar window to full screen wid
 P              - Open the selected tag in the preview window.
 ```
 
-> Note: there is also a custom ctags definition for `.cheat` files (cheatsheets). This uses the same syntax as described in the [cheatsheet-folding](https://github.com/raven42/dotfiles/tree/master/.vim#cheatsheet-folding) section. An example can be seen here:
+### Tagbar Cheatsheet Format
+Note: there is also a custom ctags definition for `.cheat` files (cheatsheets). This uses the same syntax as described in the [cheatsheet-folding](https://github.com/raven42/dotfiles/tree/master/.vim#cheatsheet-folding) section. An example can be seen here:
 
 ```
 ##### Header 1 #####
