@@ -232,6 +232,26 @@ x              - Toggle zoom mode (increase the Tagbar window to full screen wid
 P              - Open the selected tag in the preview window.
 ```
 
+> Note: there is also a custom ctags definition for `.cheat` files (cheatsheets). This uses the same syntax as described in the [cheatsheet-folding](https://github.com/raven42/dotfiles/tree/master/.vim#cheatsheet-folding) section. An example can be seen here:
+
+```
+##### Header 1 #####
+### Section 1
+
+### Section 2
+
+--- Unused Section 3
+
+### Section 4
+
+##### Header 2 #####
+### Section 5
+```
+
+This will render like this for the tagbar window:
+
+![cheatsheet_tagbar_example](..img/cheatsheet_tagbar_example.png?raw=true "Cheatsheet Tagbar Example:")
+
 ---
 
 ## Lightline
