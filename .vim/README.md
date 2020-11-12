@@ -250,7 +250,7 @@ P              - Open the selected tag in the preview window.
 
 This will render like this for the tagbar window:
 
-![cheatsheet_tagbar_example](..img/cheatsheet_tagbar_example.png?raw=true "Cheatsheet Tagbar Example:")
+![cheatsheet_tagbar_example](../img/cheatsheet_tagbar_example.png?raw=true "Cheatsheet Tagbar Example:")
 
 ---
 
