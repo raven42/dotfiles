@@ -1,0 +1,10 @@
+--langdef=cheatsheet
+--langmap=cheatsheet:.cheat
+
+--kinddef-cheatsheet=h,header,headers
+--kinddef-cheatsheet=s,section,sections
+--kinddef-cheatsheet=u,unused,unused
+
+--regex-cheatsheet=/^#####[ \t]+([^#]*)/\1/h/{scope=set}
+--regex-cheatsheet=/^###[ \t]+(.*)/\1/s/{scope=ref}
+--regex-cheatsheet=/^---[ \t]+(.*)/\1/u/{scope=ref}

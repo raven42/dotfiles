@@ -1,0 +1,6 @@
+--langdef=cheatsheet
+--langmap=cheatsheet:.cheat
+
+--regex-cheatsheet=/^#####[ \t]+([^#]*)/\1/h,header/
+--regex-cheatsheet=/^###[ \t]+(.*)/\1/s,section/
+--regex-cheatsheet=/^---[ \t]+(.*)/\1/u,unused/

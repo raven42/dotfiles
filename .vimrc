@@ -577,6 +577,25 @@ if version >= 800
 				\ }
 			\ }
 
+	let g:tagbar_type_cheatsheet = {
+				\ 'ctagstype'	: 'cheatsheet',
+				\ 'kinds'		: [
+					\ 'h:header:0:1',
+					\ 's:section:0:1',
+					\ 'u:unused:0:1',
+				\ ],
+				\ 'sro'			: '::',
+				\ 'kind2scope'	: {
+					\ 'h' : 'header',
+				\ },
+				\ 'scope2kind'	: {
+					\ 'header' : 'h',
+				\ },
+			\ }
+
+	autocmd FileType cheatsheet let g:tagbar_show_data_type = 0
+	autocmd FileType cheatsheet let g:tagbar_sort = 0
+
 	" Tagbar Debug Options:
 	" Note: when using the logfile, don't VI the file or it will overwrite what is there
 	" let g:tagbar_ctags_bin = '/usr/bin/ctags' " XXX: To test with exhuberant ctags
@@ -621,8 +640,8 @@ if version >= 800
 
 	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
-	let g:devpanel_panel_min = 45
-	let g:devpanel_panel_max = 55
+	let g:devpanel_panel_min = 40
+	let g:devpanel_panel_max = 50
 	let g:devpanel_open_min_width = 120
 	let g:devpanel_use_nerdtree = 1
 	let g:devpanel_use_tagbar = 1
