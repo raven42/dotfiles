@@ -71,6 +71,7 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 <Leader>zy   - Toggle [SYNTAX] fold method. Useful for showing only function names or other block level folds. Better folding for matching blocks than indent.
 <Leader>zi   - Toggle [INDENT] fold method. Useful for showing only function names.
 <Leader>zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.
+<Leader>zD   - Toggle [DEFINE] fold method. This will set fold markers based on the `#if` / `#endif` statements in a file. This will work with both `#if SOMETHING` or `#ifdef SOMETHING` syntax
 <Leader>zC   - Toggle [CHEATSHEET] fold method. See .vim/syntax/cheatsheet.vim for syntax details.
 <Leader>zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.
 <Leader>zM   - Toggle [MARKER] fold method.
@@ -134,32 +135,32 @@ For more information, see the documentation for list of plugins at the bottom. T
 ## Vim Folding
 There are numerous folding methods pre-defined in this .vimrc implementation. These methods allow you to view files and move around in the file a lot easier. It can allow you to limit the information you see on the screen to only what you care about. The various methods are described here.
 
-##### SEARCH Folding
+#### SEARCH Folding
 The `search` folding method can be used in two ways. Either by a `<Leader>zs` (z-search) or `<Leader>zw` (z-word) shortcut. The difference is the z-word short cut will search for the vim word under the cursor, and then perform the `search` fold method. The z-search method simply performs the `search` fold method on whatever the current search pattern is.
 
 ![search-folding example](../img/search\_folding.png?raw=true "Search Fold Example:")
 
-##### GIT Folding
+#### GIT Folding
 The `git` folding method can be used with the `<Leader>zg` (z-git) shortcut to view the current git hunks that have been modified in a file. This can be useful for previewing all the changes in your file before you stage it. Only unstaged changes will be shown.
 
 ![git-folding example](../img/git\_folding.png?raw=true "Git Fold Example:")
 
-##### Syntax Folding
+#### Syntax Folding
 The `syntax` folding method can be used with the `<Leader>zy` (z-syntax) shortcut to view the file in recognized syntax blocks. This can be useful to fold away all functions for example and expand the entire function only as needed. This also works on known blocks within the function such as `if` statements, and `switch` statements.
 
 ![syntax-folding example](../img/syntax\_folding.png?raw=true "Syntax Fold Example:")
 
-##### Indent Folding
+#### Indent Folding
 The `indent` folding methods is very similar to the `syntax` folding method and is activated with `<Leader>zi` (z-indent). The indent method is quicker to process and operates strictly based on indentation blocks. This is useful for filetypes which don't have a known syntax. If you are working on a filetype which does have a known syntax, then the `syntax` folding method will probably be more beneficial.
 
 ![indent-folding example](../img/indent\_folding.png?raw=true "Indent Fold Example:")
 
-##### DIFF Folding
+#### DIFF Folding
 The `diff` folding method can be used with the `<Leader>zd` (z-diff) shortcut. This can be used when looking at `diff <file1> <file2>` output, or from the output of `git diff`. It can limit the view to show only the files (level 1), or the files and line numbers where changes occurred (level 2), or everything (level 3).
 
 ![diff-folding example](../img/diff\_folding.png?raw=true "Diff Fold Example:")
 
-##### LOG Folding
+#### LOG Folding
 The `log` folding method can be used with `<Leader>zl` (z-log). This can be used when examining `.log` files. It keys off the log level to determine what to show at what level. When the log level is set to any of the recognized levels, all logs of that level or higher will be shown. The recognized levels are based on these strings when found in the log message:
 
 ```
@@ -177,7 +178,12 @@ The `log` folding method can be used with `<Leader>zl` (z-log). This can be used
 
 ![log-folding example](../img/log\_folding.png?raw=true "Log Fold Example:")
 
-##### CHEATSHEET Folding
+#### DEFINE Folding
+The `define` folding method is used with the `#if` and `#endif` preprocessor directives in a file. It will increase the fold level everytime a `#if` is found, and decrease the fold level everytime a `#endif` is found. This will allow for nested definitions to work at different levels.
+
+![define-folding_example](../img/define_folding.png?raw=true "Define Fold Example:")
+
+#### CHEATSHEET Folding
 The `cheatsheet` folding method can be used when viewing a document with the `.cheat` extension. This is activated with the `<Leader>zC` (z-cheatsheet) shortcut. The format of this `.cheat` file is setup to define `HEADER` blocks denoted by lines starting with 5 hash marks `#####`. The `HEADER` sections are all defined as level 1 with fold markers starting at the beginning of that header, and ending when the next header block is found. Closing the fold at a `HEADER` will fold away all `SECTIONS` and `UNUSED` blocks within that header block.
 
 The `SECTION` blocks are denoted by lines starting with 3 hash marks `###`, and can be used to separate out individual sections in that are unique and indepenent, but still categorized under the same `HEADER`. These are all set to fold level 2.

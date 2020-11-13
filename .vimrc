@@ -1000,7 +1000,7 @@ function! FoldLevelDiff(lnum)
 	endif
 endfunction
 
-" --- FoldLevelCheatsheet {{{2
+" --- FoldLevelCheatsheet() {{{2
 function! FoldLevelCheatsheet(lnum)
 	let line = getline(a:lnum)
 	let nextline = a:lnum < line('$') ? getline(a:lnum + 1) : ''
@@ -1019,6 +1019,18 @@ function! FoldLevelCheatsheet(lnum)
 		let lvl = '<2'
 	endif
 	" echom 'line ' . a:lnum . ' [' . line . '] lvl [' . lvl . ']'
+	return lvl
+endfunction
+
+" --- FoldLevelDefine() {{{2
+function! FoldLevelDefine(lnum)
+	let line = getline(a:lnum)
+	let lvl = '='
+	if line =~# '^#if'
+		let lvl = 'a1'
+	elseif line =~# '^#endif'
+		let lvl = 's1'
+	endif
 	return lvl
 endfunction
 
@@ -1166,6 +1178,12 @@ function! SetFoldMethod(fold_method, set_level)
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=1
 		echo 'Cheatsheet fold...'
+	elseif new_foldmethod ==# 'define'
+		set foldmethod=expr
+		set foldexpr=FoldLevelDefine(v:lnum)
+		set foldtext=FoldTextFmt('')
+		let new_foldlevel=0
+		echo 'Define fold...'
 	elseif new_foldmethod ==# 'manual'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
@@ -1211,6 +1229,7 @@ nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
 nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
 nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
 nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
+nnoremap <silent> <Leader>zD :call ToggleFold('define')<CR>
 nnoremap <silent> <Leader>zC :call ToggleFold('cheatsheet')<CR>
 nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
 nnoremap <silent> <Leader>zM :call ToggleFold('marker')<CR>
