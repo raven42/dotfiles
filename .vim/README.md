@@ -24,7 +24,7 @@ Contents:
 >   * [Bookmarks](https://github.com/raven42/dotfiles/tree/master/.vim#bookmarks)
 > * [Tagbar](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-ctag-viewer)
 >   * [Tagbar Shortcuts](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-shortcuts)
->   * [Tagbar Cheatsheet Format](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-cheetsheet-format)
+>   * [Tagbar Cheatsheet Format](https://github.com/raven42/dotfiles/tree/master/.vim#tagbar-cheatsheet-format)
 > * [Lightline](https://github.com/raven42/dotfiles/tree/master/.vim#lightline)
 > * [GitGutter / Fugitive](https://github.com/raven42/dotfiles/tree/master/.vim#gitgutter--fugitive)
 > * [NerdCommenter](https://github.com/raven42/dotfiles/tree/master/.vim#nerdcommenter)
