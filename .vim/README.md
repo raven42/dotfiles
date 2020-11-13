@@ -18,6 +18,7 @@ Contents:
 >   * [Indent Folding](https://github.com/raven42/dotfiles/tree/master/.vim#indent-folding)
 >   * [Diff Folding](https://github.com/raven42/dotfiles/tree/master/.vim#diff-folding)
 >   * [Log Folding](https://github.com/raven42/dotfiles/tree/master/.vim#log-folding)
+>   * [Define Folding](https://github.com/raven42/dotfiles/tree/master/.vim#define-folding)
 >   * [Cheatsheet Folding](https://github.com/raven42/dotfiles/tree/master/.vim#cheatsheet-folding)
 > * [DevPanel](https://github.com/raven42/dotfiles/tree/master/.vim#devpanel)
 > * [NerdTree](https://github.com/raven42/dotfiles/tree/master/.vim#nerdtree-file-browser)
