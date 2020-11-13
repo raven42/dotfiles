@@ -546,6 +546,7 @@ if version >= 800
 	" let g:tagbar_show_tag_linenumbers = 1
 	let g:tagbar_show_tag_count = 1
 	let g:tagbar_case_insensitive = 1
+	let g:tagbar_highlight_method = 'scoped-stl'
 	" let g:tagbar_long_help = 1
 	" let g:tagbar_compact = 1
 	" let g:tagbar_autoshowtag = 0
