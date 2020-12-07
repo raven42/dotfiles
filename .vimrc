@@ -156,6 +156,8 @@ highlight Whitespace	ctermbg=DarkRed guibg=DarkRed
 highlight WildMenu		ctermfg=Black ctermbg=Yellow guifg=Black guibg=Yellow
 highlight lCursor		guifg=bg guibg=fg
 
+autocmd FileType diff highlight Folded ctermfg=202 ctermbg=232
+
 "
 " --- Setup VIM defaults {{{2
 " --- GNU Coding Standards
@@ -540,7 +542,7 @@ if version >= 800
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 	let g:tagbar_file_size_limit = 1000000
-	let g:tagbar_scrolloff = 5
+	" let g:tagbar_scrolloff = 5
 	let g:tagbar_jump_offset = winheight(0) / 4
 	let g:tagbar_show_data_type = 1
 	" let g:tagbar_show_tag_linenumbers = 1
@@ -918,6 +920,7 @@ if version >= 800
 	nnoremap <silent> <Leader>d :DevPanelToggle<CR>
 	nnoremap <silent> <Leader>q :call BufClose()<CR>
 	nnoremap <silent> <Leader>u :UndotreeToggle<CR>
+	nnoremap <silent> <Leader>m :MinimapToggle<CR>
 
 	nnoremap g] :GitGutterNextHunk<CR>
 	nnoremap g[ :GitGutterPrevHunk<CR>
@@ -1000,7 +1003,31 @@ function! FoldLevelDiff(lnum)
 	endif
 endfunction
 
-" --- FoldLevelCheatsheet() {{{2
+" --- FoldLevelNewDiff() {{{2
+function! FoldLevelNewDiff(lnum)
+	let line = getline(a:lnum)
+	if line =~ '^\(diff\)'
+		return '>1'
+	elseif line =~ '^index'
+		return '>3'
+	elseif line =~ '^@@'
+		return '>2'
+	else
+		return '='
+	endif
+endfunction
+
+" --- FoldLevelSS() {{{2
+function! FoldLevelSS(lnum)
+	let line = getline(a:lnum)
+	if line =~# '\v(SWITCHCMD|CHASSISCMD)'
+		return '>1'
+	else
+		return '='
+	endif
+endfunction
+
+" --- FoldLevelCheatshzaeet() {{{2
 function! FoldLevelCheatsheet(lnum)
 	let line = getline(a:lnum)
 	let nextline = a:lnum < line('$') ? getline(a:lnum + 1) : ''
@@ -1167,6 +1194,11 @@ function! SetFoldMethod(fold_method, set_level)
 		set foldexpr=FoldLevelDiff(v:lnum)
 		set foldtext=FoldTextFmt('null')
 		let new_foldlevel=1
+	elseif new_foldmethod ==# 'newdiff'
+		set foldmethod=expr
+		set foldexpr=FoldLevelNewDiff(v:lnum)
+		set foldtext=FoldTextFmt('')
+		let new_foldlevel=1
 	elseif new_foldmethod ==# 'syntax'
 		set foldmethod=syntax
 		set foldtext=FoldTextFmt('block')
@@ -1194,6 +1226,12 @@ function! SetFoldMethod(fold_method, set_level)
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=1
 		echo 'Marker fold...'
+	elseif new_foldmethod ==# 'ssave'
+		set foldmethod=expr
+		set foldexpr=FoldLevelSS(v:lnum)
+		set foldtext=FoldTextFmt('')
+		let new_foldlevel=0
+		echo 'SSave fold...'
 	elseif new_foldmethod ==# 'default'
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
@@ -1229,10 +1267,12 @@ nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
 nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
 nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
 nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
+nnoremap <silent> <Leader>zdd :call ToggleFold('newdiff')<CR>
 nnoremap <silent> <Leader>zD :call ToggleFold('define')<CR>
 nnoremap <silent> <Leader>zC :call ToggleFold('cheatsheet')<CR>
 nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
 nnoremap <silent> <Leader>zM :call ToggleFold('marker')<CR>
+nnoremap <silent> <Leader>zS :call ToggleFold('ssave')<CR>
 nnoremap <silent> <Leader>zz :call SetFoldMethod(exists('b:fold_method') ? b:fold_method : 'default', 0)<CR>
 
 " Decrease / Increase fold level
@@ -1253,6 +1293,8 @@ nmap z9 :set foldlevel=9 \| echo 'set foldlevel=' . &foldlevel <CR>
 
 let c_no_comment_fold = 1
 call SetFoldMethod('default', 1)		" Default to manual folding
+
+autocmd FileType cheatsheet setlocal foldmethod=expr foldexpr=FoldLevelCheatsheet(v\:lnum) foldlevel=2
 " }}}1
 
 " --- Utility Functions {{{1
