@@ -41,7 +41,11 @@ export VISUAL=vim
 
 # If not an interactive shell, don't proceed any further (ex. SCP commands)
 # need to do at least basic PATH setup and other common env vars
-[ -z "$PS1" ] && return
+if [ -z "$PS1" ]; then
+	ECHO=:
+else
+	ECHO='echo -e'
+fi
 
 shopt -s checkwinsize
 
@@ -135,15 +139,15 @@ if [ -f $GIT_PROMPT ]; then
 fi
 
 if [ $GIT_REPO ]; then
-	echo "Setting up GIT environment variables for ${GIT_REPO}..."
+	$ECHO "Setting up GIT environment variables for ${GIT_REPO}..."
 	if [ ! -d ${GIT_ROOT} ]; then
-		echo "GIT_ROOT:${GIT_ROOT} not found."
+		$ECHO "GIT_ROOT:${GIT_ROOT} not found."
 	else
 		if [ -f ${GIT_RC} ]; then
 			rc_spec=${GIT_RC}
 		elif [ -f ${GIT_DEFAULT_RC} ]; then
 			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
-				echo "rc spec not found. Generating defaults at ${GIT_RC}..."
+				$ECHO "rc spec not found. Generating defaults at ${GIT_RC}..."
 				if [ ! -d ${GIT_RC_PATH} -a -w ${GIT_ROOT} ]; then
 					mkdir ${GIT_RC_PATH}
 				fi
@@ -153,11 +157,11 @@ if [ $GIT_REPO ]; then
 				fi
 				rc_spec=${GIT_RC}
 			else
-				echo "rc (${GIT_RC}) spec not found. Using defaults."
+				$ECHO "rc (${GIT_RC}) spec not found. Using defaults."
 				rc_spec=${GIT_DEFAULT_RC}
 			fi
 		else
-			echo "rc spec [${GIT_DEFAULT_RC}] not found. No defaults to use."
+			$ECHO "rc spec [${GIT_DEFAULT_RC}] not found. No defaults to use."
 		fi
 	fi
 
@@ -167,31 +171,31 @@ if [ $GIT_REPO ]; then
 		if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
 			if [ -f ${NERDTREE_BOOKMARKS} ]; then
 				if [[ ${NERDTREE_DEF_BOOKMARKS} -nt ${NERDTREE_BOOKMARKS} ]]; then
-					echo "NERDTree Bookmarks out of date. Generating new file..."
+					$ECHO "NERDTree Bookmarks out of date. Generating new file..."
 					${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
 				fi
 			else
-				echo "Generating NERDTree Bookmarks file..."
+				$ECHO "Generating NERDTree Bookmarks file..."
 				${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
 			fi
 		fi
 
 		# Look for TAG files and if none are found, generate new ones
 		if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
-			echo ' No TAGFILES found. Generating new tags in the background...'
+			$ECHO ' No TAGFILES found. Generating new tags in the background...'
 			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/retag_${GIT_REPO}.log &
 		fi
 
 		# Look for deprecated build target scripts
 		if [ -f ${GIT_RC_PATH}/bld_target ]; then
-			echo "Deprecated resource script found... [${GIT_RC_PATH}/bld_target]"
-			echo "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
-			echo "  mv ${GIT_RC_PATH}/bld_target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
+			$ECHO "Deprecated resource script found... [${GIT_RC_PATH}/bld_target]"
+			$ECHO "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
+			$ECHO "  mv ${GIT_RC_PATH}/bld_target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
 		fi
 		if [ -f ${GIT_RC_PATH}/target ]; then
-			echo "Deprecated resource script found... [${GIT_RC_PATH}/target]"
-			echo "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
-			echo "  mv ${GIT_RC_PATH}/target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
+			$ECHO "Deprecated resource script found... [${GIT_RC_PATH}/target]"
+			$ECHO "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
+			$ECHO "  mv ${GIT_RC_PATH}/target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
 		fi
 	fi
 fi
@@ -200,18 +204,18 @@ fi
 if [ -f ${COMMON_RC} ]; then
 	. ${COMMON_RC}
 elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
-	echo "Deprecated resource script found... [${DEFAULT_RC_PATH}/common_rc]"
-	echo "Please move to the new location...  [${COMMON_RC}]"
-	echo "   mv ${DEFAULT_RC_PATH}/common_rc ${COMMON_RC}"
-	echo "Sourcing this for now..."
+	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/common_rc]"
+	$ECHO "Please move to the new location...  [${COMMON_RC}]"
+	$ECHO "   mv ${DEFAULT_RC_PATH}/common_rc ${COMMON_RC}"
+	$ECHO "Sourcing this for now..."
 	. ${DEFAULT_RC_PATH}/common_rc
 fi
 
 # Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
 	. ${rc_spec}
-	echo "  RC SPEC:${rc_spec}"
-	echo "  TAGDIR:${TAGDIR}"
+	$ECHO "  RC SPEC:${rc_spec}"
+	$ECHO "  TAGDIR:${TAGDIR}"
 fi
 
 #Display info
@@ -285,9 +289,9 @@ fi
 if [ -f ${POST_RC} ]; then
 	. ${POST_RC}
 elif [ -f ${DEFAULT_RC_PATH}/post_rc ]; then
-	echo "Deprecated resource script found... [${DEFAULT_RC_PATH}/post_rc]"
-	echo "Please move to the new location...  [${POST_RC}]"
-	echo "   mv ${DEFAULT_RC_PATH}/post_rc ${POST_RC}"
-	echo "Sourcing this for now..."
+	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/post_rc]"
+	$ECHO "Please move to the new location...  [${POST_RC}]"
+	$ECHO "   mv ${DEFAULT_RC_PATH}/post_rc ${POST_RC}"
+	$ECHO "Sourcing this for now..."
 	. ${DEFAULT_RC_PATH}/post_rc
 fi
