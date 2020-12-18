@@ -229,6 +229,8 @@ See the [.vim/](.vim/) file for more information on the VIM setup and configurat
 
 ### VIM Compilation
 The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source.
+
+##### Install for single user
 ```
 git clone https://github.com/vim/vim
 cd vim
@@ -236,6 +238,20 @@ cd vim
 make
 make install
 ```
+
+##### Install for all users
+To install for all users, additional packages may be needed in order to compile. In this example we will use a Debian distribution, so subsitute with the package manager of your choice if required.
+```
+sudo apt-get build-deps vim
+sudo apt remove vim vim-runtime gvim
+cd ~
+get clone https://github.com/vim/vim
+cd vim
+./configure --prefix=/usr/local --enable-python3interp --enable-perlinterp --enable-gnome-check --enable-gui=auto --enable-gtk2-check --with-x --enable-fontset --enable-gtk2-check
+make VIMRUNTIMEDIR=/usr/local/share/vim/vim82
+```
+
+> :warning: **Note:** For some linux distribution installs (like Debian currently), even though VIM 8 is installed on the system, it may not have the required compilation flags for full usage of this environment setup (like `--enable-python3interp`). So manual compilation may still be needed. See [here](https://github.com/ycm-core/YouCompleteMe/wiki/Building-Vim-from-source) for more details.
 
 ### VIM Clipboard Setup
 By default VIM uses its own clipboard. The [.vimrc](.vimrc) file does override this and uses the system clipboard for autoselect as well as copy/paste funcitonality. If you wish to enabled this for use across SSH connections, then X11 forwarding must be enabled on the SSH session. This can be done in one of two ways.
@@ -259,6 +275,11 @@ Host *.<trusted-network>
 ## Unicode Character Support
 While not strictly needed, the vim configuration can make use of unicode characters to make things look a little nicer. To make use of this, the `USE_UNICODE` environment variable needs to be set to `1` in your `.default/common_rc` or similar. You must also make sure to have a font installed that has unicode characters. All the examples in the vim usage and configuration are shown with unicode characters enabled.
 
+To get unicode character support on different disrtibutions, the powerline package may need to be installed. It may also be advantagous to install the additional font packages listed here:
+> [powerline](https://packages.debian.org/stretch/powerline)
+> [ttf-ancient-fonts](https://packages.debian.org/buster/ttf-ancient-fonts)
+> [fonts-noto](https://packages.debian.org/buster/fonts-noto)
+
 ---
 
 ## Univeral CTAGS
@@ -271,6 +292,8 @@ cd ctags
 make
 make install
 ```
+
+> :warning: **Note:** This may be required for different linux distributions.
 
 ---
 

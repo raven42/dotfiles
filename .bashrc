@@ -281,9 +281,7 @@ function set_prompt() {
 	format_title
 }
 
-if [ $TERM = xterm ]; then
-	export PROMPT_COMMAND=set_prompt
-fi
+export PROMPT_COMMAND=set_prompt
 
 # Source the post_rc file if needed
 if [ -f ${POST_RC} ]; then
