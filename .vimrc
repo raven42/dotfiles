@@ -604,6 +604,7 @@ if version >= 800
 	" let g:tagbar_ctags_bin = '/usr/bin/ctags' " XXX: To test with exhuberant ctags
 	" let g:tagbar_logfile = $HOME . '/tagbar.log'
 	" let g:tagbar_no_autocmds = 1
+	" let g:tagbar_ignore_anonymous = 1
 	" let g:tagbar_width = max([25, winwidth(0) / 5])
 
 	" ---- Syntastic Configuration {{{2
