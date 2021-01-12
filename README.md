@@ -8,6 +8,7 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
   - [GIT REPO Setup](#git-repo-setup)
   - [Build Target](#build-target)
 - [Vim Usage / Setup](#vim-usage--setup)
+  - [VIM Usage](#vim-usage)
   - [VIM Compilation](#vim-compilation)
   - [VIM Clipboard Setup](#vim-clipboard-setup)
   - [Unicode Character Support](#unicode-character-support)
@@ -225,7 +226,15 @@ Example:
 ---
 
 ## VIM Usage / Setup
-See the [.vim/](.vim/) file for more information on the VIM setup and configuration.
+
+### VIM Usage
+See the [.vim/](.vim/) file for more information on the VIM setup and configuration including shortcuts and further personalization options. Documentation for plugins which are used and can be customized can be found here:
+- https://github.com/raven42/devpanel-vim
+- https://github.com/preservim/nerdtree
+- https://github.com/preservim/tagbar
+- https://github.com/tpope/vim-fugitive
+- https://github.com/airblade/vim-gitgutter
+:information\_source: For full list of plugins, see the [.vim](.vim/) readme or the [.vim/pack/plugins/start](https://github.com/raven42/dotfiles/tree/master/.vim/pack/plugins/start) directory.
 
 ### VIM Compilation
 The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source.
