@@ -312,6 +312,7 @@ So to copy from another user and update your font cache, it would look something
 fc-cache: succeeded
 ~$ 
 ```
+> :warning: **Note:** After installing / updating your font cache, it may be required to reboot your system.
 
 ---
 
