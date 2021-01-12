@@ -276,9 +276,42 @@ Host *.<trusted-network>
 While not strictly needed, the vim configuration can make use of unicode characters to make things look a little nicer. To make use of this, the `USE_UNICODE` environment variable needs to be set to `1` in your `.default/common_rc` or similar. You must also make sure to have a font installed that has unicode characters. All the examples in the vim usage and configuration are shown with unicode characters enabled.
 
 To get unicode character support on different disrtibutions, the powerline package may need to be installed. It may also be advantagous to install the additional font packages listed here:
+
 > [powerline](https://packages.debian.org/stretch/powerline)
+
 > [ttf-ancient-fonts](https://packages.debian.org/buster/ttf-ancient-fonts)
+
 > [fonts-noto](https://packages.debian.org/buster/fonts-noto)
+
+If your environment does not have any unicode fonts installed, and if you are unable to install any via the normal methods like above, another option is to copy existing fonts from another user in your organization. To manually copy / install these fonts, find another user in your organization that does have unicode fonts installed and copy them to your home path. Once copied, you can use the `fc-cache --force --verbose` to manually update your font cache and then verify that the correct directories were scanned. The paths to look at for fonts in a user profile can be found here:
+```
+<user>/.fonts
+<user>/.local/share/fonts
+```
+
+So to copy from another user and update your font cache, it would look something like this:
+```
+~$ mkdir ~/.fonts
+~$ mkdir -p ~/.local/share/fonts
+~$ cp -r /home/<another-user>/.fonts ~/.fonts
+~$ cp -r /home/<another-user>/.local/share/fonts ~/.local/share/fonts
+~$ fc-cache --force --verbose
+/usr/share/fonts: caching, new cache contents: 0 fonts, 3 dirs
+/usr/share/fonts/bitmap: caching, new cache contents: 15 fonts, 0 dirs
+/usr/share/fonts/default: caching, new cache contents: 0 fonts, 2 dirs
+/usr/share/fonts/default/Type1: caching, new cache contents: 35 fonts, 0 dirs
+/usr/share/fonts/default/ghostscript: caching, new cache contents: 13 fonts, 0 dirs
+/usr/share/fonts/liberation: caching, new cache contents: 4 fonts, 0 dirs
+/usr/share/X11/fonts/Type1: caching, new cache contents: 13 fonts, 0 dirs
+/usr/share/X11/fonts/TTF: skipping, no such directory
+/usr/local/share/fonts: skipping, no such directory
+/home/<user>/.fonts: caching, new cache contents: 250 fonts, 1 dirs
+/home/<user>/.fonts/luculent: caching, new cache contents: 0 fonts, 0 dirs
+/var/cache/fontconfig: not cleaning unwritable cache directory
+/home/<user>/.fontconfig: cleaning cache directory
+fc-cache: succeeded
+~$ 
+```
 
 ---
 
