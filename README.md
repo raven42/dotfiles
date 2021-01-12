@@ -234,6 +234,7 @@ See the [.vim/](.vim/) file for more information on the VIM setup and configurat
 - https://github.com/preservim/tagbar
 - https://github.com/tpope/vim-fugitive
 - https://github.com/airblade/vim-gitgutter
+
 :information\_source: For full list of plugins, see the [.vim](.vim/) readme or the [.vim/pack/plugins/start](https://github.com/raven42/dotfiles/tree/master/.vim/pack/plugins/start) directory.
 
 ### VIM Compilation
