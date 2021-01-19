@@ -337,35 +337,6 @@ make
 make install
 ```
 
-> :warning: **Note:** Currently Universal-CTAGS does not compile correctly on older systems like CentOS 6.9. To fix this, the following patch can be applied to the ctags source. See https://github.com/universal-ctags/ctags/issues/2776 for more info.
-
-```diff
-diff --git a/misc/packcc/packcc.c b/misc/packcc/packcc.c
-index f61274d..ffbbc58 100644
---- a/misc/packcc/packcc.c
-+++ b/misc/packcc/packcc.c
-@@ -411,7 +411,8 @@ static bool unescape_string(char *str, size_t *length) {
-                 }
-                 {
-                     char s[4];
--                    for (int k=0;k<4;k++) {
-+                    int k;
-+                    for (k=0;k<4;k++) {
-                         char c = str[i + k + 1];
-                         s[k] = (c >= '0' && c <= '9') ? c - '0' :
-                                (c >= 'a' && c <= 'f') ? c - 'a' + 10 :
-@@ -423,7 +424,8 @@ static bool unescape_string(char *str, size_t *length) {
-                     }
-                     else {
-                         int ch=s[0];
--                        for (int k=1;k<4;k++) ch = (ch << 4) | s[k];
-+                        int k;
-+                        for (k=1;k<4;k++) ch = (ch << 4) | s[k];
-                         if (ch < 0x80) {
-                             str[j++] = (char)ch;
-                         } else if (ch < 0x800) {
-```
-
 ---
 
 ## Further Reading
