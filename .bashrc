@@ -66,7 +66,6 @@ NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
 NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
 NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
 RETAG_SCRIPT=${HOME}/bin/retag
-USER_HOSTNAME="bsnvdga0120"
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
 if ! shopt -q login_shell ; then # We're not a login shell
@@ -226,7 +225,7 @@ function format_prompt() {
 	if [ $GIT_REPO ]; then
 		if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
 			PS_COLOR=${FG_PINK}
-		elif [[ ${HOSTNAME} =~ ${USER_HOSTNAME} ]]; then
+		elif [[ ${USER_HOSTNAME} =~ ${HOSTNAME} ]]; then
 			PS_COLOR=${FG_ORG}
 		else
 			PS_COLOR=${FG_CYAN}
