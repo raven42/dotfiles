@@ -238,8 +238,8 @@ while true; do
 		fi
 
 		cd ${workspace_path}
-		[ $debug -eq 1 ] && echo "Retrieving remote branches from [${remote_server}:${remote_repo}]..."
-		branches=$(git ls-remote --head ${remote_server}:${remote_repo} | sed -e 's|.*refs/heads/||' | grep -v priv)
+		[ $debug -eq 1 ] && echo "Retrieving remote branches [git ls-remove --heads ${remove_server}:${remote_repo}]..."
+		branches=$(git ls-remote --heads ${remote_server}:${remote_repo} | sed -e 's|.*refs/heads/||' | grep -v priv)
 		if [ $? -ne 0 ]; then
 			echo "Error retrieving branch list from remote [${remote_server}:${remote_repo}]"
 			echo "Please ensure you have the proper DEFAULT_GIT_SERVER and DEFAULT_GIT_REPO environment variables defined."
