@@ -3,7 +3,7 @@ If you with to install your own github ssh keys for another account (for example
 
 Generate new RSA key for different email account:
 ```
-rsa-keygen -t rsa -C "<other-email>@<domain>"
+ssh-keygen -t rsa -C "<other-email>@<domain>"
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/<user>/.ssh/id_rsa): /home/<user>/.ssh/id_rsa.<other-email>
 Enter passphrase (empty for no passphrase): 
