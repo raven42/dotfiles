@@ -142,17 +142,23 @@ if [ $GIT_REPO ]; then
 	if [ ! -d ${GIT_ROOT} ]; then
 		$ECHO "GIT_ROOT:${GIT_ROOT} not found."
 	else
+		if [[ ${GIT_ROOT} =~ ${USER} ]]; then
+			if [ ! -d ${GIT_RC_PATH} -a -w ${GIT_ROOT} ]; then
+				$ECHO "Creating repo rc directory at ${GIT_RC_PATH}..."
+				mkdir ${GIT_RC_PATH}
+			fi
+			if [ ! -d ${GIT_TAGS_PATH} -a -w ${GIT_RC_PATH} ]; then
+				$ECHO "Creating ctags output directory at ${GIT_TAGS_PATH}..."
+				mkdir ${GIT_TAGS_PATH}
+			fi
+		fi
 		if [ -f ${GIT_RC} ]; then
 			rc_spec=${GIT_RC}
 		elif [ -f ${GIT_DEFAULT_RC} ]; then
 			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
 				$ECHO "rc spec not found. Generating defaults at ${GIT_RC}..."
-				if [ ! -d ${GIT_RC_PATH} -a -w ${GIT_ROOT} ]; then
-					mkdir ${GIT_RC_PATH}
-				fi
 				if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} ]; then
 					cp ${GIT_DEFAULT_RC} ${GIT_RC}
-					mkdir ${GIT_TAGS_PATH}
 				fi
 				rc_spec=${GIT_RC}
 			else
