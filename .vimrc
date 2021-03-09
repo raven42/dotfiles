@@ -1020,7 +1020,7 @@ function! FoldLevelLog(lnum)
 	return len(g:LogLevelFoldMap)
 endfunction
 
-" --- FoldLevelDiff(za) {{{2
+" --- FoldLevelDiff() {{{2
 function! FoldLevelDiff(lnum)
 	let line = getline(a:lnum)
 	if line =~ '^\(diff\) '
@@ -1032,7 +1032,7 @@ function! FoldLevelDiff(lnum)
 	endif
 endfunction
 
-" --- FoldLevelNewDiff() {{za{2
+" --- FoldLevelNewDiff() {{{2
 function! FoldLevelNewDiff(lnum)
 	let line = getline(a:lnum)
 	if line =~ '^\(diff\)'
