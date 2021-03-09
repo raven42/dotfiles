@@ -241,9 +241,18 @@ See the [.vim/](.vim/) file for more information on the VIM setup and configurat
 The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source.
 
 ##### Install for single user
+1. Clone the git repository:
 ```
 git clone https://github.com/vim/vim
 cd vim
+```
+2. If you have previously cloned and built vim in your local vim repository, do the following to return it to a porcelain state. Otherwise you can skip to step 3.
+```
+git clean -dxf
+git pull
+```
+3. Now you can configure, build, and install vim
+```
 ./configure --prefix=${HOME} --enable-python3interp --enable-perlinterp --enable-gnome-check --enable-gui=auto --enable-gtk2-check --with-x --enable-fontset --enable-gtk2-check
 make
 make install
