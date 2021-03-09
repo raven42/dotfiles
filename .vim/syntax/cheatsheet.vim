@@ -28,7 +28,7 @@ syntax	match	CHEATSHEET_COMMENT			"#.*$"
 syntax	match	CHEATSHEET_COMMENT			"^-.*$"
 
 highlight		CHEATSHEET_HEADER			ctermfg=Red
-highlight		CHEATSHEET_HEADER_TITLE		ctermfg=Yellow
+highlight		CHEATSHEET_HEADER_TITLE		ctermfg=DarkCyan
 highlight		CHEATSHEET_SECTION			ctermfg=Red
 highlight		CHEATSHEET_SECTION_TITLE	ctermfg=DarkYellow
 highlight		CHEATSHEET_UNUSED			ctermfg=DarkRed

@@ -97,68 +97,13 @@ endif
 " --- Syntax Highlighting Defintions {{{2
 
 " --- For more colors, see 256 color pallet in ~/.vim/sample-256.colors
-
-"colorscheme desert
+"	  Primary color highlighting moved into ~/.vim/colors/  and will use
+"	  the colorscheme command to load a <colorscheme>.vim file.
 syntax on					" ---- turn on syntax highlighting
 set background=dark
 set hlsearch
+colorscheme xterm
 
-highlight Comment		ctermfg=Red guifg=Red
-highlight Constant		ctermfg=Gray guifg=Gray
-highlight Cursor		guifg=bg guibg=fg
-highlight CursorLine	cterm=bold ctermbg=DarkGray
-highlight Delimiter		ctermfg=Gray guifg=Gray
-highlight DiffAdd		ctermbg=4 guibg=DarkBlue
-highlight DiffChange	ctermbg=5 guibg=DarkMagenta
-highlight DiffDelete	ctermfg=12 ctermbg=6 gui=bold guifg=Blue guibg=DarkCyan
-highlight DiffText		cterm=bold ctermbg=12 gui=bold guibg=Red
-highlight Directory		ctermfg=Yellow guifg=Yellow
-highlight Error			ctermfg=White guifg=White ctermbg=Red guibg=Red
-highlight ErrorMsg		ctermfg=Yellow guifg=Yellow
-highlight FoldColumn	ctermfg=Yellow ctermbg=237 guifg=Yellow guibg=DarkMagenta
-highlight Folded		ctermfg=Magenta ctermbg=232 guifg=Magenta guibg=Black
-highlight GitGutterAdd			ctermfg=Green
-highlight GitGutterAddLine		ctermbg=235
-highlight GitGutterChange		ctermfg=Blue
-highlight GitGutterChangeLine	ctermbg=17
-highlight GitGutterDelete		ctermfg=Red
-highlight GitGutterDeleteLine	ctermbg=52
-highlight Identifier	ctermfg=DarkBlue guifg=DarkBlue
-highlight Ignore		ctermfg=Gray guifg=bg
-highlight IncSearch		cterm=reverse gui=reverse
-highlight LineNr		ctermfg=Gray guifg=Gray
-highlight ModeMsg		ctermfg=White guifg=White ctermbg=DarkRed guibg=DarkRed
-highlight MoreMsg		ctermfg=White guifg=White ctermbg=DarkRed guibg=DarkRed
-highlight NonText		ctermfg=LightGreen guifg=LightGreen
-highlight Normal		ctermfg=White ctermbg=232 guifg=White guibg=Black
-highlight PreProc		ctermfg=Yellow guifg=Yellow
-highlight Question		ctermfg=Red guifg=Red
-highlight Search		ctermfg=White guifg=White ctermbg=DarkMagenta guibg=DarkBlue
-highlight SignColumn	ctermfg=White ctermbg=Black guifg=Magenta guibg=Grey
-highlight Special		ctermfg=Yellow guifg=Yellow
-highlight SpecialKey	cterm=bold
-highlight Statement		ctermfg=Green guifg=Green
-highlight StatusLine	ctermfg=DarkGray guifg=DarkGray ctermbg=White guibg=White
-highlight StatusLineNC	ctermfg=DarkMagenta guifg=DarkMagenta ctermbg=White guibg=Black
-highlight TabLine		ctermbg=DarkMagenta ctermfg=DarkMagenta
-highlight TabLineFill	ctermbg=DarkGray ctermfg=White
-highlight TabLineSel	ctermbg=LightGray ctermfg=White
-highlight TagbarHighlight	ctermfg=White ctermbg=88
-highlight Title			ctermfg=Red guifg=Red
-highlight Todo			ctermfg=Yellow guifg=Yellow ctermbg=Black guibg=Black
-highlight Type			ctermfg=Magenta guifg=Magenta
-highlight Underlined	cterm=underline ctermfg=12 gui=underline guifg=#80a0ff
-highlight VertSplit		ctermfg=DarkMagenta ctermbg=DarkMagenta
-highlight Visual		cterm=reverse gui=reverse
-highlight VisualNOS		cterm=bold gui=bold
-highlight WarningMsg	ctermfg=Red guifg=Red
-highlight Whitespace	ctermbg=DarkRed guibg=DarkRed
-highlight WildMenu		ctermfg=Black ctermbg=Yellow guifg=Black guibg=Yellow
-highlight lCursor		guifg=bg guibg=fg
-
-autocmd FileType diff highlight Folded ctermfg=202 ctermbg=232
-
-"
 " --- Setup VIM defaults {{{2
 " --- GNU Coding Standards
 " setlocal cindent
@@ -167,6 +112,8 @@ autocmd FileType diff highlight Folded ctermfg=202 ctermbg=232
 " setlocal softtabstop=2
 " setlocal textwidth=79
 " setlocal fo-=ro fo+=cql
+
+let $TMPDIR=$HOME . '/tmp'
 
 set nocompatible			" ---- Use Vim defaults (much better!)
 set bs=indent,eol,start		" ---- allow backspacing over everything in insert mode
@@ -205,7 +152,7 @@ set cindent					" ---- Enabled C indenting
 set autoindent				" ---- autoindenting is good
 set smartindent				" ---- Recognize syntax for formatting
 set autoread				" ---- Autoread file when change is detected
-set shortmess=aIt
+" set shortmess=aIt
 set textwidth=0				" ---- Set default character width before autowrap
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
@@ -325,10 +272,10 @@ if version >= 800
 				\ 'right-separator'			: '',
 				\ 'left-subseparator'		: '',
 				\ 'right-subseparator'		: '',
-				\ 'arrow-up'				: '▲',
-				\ 'arrow-down'				: '▼',
-				\ 'arrow-left'				: '◀',
-				\ 'arrow-right'				: '▶',
+				\ 'arrow-up'				: '⯅',
+				\ 'arrow-down'				: '⯆',
+				\ 'arrow-left'				: '⯇',
+				\ 'arrow-right'				: '⯈',
 				\ 'line-added'				: '',
 				\ 'line-modified'			: '',
 				\ 'line-modified-removed'	: '',
@@ -536,7 +483,6 @@ if version >= 800
 	let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
 	let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
 
-	autocmd VimEnter * call gitgutter#all(0)
 
 	" ---- Tagbar Configuration {{{2
 	let g:tagbar_no_status_line = 1
@@ -595,6 +541,32 @@ if version >= 800
 					\ 'header' : 'h',
 				\ },
 			\ }
+	let g:tagbar_type_markdown = {
+				\ 'ctagstype'	: 'markdown',
+				\ 'kinds'		: [
+					\ 'c:chapter:0:1',
+					\ 's:section:0:1',
+					\ 'S:subsection:0:1',
+					\ 't:subsubsection:0:1',
+					\ 'T:l4subsection:0:1',
+					\ 'u:l5subsection:0:1',
+				\ ],
+				\ 'sro'			: '""',
+				\ 'kind2scope'	: {
+					\ 'c' : 'chapter',
+					\ 's' : 'section',
+					\ 'S' : 'subsection',
+					\ 't' : 'subsubsection',
+					\ 'T' : 'l4subsection',
+				\ },
+				\ 'scope2kind'	: {
+					\ 'chapter' : 'c',
+					\ 'section' : 's',
+					\ 'subsection' : 'S',
+					\ 'subsubsection' : 't',
+					\ 'l4subsection' : 'T',
+				\ },
+			\ }
 
 	autocmd FileType cheatsheet let g:tagbar_show_data_type = 0
 	autocmd FileType cheatsheet let g:tagbar_sort = 0
@@ -645,7 +617,7 @@ if version >= 800
 	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
 	let g:devpanel_panel_min = 40
-	let g:devpanel_panel_max = 50
+	let g:devpanel_panel_max = 45
 	let g:devpanel_open_min_width = 120
 	let g:devpanel_use_nerdtree = 1
 	let g:devpanel_use_tagbar = 1
@@ -691,6 +663,10 @@ if version >= 800
 
 	if g:have_tagbar && exists('g:tagbar_logfile')
 		execute 'TagbarDebug ' . g:tagbar_logfile
+	endif
+
+	if g:have_gitgutter
+		autocmd VimEnter * call gitgutter#all(0)
 	endif
 
     " ---- LightlineFileEncoding() {{{2
@@ -770,6 +746,46 @@ if version >= 800
 		echom 'Closing buffer ' . % . '...'
 	endfunction
 
+	" ---- LightLineColorscheme() {{{2
+	augroup LightlineColorscheme
+		autocmd!
+		autocmd ColorScheme * call LightlineColorScheme()
+	augroup END
+
+	let g:lineline_colorscheme = 'powerline'
+	function! LightlineColorScheme(...) abort
+		if !exists('g:loaded_lightline')
+			return
+		endif
+		let color_name = a:0 > 0 ? a:1 : g:lightline_colorscheme
+		try
+			if color_name =~# 'powerline\|wombat\|solarized\|landscape\|jellybeans\|seoul256\|Tomorrow'
+				let g:lightline.colorscheme =
+							\ substitute(substitute(color_name, '-', '_', 'g'), '256.*', '', '')
+				call lightline#init()
+				call lightline#colorscheme()
+				call lightline#update()
+			endif
+		catch
+		endtry
+	endfunction
+
+	function! s:set_lightline_colorscheme(name) abort
+		let g:lightline.colorscheme = a:name
+		call lightline#init()
+		call lightline#colorscheme()
+		call lightline#update()
+	endfunction
+
+	function! s:lightline_colorschemes(...) abort
+		return join(map(
+					\ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+					\ "fnamemodify(v:val,':t:r')"),
+					\ "\n")
+	endfunction
+	command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
+				\ call s:set_lightline_colorscheme(<q-args>)
+
     " ---- LastOpenFileNmae() {{{2
 	function! LastOpenFileName() abort
 		if !exists('t:lastfilename')
@@ -800,6 +816,7 @@ if version >= 800
 		let file_info = substitute(file_info, '\/home\/' . $USER, '~', '')
 		let file_info = substitute(file_info, $SRC_PATH_PREFIX, '..', '')
 		let &titlestring = 'VIM ' . branch_info . file_info
+		set title
 	endfunction
 
     " ---- FilterBuffer() {{{2
@@ -967,6 +984,17 @@ endif
 " }}}1
 
 " --- Folding utilities {{{1
+" --- Folding Information {{{2
+"		foldexpr return		behavior
+"		0					No fold at this line
+"		1, 2, ..			line set to this fold level
+"		-1					use fold level of prev/next line (lowest)
+"		'='					line set to fold level of previous line
+"		'a1', 'a2', ..		add one, two, .. to fold level of prev line
+"		's1', 's2', ..		subtrack one, two, .. to fold level of prev line
+"		'<1', '<2', ..		a fold with this level ends at this line
+"		'>1', '>2', ..		a fold with this level starts at this line
+"
 " --- LogLevelFolding Setup {{{2
 let g:LogLevelFoldMap = [
 			\ [ '###',			0 ],
@@ -992,7 +1020,7 @@ function! FoldLevelLog(lnum)
 	return len(g:LogLevelFoldMap)
 endfunction
 
-" --- FoldLevelDiff() {{{2
+" --- FoldLevelDiff(za) {{{2
 function! FoldLevelDiff(lnum)
 	let line = getline(a:lnum)
 	if line =~ '^\(diff\) '
@@ -1004,7 +1032,7 @@ function! FoldLevelDiff(lnum)
 	endif
 endfunction
 
-" --- FoldLevelNewDiff() {{{2
+" --- FoldLevelNewDiff() {{za{2
 function! FoldLevelNewDiff(lnum)
 	let line = getline(a:lnum)
 	if line =~ '^\(diff\)'
@@ -1062,6 +1090,22 @@ function! FoldLevelDefine(lnum)
 	return lvl
 endfunction
 
+" --- FoldLevelInvertSearch() {{{2
+function! FoldLevelInvertSearch(lnum)
+	let line = getline(a:lnum)
+	let lvl = '0'
+	let srch_pattern = @/
+
+	" For empty lines, use -1
+	if line =~# '^\s*$'
+		let lvl = -1
+	elseif line =~# srch_pattern
+		let lvl = 1
+	endif
+
+	return lvl
+endfunction
+
 " --- FoldTextFmt() {{{2
 function! FoldTextFmt(fmt)
 	if a:fmt ==# 'tag' && g:have_tagbar						" TAG fold text
@@ -1078,6 +1122,8 @@ function! FoldTextFmt(fmt)
 		let text = substitute(disp_level, '[\[\]\\]', '', 'g')
 	elseif a:fmt ==# 'search'								" SEARCH fold text
 		let text = 'search:' . @/		" Read contents of search register into text
+	elseif a:fmt ==# 'invert-search'						" INVERT-SEARCH fold text
+		let text = 'invert-search:' . @/
 	elseif a:fmt ==# 'block'								" BLOCK fold text
 		let suba = getline(v:foldstart)
 		let foldmarkerpat = join(map(split(&l:foldmarker,','), "v:val.'\\d\\='"), '\|')
@@ -1131,7 +1177,8 @@ function! SetFoldMethod(fold_method, set_level)
 	let current_foldlevel = &foldlevel
 	let new_foldlevel = current_foldlevel
 	let new_foldmethod = a:fold_method
-	if new_foldmethod ==# 'log'
+
+	if new_foldmethod ==# 'log'					" --- LOG fold method
 		set foldmethod=expr
 		set foldexpr=FoldLevelLog(v:lnum)
 		let new_foldlevel = a:set_level ? 5 : current_foldlevel
@@ -1143,7 +1190,7 @@ function! SetFoldMethod(fold_method, set_level)
 			endif
 		endfor
 		echo 'Folding log-level - showing all logs ' . substitute(disp_level, '\', '', 'g') . ' (' . new_foldlevel . ') or higher...'
-	elseif new_foldmethod ==# 'git'
+	elseif new_foldmethod ==# 'git'				" --- GIT fold method
 		if !g:have_gitgutter
 			echo 'GitGutter plugin not installed...'
 			return
@@ -1159,81 +1206,87 @@ function! SetFoldMethod(fold_method, set_level)
 		endif
 		let new_foldlevel = 1
 		redraw | echo 'GIT fold... +' . a . ' ~' . m . ' -' . r
-	elseif new_foldmethod ==# 'search'
+	elseif new_foldmethod ==# 'invert-search'	" --- INVERT-SEARCH fold method
+		let new_foldlevel=0
+		set foldmethod=expr
+		set foldexpr=FoldLevelInvertSearch(v:lnum)
+		set foldtext=FoldTextFmt('invert-search')
+		echo 'Invert-Search fold...'
+	elseif new_foldmethod ==# 'search'			" --- SEARCH fold method
 		if !g:have_searchfold
 			echo 'SearchFold plugin not installed...'
 			return
 		endif
-		call SearchFold(0)				" --- Call SearchFold() for normal mode
+		call SearchFold(0) " Call SearchFold() for normal mode
 		let new_foldlevel=2
 		if &filetype ==# 'log'
 			set foldtext=FoldTextFmt('search')
 		else
 			set foldtext=FoldTextFmt('tag')
 		endif
-	elseif new_foldmethod ==# 'search-word'
+	elseif new_foldmethod ==# 'search-word'		" --- SEARCH-WORD fold method
 		if !g:have_searchfold
 			echo 'SearchFold plugin not installed...'
 			return
 		endif
-		let @/ = expand('<cword>')		" --- Set search pattern to current word
-		call SearchFold(0)				" --- Call SearchFold() for normal mode
+		let @/ = expand('<cword>')	" Set search pattern to current word
+		call SearchFold(0)			" Call SearchFold() for normal mode
 		let new_foldlevel=2
-		let new_foldmethod='search'		" --- 'search-word' is really the same as 'search'
+		let new_foldmethod='search'	" 'search-word' is really the same as 'search'
 		if &filetype ==# 'log'
 			set foldtext=FoldTextFmt('search')
 		else
 			set foldtext=FoldTextFmt('tag')
 		endif
-	elseif new_foldmethod ==# 'indent'
+	elseif new_foldmethod ==# 'indent'			" --- INTEND fold method
 		set foldmethod=indent
 		set foldtext=FoldTextFmt('null')
 		let new_foldlevel=0
 		echo 'Indent fold...'
-	elseif new_foldmethod ==# 'diff'
+	elseif new_foldmethod ==# 'diff'			" --- DIFF fold method
 		set foldmethod=expr
 		set foldexpr=FoldLevelDiff(v:lnum)
 		set foldtext=FoldTextFmt('null')
 		let new_foldlevel=1
-	elseif new_foldmethod ==# 'newdiff'
+	elseif new_foldmethod ==# 'newdiff'			" --- NEWDIFF fold method
 		set foldmethod=expr
 		set foldexpr=FoldLevelNewDiff(v:lnum)
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=1
-	elseif new_foldmethod ==# 'syntax'
+	elseif new_foldmethod ==# 'syntax'			" --- SYNTAX fold method
 		set foldmethod=syntax
 		set foldtext=FoldTextFmt('block')
 		let new_foldlevel=0
 		echo 'Syntax fold...'
-	elseif new_foldmethod ==# 'cheatsheet'
+	elseif new_foldmethod ==# 'cheatsheet'		" --- CHEATSHEET fold method
 		set foldmethod=expr
 		set foldexpr=FoldLevelCheatsheet(v:lnum)
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=1
 		echo 'Cheatsheet fold...'
-	elseif new_foldmethod ==# 'define'
+	elseif new_foldmethod ==# 'define'			" --- DEFINE fold method
 		set foldmethod=expr
 		set foldexpr=FoldLevelDefine(v:lnum)
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
 		echo 'Define fold...'
-	elseif new_foldmethod ==# 'manual'
+	elseif new_foldmethod ==# 'manual'			" --- MANUAL fold method
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
 		echo 'Manual fold...'
-	elseif new_foldmethod ==# 'marker'
+	elseif new_foldmethod ==# 'marker'			" --- MARKER fold method
 		set foldmethod=marker
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=1
 		echo 'Marker fold...'
-	elseif new_foldmethod ==# 'ssave'
+	elseif new_foldmethod ==# 'ssave'			" --- SSAVE fold method
 		set foldmethod=expr
 		set foldexpr=FoldLevelSS(v:lnum)
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
 		echo 'SSave fold...'
-	elseif new_foldmethod ==# 'default'
+	elseif new_foldmethod ==# 'default'			" --- DEFAULT fold method
 		set foldmethod=manual
 		set foldtext=FoldTextFmt('')
 		let new_foldlevel=0
@@ -1267,6 +1320,7 @@ nnoremap <silent> <Leader>zy :call ToggleFold('syntax')<CR>
 nnoremap <silent> <Leader>zl :call ToggleFold('log')<CR>
 nnoremap <silent> <Leader>zg :call ToggleFold('git')<CR>
 nnoremap <silent> <Leader>zi :call ToggleFold('indent')<CR>
+nnoremap <silent> <Leader>zis :call ToggleFold('invert-search')<CR>
 nnoremap <silent> <Leader>zd :call ToggleFold('diff')<CR>
 nnoremap <silent> <Leader>zdd :call ToggleFold('newdiff')<CR>
 nnoremap <silent> <Leader>zD :call ToggleFold('define')<CR>
@@ -1348,6 +1402,7 @@ function! ToggleUnicode()
 	redraw!
 endfunction
 command! -nargs=0 ToggleUnicode call ToggleUnicode()
+command! -nargs=0 UnicodeToggle call ToggleUnicode()
 
 " }}}1
 
