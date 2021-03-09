@@ -35,7 +35,7 @@ Test your SSH connection to github.
 ssh -T github.com
 ```
 
-If you want to use these SSH credentials for an existing repository, you may need to update your `<repository>/.git/config` file to the following. You will also need to make sure the username and email is correct for this repository:
+If you want to use these SSH credentials for an existing repository, you may need to update your `<repository>/.git/config` file to the following. If using this dotfiles repository, the git config will be at `${HOME}/.cfg/config`. You will also need to make sure the username and email is correct for this repository:
 ```
 [remote "origin"]
 	url = git@github.com:<user-name>/<repository>
