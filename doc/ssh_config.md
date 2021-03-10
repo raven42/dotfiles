@@ -3,7 +3,7 @@ If you with to install your own github ssh keys for another account (for example
 
 Generate new RSA key for different email account:
 ```
-rsa-keygen -t rsa -C "<other-email>@<domain>"
+ssh-keygen -t rsa -C "<other-email>@<domain>"
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/<user>/.ssh/id_rsa): /home/<user>/.ssh/id_rsa.<other-email>
 Enter passphrase (empty for no passphrase): 
@@ -35,7 +35,7 @@ Test your SSH connection to github.
 ssh -T github.com
 ```
 
-If you want to use these SSH credentials for an existing repository, you may need to update your `<repository>/.git/config` file to the following. You will also need to make sure the username and email is correct for this repository:
+If you want to use these SSH credentials for an existing repository, you may need to update your `<repository>/.git/config` file to the following. If using this dotfiles repository, the git config will be at `${HOME}/.cfg/config`. You will also need to make sure the username and email is correct for this repository:
 ```
 [remote "origin"]
 	url = git@github.com:<user-name>/<repository>

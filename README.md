@@ -30,9 +30,11 @@ githome checkout
 ```
 
 
-Setup git to not show untracked files in the status output
+Setup git to not show untracked files in the status output. You can also setup the username and email associated with this git repository if different than your normal username / email.
 ```
 githome config --local status.showUntrackedFiles no
+githome config --local user.name "username"
+githome config --local user.email "user@email.com"
 ```
 
 Once cloned, it may be necessary to initialize / update any submodules for any git repositories that are embedded in the environment.
