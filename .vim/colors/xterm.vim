@@ -111,3 +111,11 @@ execute ':highlight WildMenu			ctermfg=' . black . ' ctermbg=' . magenta
 " Update lightline configuration... this is used in .vimrc in the
 " LightlineColorScheme() routine
 let g:lightline_colorscheme = 'powerline'
+
+" Need both the autocmd and normal highlight. The autocmd is needed for
+" opening the file, and the normal command is needed when switching
+" colorscheme after file has been opened
+if &filetype ==# 'diff'
+	execute ':highlight Folded ctermfg=' . darkgray . ' ctermbg=' . bg
+endif
+autocmd FileType diff execute ':highlight Folded ctermfg=' . darkgray . ' ctermbg=' bg

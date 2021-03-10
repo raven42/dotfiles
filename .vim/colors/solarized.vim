@@ -2,7 +2,7 @@
 " Solarized Vim Color Setup
 "
 syntax on					" ---- turn on syntax highlighting
-set background=light
+set background=dark
 set hlsearch
 
 highlight Normal				ctermfg=White ctermbg=232
@@ -61,3 +61,11 @@ highlight WildMenu				ctermfg=Black ctermbg=Yellow
 " Update lightline configuration... this is used in .vimrc in the
 " LightlineColorScheme() routine
 let g:lightline_colorscheme = 'powerline'
+
+" Need both the autocmd and normal highlight. The autocmd is needed for
+" opening the file, and the normal command is needed when switching
+" colorscheme after file has been opened
+if &filetype ==# 'diff'
+	execute ':highlight Folded ctermfg=' . blue . ' ctermbg=bg'
+endif
+autocmd FileType diff execute ':highlight Folded ctermfg=' . blue . ' ctermbg=bg'
