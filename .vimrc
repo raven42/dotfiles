@@ -157,7 +157,10 @@ set textwidth=0				" ---- Set default character width before autowrap
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
 set clipboard=unnamed,autoselect,exclude:cons\|linux
-set modelineexpr
+
+if version >= 800
+	set modelineexpr
+endif
 
 let tagfiles = ''
 for tagfile in split(globpath($TAGDIR, '*'), '\n')
@@ -625,7 +628,8 @@ if version >= 800
 	let g:devpanel_use_flake8 = 1
 
 	" ---- Generic definitions used by functions for plugins {{{2
-	let g:ignored_windows = '\v(nerdtree|tagbar|undotree)'
+	let g:ignored_filetypes = '\v(nerdtree|tagbar|undotree)'
+	let g:ignored_files = '\v(hunk-preview)'
 
     " ---- Load Plugins {{{2
 	packloadall
@@ -671,26 +675,26 @@ if version >= 800
 
     " ---- LightlineFileEncoding() {{{2
 	function! LightlineFileEncoding()
-		return &filetype =~# g:ignored_windows ? '' :
+		return &filetype =~# g:ignored_filetypes ? '' :
 					\ &fenc !=# '' ? &fenc : &enc
 	endfunction
 
     " ---- LightlineFileFormat() {{{2
 	function! LightlineFileFormat()
 		return winwidth(0) < 90 ? '' :
-					\ &filetype =~# g:ignored_windows ? '' :
+					\ &filetype =~# g:ignored_filetypes ? '' :
 					\ &fileformat
 	endfunction
 
     " ---- LightlineFilename() {{{2
 	function! LightlineFilename()
-		return &filetype =~# g:ignored_windows ? '' :
+		return &filetype =~# g:ignored_filetypes ? '' :
 					\ expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
 	endfunction
 
     " ---- LightlineFileType() {{{2
 	function! LightlineFileType()
-		return &filetype !~# g:ignored_windows ? &filetype : ''
+		return &filetype !~# g:ignored_filetypes ? &filetype : ''
 	endfunction
 
     " ---- LightlineGitgutterHunks() {{{2
@@ -713,20 +717,20 @@ if version >= 800
     " ---- LightlineModified() {{{2
 	function! LightlineModified()
 		return !&modified ? '' :
-					\ &filetype =~# g:ignored_windows ? '' :
+					\ &filetype =~# g:ignored_filetypes ? '' :
 					\ g:charmap['write']
 	endfunction
 
     " ---- LightlineReadonly() {{{2
 	function! LightlineReadonly()
 		return !&readonly ? '' :
-					\ &filetype =~# g:ignored_windows ? '' :
+					\ &filetype =~# g:ignored_filetypes ? '' :
 					\ g:charmap['lock']
 	endfunction
 
     " ---- LightlineBranchInfo() {{{2
 	function! LightlineBranchInfo()
-		if !g:have_fugitive || &filetype =~# g:ignored_windows
+		if !g:have_fugitive || &filetype =~# g:ignored_filetypes
 			return ''
 		endif
 		let branch = fugitive#head()
@@ -735,7 +739,7 @@ if version >= 800
 
     " ---- LightlineFunctionName() {{{2
 	function! LightlineFunctionName()
-		if !g:have_tagbar || &filetype =~# g:ignored_windows
+		if !g:have_tagbar || &filetype =~# g:ignored_filetypes
 			return ''
 		endif
 		return tagbar#currenttag("%s", "", 'f', 'nearest-stl')
@@ -791,7 +795,7 @@ if version >= 800
 		if !exists('t:lastfilename')
 			let t:lastfilename = fnamemodify(bufname('%'), ':p')
 		endif
-		if &filetype !~# g:ignored_windows
+		if &filetype !~# g:ignored_filetypes
 			let bufname = fnamemodify(bufname('%'), ':p')
 			if bufname == ''
 				let bufname = 'No Name'
@@ -821,7 +825,7 @@ if version >= 800
 
     " ---- FilterBuffer() {{{2
 	function! FilterBuffer(i)
-		return bufexists(a:i) && buflisted(a:i) && !(getbufvar(a:i, '&filetype') =~# g:ignored_windows)
+		return bufexists(a:i) && buflisted(a:i) && !(getbufvar(a:i, '&filetype') =~# g:ignored_filetypes) && !(bufname('%') =~# g:ignored_files)
 	endfunction
 
     " ---- FilteredBuffers() {{{2
@@ -835,7 +839,7 @@ if version >= 800
 		if winnr('#') > 1
 			" Find the main window... don't switch to another buffer while
 			" in a devpanel window
-			while &readonly && &filetype =~# g:ignored_windows
+			while &readonly && &filetype =~# g:ignored_filetypes && bufname('%') =~# g:ignored_files
 				execute 'wincmd w'
 			endwhile
 		endif
@@ -941,7 +945,9 @@ if version >= 800
 	nnoremap <silent> <Leader>m :MinimapToggle<CR>
 
 	nnoremap g] :GitGutterNextHunk<CR>
+	nnoremap g. :GitGutterNextHunk<CR>:GitGutterPreviewHunk<CR>
 	nnoremap g[ :GitGutterPrevHunk<CR>
+	nnoremap g, :GitGutterPrevHunk<CR>:GitGutterPreviewHunk<CR>
 	nnoremap gs :GitGutterStageHunk<CR>
 	nnoremap gu :GitGutterUndoHunk<CR>
 	nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
