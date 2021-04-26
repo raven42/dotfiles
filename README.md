@@ -350,6 +350,11 @@ make install
 
 ---
 
+## Environment Modules
+It is also possible to integrate environment modules into these resource files. Environment modules allows for easy setting of your `$PATH` / `$LD_LIBRARY_PATH` / `$MANPATH` and other similar environment variables. It also allows you to `load` a module at will, and to `unload` a module at will. This makes swapping toolsets or such an easy task. For more info, see the `modules` link in the further reading section.
+
+---
+
 ## Further Reading
 For more reading, see the following:
 > * <https://www.atlassian.com/git/tutorials/dotfiles>
@@ -358,6 +363,7 @@ For more reading, see the following:
 > * <https://docs.github.com/en/github/writing-on-github>
 > * <https://www.webfx.com/tools/emoji-cheat-sheet/>
 > * <https://www.rapidtables.com/code/text/unicode-characters.html>
+> * <https://modules.readthedocs.io/en/latest/index.html>
 
 Credit:
 > <darth.gerbil@gmail.com>
