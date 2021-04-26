@@ -64,6 +64,7 @@ execute ':highlight Delimiter			ctermfg=' . gray
 execute ':highlight DiffAdded			ctermfg=' . green
 execute ':highlight DiffChanged			ctermfg=' . blue
 execute ':highlight DiffFile			ctermfg=' . magenta
+execute ':highlight DiffLine			ctermfg=' . blue
 execute ':highlight DiffRemoved			ctermfg=' . red
 execute ':highlight DiffText			cterm=bold ctermbg=' . gray
 execute ':highlight Directory			ctermfg=' . magenta
@@ -98,7 +99,7 @@ execute ':highlight TabLineFill			ctermbg=' . darkgray . ' ctermfg=' . white
 execute ':highlight TabLineSel			ctermbg=' . gray . ' ctermfg=' . white
 execute ':highlight TagbarHighlight		ctermfg=' . white . ' ctermbg=' . darkestred
 execute ':highlight Title				ctermfg=' . red
-execute ':highlight Todo				ctermfg=' . lightestyellow. ' ctermbg=' . bg
+execute ':highlight Todo				ctermfg=' . yellow . ' ctermbg=' . bg
 execute ':highlight Type				ctermfg=' . magenta
 execute ':highlight Underlined			cterm=underline ctermfg=' . gray
 execute ':highlight VertSplit			ctermfg=' . darkmagenta . ' ctermbg=' . darkmagenta

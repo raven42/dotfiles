@@ -15,6 +15,7 @@ highlight DiffAdded				ctermfg=34
 highlight DiffChanged			ctermfg=128
 highlight DiffRemoved			ctermfg=160
 highlight DiffFile				ctermfg=75
+highlight DiffLine				ctermfg=Blue
 highlight DiffText				cterm=bold ctermbg=12
 highlight Directory				ctermfg=Yellow
 highlight Error					ctermfg=White ctermbg=Red

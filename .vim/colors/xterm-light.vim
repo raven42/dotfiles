@@ -64,6 +64,7 @@ execute ':highlight Delimiter			ctermfg=' . gray
 execute ':highlight DiffAdded			ctermfg=' . green
 execute ':highlight DiffChanged			ctermfg=' . blue
 execute ':highlight DiffFile			ctermfg=' . magenta
+execute ':highlight DiffLine			ctermfg=' . blue
 execute ':highlight DiffRemoved			ctermfg=' . red
 execute ':highlight DiffText			cterm=bold ctermbg=' . gray
 execute ':highlight Directory			ctermfg=' . magenta
