@@ -94,7 +94,9 @@ zE   - Deletes all folds (MANUAL only)
 ### Git Shortcuts
 ```
 g] - Move to next hunk
+g. - Move to next hunk and load hunk preview
 g[ - Move to previous hunk
+g, - Move to previous hunk and load hunk preview
 gs - Stage the hunk under the cursor
 gu - Undo the hunk under the cursor, reverting it to the unmodified state
 gp - Toggle the preview window and populate with the hunk under the cursor
