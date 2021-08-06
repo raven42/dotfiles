@@ -108,6 +108,8 @@ gq - Toggle the quickfix window and populate with all hunks
 ```
 <Ctrl-h> - Toggle Hex mode.
 //       - Search for the text that is visually selected.
+t[       - Jump to the previous tag in the file
+t]       - Jump to the next tag in the file
 ```
 
 ### Commands

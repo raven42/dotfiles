@@ -491,13 +491,26 @@ if version >= 800
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
 	let g:tagbar_file_size_limit = 1000000
-	" let g:tagbar_scrolloff = 5
 	let g:tagbar_jump_offset = winheight(0) / 4
 	let g:tagbar_show_data_type = 1
-	" let g:tagbar_show_tag_linenumbers = 1
 	let g:tagbar_show_tag_count = 1
 	let g:tagbar_case_insensitive = 1
 	let g:tagbar_highlight_method = 'scoped-stl'
+	let g:tagbar_autoclose = 0
+
+	" let g:no_status_line = 1
+	" let g:tagbar_autofocus = 0
+	" let g:tagbar_autopreview = 0
+	" let g:tagbar_autoshowtag = 1
+	" let g:tagbar_compact = 1
+	" let g:tagbar_indent = 1
+	" let g:tagbar_jump_offset = winheight(0)/4
+	" let g:tagbar_left = 1
+	" let g:tagbar_silent = 1
+	" let g:tagbar_sort = 0
+	" let g:tagbar_width = max([40, winwidth(0) / 6])
+	" let g:tagbar_wrap = 1
+
 	" let g:tagbar_long_help = 1
 	" let g:tagbar_compact = 1
 	" let g:tagbar_autoshowtag = 0
@@ -544,35 +557,24 @@ if version >= 800
 					\ 'header' : 'h',
 				\ },
 			\ }
-	let g:tagbar_type_markdown = {
-				\ 'ctagstype'	: 'markdown',
-				\ 'kinds'		: [
-					\ 'c:chapter:0:1',
-					\ 's:section:0:1',
-					\ 'S:subsection:0:1',
-					\ 't:subsubsection:0:1',
-					\ 'T:l4subsection:0:1',
-					\ 'u:l5subsection:0:1',
-				\ ],
-				\ 'sro'			: '""',
-				\ 'kind2scope'	: {
-					\ 'c' : 'chapter',
-					\ 's' : 'section',
-					\ 'S' : 'subsection',
-					\ 't' : 'subsubsection',
-					\ 'T' : 'l4subsection',
-				\ },
-				\ 'scope2kind'	: {
-					\ 'chapter' : 'c',
-					\ 'section' : 's',
-					\ 'subsection' : 'S',
-					\ 'subsubsection' : 't',
-					\ 'l4subsection' : 'T',
-				\ },
-			\ }
+
+	" let g:tagbar_type_perl = {
+	"             \ 'kinds' : [
+	"                 \ 'c:constants:0:0',
+	"                 \ 'f:formats:0:0',
+	"                 \ 'l:labels:0:1',
+	"                 \ 'p:packages:1:0',
+	"                 \ 's:subroutines:0:1',
+	"                 \ 'd:subroutineDeclaration:0:0',
+	"                 \ 'M:modules:0:0',
+	"             \ ],
+	"             \ 'deffile' : '~/projects/tagbar-test-files/perl.ctags',
+	"         \ }
 
 	autocmd FileType cheatsheet let g:tagbar_show_data_type = 0
 	autocmd FileType cheatsheet let g:tagbar_sort = 0
+
+	" autocmd FileType tagbar setlocal nolinebreak
 
 	" Tagbar Debug Options:
 	" Note: when using the logfile, don't VI the file or it will overwrite what is there
@@ -581,6 +583,7 @@ if version >= 800
 	" let g:tagbar_no_autocmds = 1
 	" let g:tagbar_ignore_anonymous = 1
 	" let g:tagbar_width = max([25, winwidth(0) / 5])
+	" let g:tagbar_wrap = 2
 
 	" ---- Syntastic Configuration {{{2
 	let g:syntastic_always_populate_loc_list = 1
@@ -790,6 +793,7 @@ if version >= 800
 	command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
 				\ call s:set_lightline_colorscheme(<q-args>)
 
+
     " ---- LastOpenFileNmae() {{{2
 	function! LastOpenFileName() abort
 		if !exists('t:lastfilename')
@@ -952,6 +956,11 @@ if version >= 800
 	nnoremap gu :GitGutterUndoHunk<CR>
 	nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
 	nnoremap <silent> gq :call ToggleGitQuickFix()<CR>
+
+	nnoremap <silent> t[ :TagbarJumpPrev<CR>
+	nnoremap <silent> t] :TagbarJumpNext<CR>
+	" nnoremap <silent> t[ :call tagbar#jumpToNearbyTag(-1, 'nearest')<CR>
+	" nnoremap <silent> t] :call tagbar#jumpToNearbyTag(1, 'nearest')<CR>
 
 	" <CTRL-UP> - Switch to window above
 	" <CTRL-DOWN> - Switch to window below
