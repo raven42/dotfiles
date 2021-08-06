@@ -238,7 +238,7 @@ while true; do
 		fi
 
 		cd ${workspace_path}
-		[ $debug -eq 1 ] && echo "Retrieving remote branches [git ls-remove --heads ${remove_server}:${remote_repo}]..."
+		[ $debug -eq 1 ] && echo "Retrieving remote branches [git ls-remote --heads ${remote_server}:${remote_repo}]..."
 		branches=$(git ls-remote --heads ${remote_server}:${remote_repo} | sed -e 's|.*refs/heads/||' | grep -v priv)
 		if [ $? -ne 0 ]; then
 			echo "Error retrieving branch list from remote [${remote_server}:${remote_repo}]"
