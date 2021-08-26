@@ -66,7 +66,8 @@ Basic usage and navigation uses the standard vim movement keys and also uses the
 ### Folding Shortcuts
 ```
 <Leader>zw   - Set [SEARCH] pattern to word under cursor and toggle search fold method
-<Leader>zs   - Toggle [SEARCH] fold method to fold based on the current search pattern
+<Leader>zs   - Toggle [SEARCH] fold method to fold based on the current search pattern which matches the current search pattern
+<Leader>zis  - Toggle [INVERT-SEARCH] fold method to fold based on the current search pattern which matches anything except the current search pattern
 <Leader>zl   - Toggle [LOG-LEVEL] fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher
 <Leader>zg   - Activate the [GIT] method to fold all text around the current changes in the open file
 <Leader>zy   - Toggle [SYNTAX] fold method. Useful for showing only function names or other block level folds. Better folding for matching blocks than indent.
@@ -142,6 +143,8 @@ There are numerous folding methods pre-defined in this .vimrc implementation. Th
 
 #### SEARCH Folding
 The `search` folding method can be used in two ways. Either by a `<Leader>zs` (z-search) or `<Leader>zw` (z-word) shortcut. The difference is the z-word short cut will search for the vim word under the cursor, and then perform the `search` fold method. The z-search method simply performs the `search` fold method on whatever the current search pattern is.
+
+There is alto the `invert-search` folding method using the `<Leader>zis` which will do the opposite and set the fold level dependent on lines not containing the search pattern.
 
 ![search-folding example](../img/search\_folding.png?raw=true "Search Fold Example:")
 
