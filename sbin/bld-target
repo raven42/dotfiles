@@ -80,7 +80,7 @@ while [ $1 != -- ]; do
 		;;
 
 	--dart)
-		bld_target="swbd188"
+		bld_target="swbd190"
 		;;
 
 	-h | --help)
