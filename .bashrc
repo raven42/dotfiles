@@ -8,7 +8,7 @@ alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
 alias rebash='source ~/.bashrc'
 alias scp="scp -oStrictHostKeyChecking=no"
-alias ssh="ssh -oStrictHostKeyChecking=no"
+alias ssh="ssh -e  -oStrictHostKeyChecking=no"
 alias telnet="telnet -e ^B"
 alias vi="vim"
 
@@ -32,7 +32,8 @@ export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
 export MODULEPATH=$HOME/.default/modulefiles:/usr/share/Modules/modulefiles:/etc/modulefiles
 #export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 export PATH=/bin:/usr/sbin:/usr/bin:/usr/local/bin
-export PYTHONPATH=~/.local/lib/python3.5/site-packages
+#export PYTHONPATH=~/.local/lib/python3.5/site-packages
+export PYTHONPATH=
 export SHOW_TARGET_IN_PROMPT=1
 export TAGDIR=$HOME/.default/tags
 export TMOUT=0
