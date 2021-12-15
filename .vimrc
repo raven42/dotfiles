@@ -216,7 +216,7 @@ autocmd BufWinEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
 autocmd InsertEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+\%#\@<!$/
 autocmd InsertLeave *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
 autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
-autocmd BufWinEnter *.py set fileformat=unix
+"autocmd BufWinEnter *.py set fileformat=unix
 autocmd BufWinLeave * call clearmatches()
 
 " Hit // to search for visually selected text
@@ -631,7 +631,7 @@ if version >= 800
 	let g:devpanel_use_flake8 = 1
 
 	" ---- Generic definitions used by functions for plugins {{{2
-	let g:ignored_filetypes = '\v(nerdtree|tagbar|undotree)'
+	let g:ignored_filetypes = '\v(nerdtree|tagbar|undotree|qf)'
 	let g:ignored_files = '\v(hunk-preview)'
 
     " ---- Load Plugins {{{2
@@ -1419,6 +1419,15 @@ endfunction
 command! -nargs=0 ToggleUnicode call ToggleUnicode()
 command! -nargs=0 UnicodeToggle call ToggleUnicode()
 
+" --- Search and fold {{{2
+"  This function will search for a pattern, then set the fold method to
+"  search-fold for all buffers
+function! SearchAndFold(pattern)
+	let @/ = a:pattern	" Set search pattern to passed in pattern
+	execute 'bufdo execute ":call SetFoldMethod(''search'', 1)"'
+	call BufActivateNth(0)
+endfunction
+command! -nargs=+ SearchAndFold call SearchAndFold(<q-args>)
 " }}}1
 
 " --- Modeline {{{1

@@ -10,3 +10,8 @@ augroup end
 augroup markdown
 	autocmd FileType markdown setlocal ts=4 sts=4 sw=4 expandtab
 augroup end
+
+augroup quickfix
+	autocmd!
+    autocmd FileType qf setlocal nobuflisted
+augroup end
