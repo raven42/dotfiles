@@ -78,6 +78,43 @@ if [ "${TAGDIR}" != "" ]; then
 	dir=${TAGDIR}
 fi
 
+create_ctags()
+{
+	filename=$1
+	path=$2
+
+	if [ $universal_ctags -eq 1 ]; then
+		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
+	else
+		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
+	fi
+	#ctags_cmd="/usr/bin/ctags --tag-relative --recurse -extra=f -f $filename --links=no *"
+
+	echo -n "  $path -> $filename ..."
+	
+	if [ -d $rootdir/$src_path/$path ]; then
+		$EXEC cd $rootdir/$src_path/$path
+		cd $rootdir/$src_path/$path
+		$EXEC $ctags_cmd 2>/dev/null
+		echo " done"
+	else
+		echo "Path not found:$rootdir/$src_path/$path"
+	fi
+}
+
+print_tagpath()
+{
+	echo "  TAGDIR: ${TAGDIR}"
+	if [[ "$TAG_PATH" != "" ]]; then
+		echo "  TAG_PATH:"
+		echo "    Def TagFile         Path:"
+		echo "$(echo $TAG_PATH | tr ' ' '\n' | tr ':' '\t' | sed -e 's/^\([01]\)/    \1/')"
+		echo ""
+	else
+		echo "  TAG_PATH: not defined."
+	fi
+}
+
 optarg=0
 opts=`getopt -n $prog -o $s_opts -ual $l_opts -- $@`
 if [ $? != 0 ]; then
@@ -116,35 +153,12 @@ while [ $1 != -- ]; do
 		* | --help) echo ""
 		   echo "$Usage"
 		   echo ""
+		   print_tagpath
 		   exit 1;;
 	esac
 
 	shift
 done
-
-create_ctags()
-{
-	filename=$1
-	path=$2
-
-	if [ $universal_ctags -eq 1 ]; then
-		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
-	else
-		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
-	fi
-	#ctags_cmd="/usr/bin/ctags --tag-relative --recurse -extra=f -f $filename --links=no *"
-
-	echo -n "  $path -> $filename ..."
-	
-	if [ -d $rootdir/$src_path/$path ]; then
-		$EXEC cd $rootdir/$src_path/$path
-		cd $rootdir/$src_path/$path
-		$EXEC $ctags_cmd 2>/dev/null
-		echo " done"
-	else
-		echo "Path not found:$rootdir/$src_path/$path"
-	fi
-}
 
 if [ ! -d $dir ]; then
 	echo "Directory $dir does not exist. Creating it."
@@ -157,14 +171,11 @@ if [ $universal_ctags -eq 1 ]; then
 else
 	echo "Using Exuberant CTAGS"
 fi
-echo "  TAGDIR: ${TAGDIR}"
-echo "  TAG_PATH:"
-echo "    Def TagFile         Path:"
-echo "$(echo $TAG_PATH | tr ' ' '\n' | tr ':' '\t' | sed -e 's/^\([01]\)/    \1/')"
-echo ""
-echo "Rebuilding ctag definitions..."
-echo ""
 
+print_tagpath
+echo "Rebuilding ctag definitions..."
+
+echo ""
 if [[ "$TAG_PATH" != "" ]]; then
 	for path in $TAG_PATH; do
 		default=$(echo $path | cut -d ":" -f 1)
