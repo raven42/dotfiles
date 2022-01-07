@@ -36,15 +36,18 @@
 Usage="Usage: rebuild_ctags [<options>]
 
  Options:
-   -a           Build all ctag directories
-   -p           Pretend - shows what commands would have been executed
-   --dir <dir>  Put the tag files in specified directory"
+   -a                 Build all ctag directories
+   -p                 Pretend - shows what commands would have been executed
+   --tagfile <file>   Build only the tagfile specified from the TAG_PATH definition
+   --dir <dir>        Put the tag files in specified directory"
 
-shortopts=ap
-longopts=dir:,help,pretend
+s_opts=apt:h
+l_opts=dir:,tagfile:,help,pretend
 
 all=0
+tagfile=
 pretend=0
+prog=`basename $0`
 dir=${HOME}
 
 if [ $GIT_ROOT ]; then
@@ -75,20 +78,27 @@ if [ "${TAGDIR}" != "" ]; then
 	dir=${TAGDIR}
 fi
 
-option=
 optarg=0
-opts=`getopt -qo $shortopts -ual $longopts -- $@`
-for opt in $opts
-do
-	if [ $optarg -eq 1 ]; then
-		case "$option" in
-		dir) dir=$opt;;
-		esac
-		optarg=0
-	else
-		case "$opt" in
+opts=`getopt -n $prog -o $s_opts -ual $l_opts -- $@`
+if [ $? != 0 ]; then
+	echo ""
+	echo "$Usage"
+	echo ""
+	exit 2
+fi
+
+eval set -- "$opts"
+
+while [ $1 != -- ]; do
+
+	case "$1" in
 		-a)
 			all=1
+			;;
+
+		-t | --tagfile)
+			tag_file=$2
+			shift
 			;;
 
 		-p | --pretend)
@@ -97,8 +107,8 @@ do
 			;;
 
 		--dir)
-			optarg=1
-			option=dir
+			dir=$2
+			shift
 			;;
 
 		--) ;; # ignore
@@ -107,8 +117,9 @@ do
 		   echo "$Usage"
 		   echo ""
 		   exit 1;;
-		esac
-	fi
+	esac
+
+	shift
 done
 
 create_ctags()
@@ -159,6 +170,9 @@ if [[ "$TAG_PATH" != "" ]]; then
 		default=$(echo $path | cut -d ":" -f 1)
 		filename=$(echo $path | cut -d ":" -f 2)
 		directory=$(echo $path | cut -d ":" -f 3)
+		if [ "$tag_file" != "" -a "$tag_file" != $filename ]; then
+			continue
+		fi
 		if [ $all -eq 1 -o $default -eq 1 ]; then
 			create_ctags $filename $directory
 		fi
