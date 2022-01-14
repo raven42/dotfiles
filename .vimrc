@@ -486,7 +486,6 @@ if version >= 800
 	let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
 	let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
 
-
 	" ---- Tagbar Configuration {{{2
 	let g:tagbar_no_status_line = 1
 	let g:tagbar_iconchars = [ g:charmap['arrow-right'], g:charmap['arrow-down'] ]
@@ -601,6 +600,7 @@ if version >= 800
 	let g:flake8_show_in_file = 0
 	let g:flake8_quickfix_height = 10
 	let g:flake8_always_visible = 1
+	let g:flake8_auto_update = 0
 
 	" ---- Auto-pairs Configuration {{{2
 	let g:AutoPairsShortcutToggle = ''
@@ -809,6 +809,20 @@ if version >= 800
 		return t:lastfilename
 	endfunction
 
+	" ---- Flake8Update() {{{2
+	function! Flake8Update() abort
+		" The flake8 when calling the flake8 plugin via an autocmd, it appears
+		" to be changing the window focus so the lightline and tagbar info
+		" doesn't match what it should. So record the winnr() and switch to it
+		" again when we are done, then call some update routines and redraw
+		let l:win = winnr()
+		call flake8#Flake8()
+		execute l:win 'wincmd w'
+		call lightline#update()
+		call tagbar#Update()
+		redraw!
+	endfunction
+
     " ---- UpdateTitle() {{{2
 	function! UpdateTitle()
 		let &titlestring = 'VIM - ' . expand("%:t")
@@ -900,21 +914,20 @@ if version >= 800
 
     " ---- CheckForDotFiles() {{{2
 	function! CheckForDotFiles() abort
-		if expand('%t') ==# ''
-			return
-		endif
-		if exists('g:dotfiles_file_list')
-			let file_list = g:dotfiles_file_list
-		else
-			let git_home_args = '--git-dir=' . $HOME . '/.cfg/ --work-tree ' . $HOME
-			let cmd = 'git ' . git_home_args . ' ls-files ' . $HOME
-			let out = system(cmd)
-			let file_list = out
-		endif
-		if file_list =~# expand('%:t')
-			let g:gitgutter_git_args = git_home_args
+		let file = expand('%:t')
+		let path = expand('%:p:h')
+		let githome_repo = [
+					\ $HOME,
+					\ $HOME . '/sbin',
+					\ $HOME . '/doc',
+				\ ]
+		if index(githome_repo, path) != -1
+			" let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/'
+			let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/ --work-tree=' . $HOME
+			let g:gitgutter_diff_args = '--no-index'
 		else
 			let g:gitgutter_git_args = ''
+			let g:gitgutter_diff_args = ''
 		endif
 	endfunction
 
@@ -986,7 +999,7 @@ if version >= 800
 	" ---- Autocmds for all plugins {{{2
 	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
 	autocmd BufEnter * call UpdateTitle()
-	autocmd BufWritePost *.py call flake8#Flake8()
+	autocmd BufWritePost *.py call Flake8Update()
 	autocmd BufEnter * call CheckForDotFiles()
 
 	augroup quickfixclose
@@ -1418,6 +1431,30 @@ function! ToggleUnicode()
 endfunction
 command! -nargs=0 ToggleUnicode call ToggleUnicode()
 command! -nargs=0 UnicodeToggle call ToggleUnicode()
+
+" --- CleanWhiteSpace {{{2
+"  This function can be used to clear whitespace at the end of the line.
+function! CleanWhiteSpace()
+	silent! execute '%s/\s\+$//e'
+endfunction
+command! -nargs=0 CleanWhiteSpace call CleanWhiteSpace()
+
+" --- CleanFile {{{2
+"  This function can be used to run a series of cleanup routines on
+"  the file to ensure proper formatting.
+function! CleanFile()
+	call CleanWhiteSpace()
+	if g:have_autoformat
+        if !has("python") && !has("python3")
+            echohl WarningMsg |
+                \ echomsg "WARNING: vim has no support for python, but it is required to run the formatter!" |
+                \ echohl None
+            return 1
+        endif
+		silent! execute ':Autoformat'
+	endif
+endfunction
+command! -nargs=0 CleanFile call CleanFile()
 
 " --- Search and fold {{{2
 "  This function will search for a pattern, then set the fold method to
