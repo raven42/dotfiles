@@ -6,7 +6,7 @@
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
-alias rebash='source ~/.bashrc'
+alias rebash='unset LOADEDMODULES _LMFILES_ ; source ~/.bashrc'
 alias scp="scp -oStrictHostKeyChecking=no"
 alias ssh="ssh -e  -oStrictHostKeyChecking=no"
 alias telnet="telnet -e ^B"
@@ -98,20 +98,20 @@ fi
 # 035m - Purple
 # 036m - Cyan
 # 037m - White
-# 0m   - reset
+# 0m   - Reset
 
-FG_BLK="\[\033[0;30m\]"
+FG_BLACK="\[\033[0;30m\]"
 FG_RED="\[\033[0;31m\]"
-FG_GRN="\[\033[0;32m\]"
-FG_YLW="\[\033[0;33m\]"
-FG_BLU="\[\033[0;34m\]"
-FG_PURP="\[\033[0;35m\]"
+FG_GREEN="\[\033[0;32m\]"
+FG_YELLOW="\[\033[0;33m\]"
+FG_BLUE="\[\033[0;34m\]"
+FG_MAGENTA="\[\033[0;35m\]"
 FG_CYAN="\[\033[0;36m\]"
-FG_WHT="\[\033[0;37m\]"
-FG_RST="\[\033[0;0m\]"
+FG_WHITE="\[\033[0;37m\]"
+FG_RESET="\[\033[0;0m\]"
 
 FG_PINK="\[\033[38;5;212m\]"
-FG_ORG="\[\033[38;5;202m\]"
+FG_ORANGE="\[\033[38;5;202m\]"
 
 PS_DATE="\d"		# Date in "Tue May 26" format
 PS_HOST="\h"		# Hostname to first '.'
@@ -123,7 +123,7 @@ PS_24TIME="\t"		# Time in 24 hour HH:MM:SS format
 PS_12TIME="\T"		# Time in 12 hour HH:MM:SS format
 PS_TIME="\@"		# Time in am/pm format
 PS_USER="\u"		# Username
-PS_WD="\w"			# Current working directory
+PS_CWD="\w"			# Current working directory
 PS_DIR="\W"			# Basename of current working directory
 PS_HIST="\!"		# History number of this command
 PS_CMDNUM="\#"		# Command number of this command
@@ -235,7 +235,7 @@ function format_prompt() {
 		if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
 			PS_COLOR=${FG_PINK}
 		elif [[ ${USER_HOSTNAME} =~ ${HOSTNAME} ]]; then
-			PS_COLOR=${FG_ORG}
+			PS_COLOR=${FG_ORANGE}
 		else
 			PS_COLOR=${FG_CYAN}
 		fi
@@ -247,7 +247,7 @@ function format_prompt() {
 		fi
 
 		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
-			TARGET_STRING="${FG_YLW}${BLD_TARGET}${FG_RST} "
+			TARGET_STRING="${FG_YELLOW}${BLD_TARGET}${FG_RESET} "
 		else
 			TARGET_STRING=""
 		fi
@@ -255,11 +255,11 @@ function format_prompt() {
 		PS_INFO="$GIT_REPO\$(__git_ps1)"
 		# PS_INFO=$'$GIT_REPO \xee\x82\xa0$(__git_ps1)'
 	else
-		PS_COLOR=${FG_GRN}
-		PS_INFO="${PS_HOST}${FG_YLW}\$(__git_ps1)${FG_RST}"
+		PS_COLOR=${FG_GREEN}
+		PS_INFO="${PS_HOST}${FG_YELLOW}\$(__git_ps1)${FG_RESET}"
 		TARGET_STRING=""
 	fi
-	export PS1="${TARGET_STRING}${PS_COLOR}${PS_INFO}${FG_RST} ${PS_DIR}${PS_SYMB} "
+	export PS1="${TARGET_STRING}${PS_COLOR}${PS_INFO}${FG_RESET} ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
@@ -273,7 +273,7 @@ function format_title() {
 	else
 		TITLE_INFO="${USER}"
 	fi
-	echo -ne "\033]0;${TITLE_INFO} ${PWD}\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
+	echo -ne "\033]0;${PWD} ${TITLE_INFO}\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
 }
 
 function set_prompt() {

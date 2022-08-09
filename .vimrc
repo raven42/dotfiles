@@ -496,6 +496,7 @@ if version >= 800
 	let g:tagbar_case_insensitive = 1
 	let g:tagbar_highlight_method = 'scoped-stl'
 	let g:tagbar_autoclose = 0
+	let g:tagbar_autoclose_netrw = 1
 
 	" let g:no_status_line = 1
 	" let g:tagbar_autofocus = 0
@@ -736,7 +737,7 @@ if version >= 800
 		if !g:have_fugitive || &filetype =~# g:ignored_filetypes
 			return ''
 		endif
-		let branch = fugitive#head()
+		let branch = FugitiveHead()
 		return branch !=# '' ? ' '. g:charmap['branch'] . branch : ''
 	endfunction
 
@@ -828,7 +829,7 @@ if version >= 800
 		let &titlestring = 'VIM - ' . expand("%:t")
 		let branch_info = ''
 		if g:have_fugitive
-			let branch = fugitive#head()
+			let branch = FugitiveHead()
 			if branch !=# ''
 				let branch_info = ' '. g:charmap['branch'] . ' (' . branch . ') '
 			endif
@@ -1382,18 +1383,51 @@ autocmd FileType cheatsheet setlocal foldmethod=expr foldexpr=FoldLevelCheatshee
 
 " --- Utility Functions {{{1
 " --- ToggleHex Setup {{{2
-let w:hexmode = 0
-function! ToggleHex()
-	if (w:hexmode == 0)
-		let w:hexmode = 1
-		%!xxd -g 4
-	else
-		let w:hexmode = 0
-		%!xxd -r
-	endif
-endfunction
+
 "<Ctrl-H> - convert file to hex
 map <silent>  :call ToggleHex()<CR>
+" ex command for toggling hex mode - define mapping if desired
+command -bar ToggleHex call ToggleHex()
+
+" helper function to toggle hex mode
+function ToggleHex()
+  " hex mode should be considered a read-only operation
+  " save values for modified and read-only for restoration later,
+  " and clear the read-only flag for now
+  let l:modified=&mod
+  let l:oldreadonly=&readonly
+  let &readonly=0
+  let l:oldmodifiable=&modifiable
+  let &modifiable=1
+  if !exists("b:editHex") || !b:editHex
+    " save old options
+    let b:oldft=&ft
+    let b:oldbin=&bin
+    " set new options
+    setlocal binary " make sure it overrides any textwidth, etc.
+    silent :e " this will reload the file without trickeries 
+              "(DOS line endings will be shown entirely )
+    let &ft="xxd"
+    " set status
+    let b:editHex=1
+    " switch to hex editor
+    %!xxd -g 4
+  else
+    " restore old options
+    let &ft=b:oldft
+    if !b:oldbin
+      setlocal nobinary
+    endif
+    " set status
+    let b:editHex=0
+    " return to normal editing
+    %!xxd -r
+  endif
+  " restore values for modified and read only state
+  let &mod=l:modified
+  let &readonly=l:oldreadonly
+  let &modifiable=l:oldmodifiable
+endfunction
 
 " --- GenerateUnicode() {{{2
 function! GenerateUnicode(first, last)
