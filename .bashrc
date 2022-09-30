@@ -251,6 +251,13 @@ function format_prompt() {
 		else
 			TARGET_STRING=""
 		fi
+		pyuniti_config=${HOME}/.pyuniti/config.ini
+		if [ -f ${pyuniti_config} ]; then
+			if [ $(grep -c "^tbc=" ${pyuniti_config}) -eq 1 ]; then
+				TBC=$(grep "^tbc=" ${pyuniti_config} | sed -e 's|^tbc.*/||')
+				TARGET_STRING+="${FG_MAGENTA}${TBC}${FG_RESET} "
+			fi
+		fi
 		# branch code $'\xee\x82\xa0'
 		PS_INFO="$GIT_REPO\$(__git_ps1)"
 		# PS_INFO=$'$GIT_REPO \xee\x82\xa0$(__git_ps1)'

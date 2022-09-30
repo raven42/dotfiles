@@ -55,4 +55,5 @@ change_dir()
 	return 0
 }
 
+# Create alias for `cd` command
 alias cd=change_dir

@@ -34,6 +34,19 @@ else
 	target_rc=${HOME}/.default/bld_target.sh
 fi
 
+# The following are used to set the pyuniti default tbc file
+pyuniti_config=${HOME}/.pyuniti/config.ini
+default_tbc_list=()
+default_tbc_list+=("swbd178"	"awing63.tbc")
+default_tbc_list+=("swbd165"	"ven60.tbc")
+default_tbc_list+=("swbd190"	"dart104.tbc")
+max=${#default_tbc_list[@]}
+let max=max-1
+arg_dist=0
+arg_tbc=1
+arg_count=2
+
+# Process the command line arguments
 optarg=0
 opts=`getopt -n $prog -o $shrt_opts -ual $long_opts -- $@`
 
@@ -118,5 +131,26 @@ else
 	echo "export BLD_TARGET=${bld_target}" > $target_rc
 	echo "Set new default BLD_TARGET=${bld_target} in [${target_rc}]"
 	. $target_rc
+fi
+
+# Now check if we should set the pyuniti default tbc
+if [ -f $pyuniti_config ]; then
+	found=0
+	for i in `seq 0 $arg_count $max`; do
+		dist=${default_tbc_list[$i+$arg_dist]}
+		if [ "$bld_target" == "$dist" ]; then
+			pyuniti_tbc=${default_tbc_list[$i+$arg_tbc]}
+			found=1
+			break
+		fi
+	done
+
+	if [ $found -eq 1 ]; then
+		cp ${pyuniti_config} ${pyuniti_config}.bak
+		cat ${pyuniti_config} | sed -e 's|^\(tbc=.*\)/.*|\1/'${pyuniti_tbc}'|' > ${pyuniti_config}.new
+		mv ${pyuniti_config}.new ${pyuniti_config}
+		echo "pyuniti tbc set to:$(grep '^tbc=' ${pyuniti_config})"
+	fi
+
 fi
 exit 0

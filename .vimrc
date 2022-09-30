@@ -157,6 +157,7 @@ set textwidth=0				" ---- Set default character width before autowrap
 set foldlevel=10
 set makeprg=$HOME/bin/cmk
 set clipboard=unnamed,autoselect,exclude:cons\|linux
+set number
 
 if version >= 800
 	set modelineexpr
@@ -519,6 +520,10 @@ if version >= 800
 	" unions inside of functions messing up with display and scoping issues.
 	let g:tagbar_type_c = {
 				\ 'ctagstype'	: 'c',
+				\ 'regex'	: [
+					\ '/(TODO).*//T,ToDo,ToDo Messages/{_anonymous=todo_}',
+					\ '/(FIXME).*//Q,FixMe,FixMe Messages/{_anonymous=fixme_}',
+				\ ],
 				\ 'kinds'		: [
 					\ 'h:header files:1:0',
 					\ 'd:macros:1:0',
@@ -529,7 +534,9 @@ if version >= 800
 					\ 's:structs:0:1',
 					\ 'm:members:1:0',
 					\ 'v:variables:0:0',
-					\ 'f:functions:0:1:{:}'
+					\ 'f:functions:0:1:{:}',
+					\ 'T:todo:0:0',
+					\ 'Q:fixme:0:0',
 				\ ],
 				\ 'sro'			: '::',
 				\ 'kind2scope'	: {
@@ -558,6 +565,33 @@ if version >= 800
 				\ },
 			\ }
 
+	let g:tagbar_type_javascript = {
+				\ 'ctagstype'	: 'javascript',
+				\ 'regex'		: [
+					\ '/async[ \t]+(.*)[ \t]*\(.*\)/\1/f/func/function/',
+				\ ],
+				\ 'kinds'		: [
+					\ 'v:global variables:0:0',
+					\ 'C:constants:0:0',
+					\ 'c:classes:0:1',
+					\ 'g:generators:0:0',
+					\ 'p:properties:0:0',
+					\ 'm:methods:0:1',
+					\ 'f:functions:0:0',
+				\ ],
+				\ 'sro'			: '.',
+				\ 'kind2scope'	: {
+					\ 'c' : 'class',
+					\ 'f' : 'function',
+					\ 'm' : 'method',
+					\ 'p' : 'property',
+				\ },
+				\ 'scope2kind'	: {
+					\ 'class' : 'c',
+					\ 'function' : 'f',
+				\ },
+			\ }
+
 	" let g:tagbar_type_perl = {
 	"             \ 'kinds' : [
 	"                 \ 'c:constants:0:0',
@@ -570,6 +604,21 @@ if version >= 800
 	"             \ ],
 	"             \ 'deffile' : '~/projects/tagbar-test-files/perl.ctags',
 	"         \ }
+
+	" let g:tagbar_type_asciidoc2 = {
+	"             \ 'ctagstype': 'asciidoc2',
+	"             \ 'deffile': '/home/dh404494/.vim/vim-asciidoc/ctags/asciidoc.cnf',
+	"             \ 'sort': 0,
+	"             \ 'kinds': [
+	"                 \ 's:Table of Contents',
+	"                 \ 'i:Included Files',
+	"                 \ 'I:Images',
+	"                 \ 'v:Videos',
+	"                 \ 'a:Set Attributes',
+	"                 \ 'A:Unset Attributes'
+	"             \ ]
+	"         \}
+
 
 	autocmd FileType cheatsheet let g:tagbar_show_data_type = 0
 	autocmd FileType cheatsheet let g:tagbar_sort = 0
@@ -623,6 +672,7 @@ if version >= 800
 
 	" ---- DevPanel Configuration {{{2
 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
+	" let g:devpanel_auto_open_files = 'none'
 	let g:devpanel_panel_min = 40
 	let g:devpanel_panel_max = 45
 	let g:devpanel_open_min_width = 120
@@ -1342,6 +1392,44 @@ function! ToggleFold(fold_method)
 	call SetFoldMethod(a:fold_method, 1)
 endfunction
 
+" --- FoldUsage() {{{2
+function! FoldUsage()
+	if !exists('g:mapleader')
+		let leader = '\'
+	elseif g:mapleader ==? '\<Space>'
+		let leader = '<Space>'
+	elseif g:mapleader ==? '\<Tab>'
+		let leader = '<Tab>'
+	else
+		let leader = g:mapleader
+	endif
+
+	echo 'Folding Usage:'
+	echo '  ' . leader . 'zw   - Set [SEARCH] pattern to word under cursor and toggle search fold method'
+	echo '  ' . leader . 'zs   - Toggle [SEARCH] fold method to fold based on the current search pattern which matches the current search pattern'
+	echo '  ' . leader . 'zis  - Toggle [INVERT-SEARCH] fold method to fold based on the current search pattern which matches anything except the current search pattern'
+	echo '  ' . leader . 'zl   - Toggle [LOG-LEVEL] fold method. Sets fold levels for `[VERBOSE]` / `[DEBUG]` / etc. Default fold level is `[WARN]` and higher'
+	echo '  ' . leader . 'zg   - Activate the [GIT] method to fold all text around the current changes in the open file'
+	echo '  ' . leader . 'zy   - Toggle [SYNTAX] fold method. Useful for showing only function names or other block level folds. Better folding for matching blocks than indent.'
+	echo '  ' . leader . 'zi   - Toggle [INDENT] fold method. Useful for showing only function names.'
+	echo '  ' . leader . 'zd   - Toggle [DIFF] fold method. Use this when examining output of `diff <file1> <file2> > diff-file` command output.'
+	echo '  ' . leader . 'zD   - Toggle [DEFINE] fold method. This will set fold markers based on the `#if` / `#endif` statements in a file. This will work with both `#if SOMETHING` or `#ifdef SOMETHING` syntax'
+	echo '  ' . leader . 'zC   - Toggle [CHEATSHEET] fold method. See .vim/syntax/cheatsheet.vim for syntax details.'
+	echo '  ' . leader . 'zm   - Toggle [MANUAL] fold method. This can be used with `zf` to create manual folds.'
+	echo '  ' . leader . 'zM   - Toggle [MARKER] fold method.'
+	echo '  ' . leader . 'zz   - Recompute current fold method. Does not change fold level, but updates current fold method to recompute for any changes.'
+	echo '  z,    - Decrease current foldlevel by one reducing the amount of context around a fold'
+	echo '  z.    - Increase current foldlevel by one increasing the amount of context around a fold'
+	echo '  z,,   - Set foldlevel to 0 (close all folds)'
+	echo '  z..   - Set foldlevel to 99 (open all folds to level 99)'
+	echo '  za    - Toggle a fold open / closed under the cursor'
+	echo '  zA    - Toggle all folds open / closed under the cursor'
+	echo '  z<#>  - Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3'
+	echo '  zf    - Create a fold around the selected text (MANUAL only)'
+	echo '  zd    - Delete the fold under the cursor (MANUAL only)'
+	echo '  zE    - Deletes all folds (MANUAL only)'
+endfunction
+
 " --- Folding keymaps and other fold init {{{2
 nnoremap <silent> <Leader>zw :call ToggleFold('search-word')<CR>
 nnoremap <silent> <Leader>zs :call ToggleFold('search')<CR>
@@ -1358,6 +1446,9 @@ nnoremap <silent> <Leader>zm :call ToggleFold('manual')<CR>
 nnoremap <silent> <Leader>zM :call ToggleFold('marker')<CR>
 nnoremap <silent> <Leader>zS :call ToggleFold('ssave')<CR>
 nnoremap <silent> <Leader>zz :call SetFoldMethod(exists('b:fold_method') ? b:fold_method : 'default', 0)<CR>
+
+nnoremap <Leader>z? :call FoldUsage()<CR>
+nnoremap z? :call FoldUsage()<CR>
 
 " Decrease / Increase fold level
 nmap z, zm \| :echo 'set foldlevel=' . &foldlevel <CR>
