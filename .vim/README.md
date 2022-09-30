@@ -88,6 +88,7 @@ z<#> - Set the foldlevel to `<#>`. Ex: `z3` will set the fold level to 3
 zf   - Create a fold around the selected text (MANUAL only)
 zd   - Delete the fold under the cursor (MANUAL only)
 zE   - Deletes all folds (MANUAL only)
+z?   - Print this usage statement
 
 ```
 :information\_source: **More Info:** See the [Vim Folding](https://github.com/raven42/dotfiles/tree/master/.vim#vim-folding) section for more details on folding and the different fold methods.
