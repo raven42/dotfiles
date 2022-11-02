@@ -52,6 +52,10 @@ fi
 
 shopt -s checkwinsize
 
+if [ "$(command -v module)" ]; then
+	module purge
+fi
+
 # External resource / script files
 BLD_TARGET_SCRIPT=bld_target.sh
 DEFAULT_RC_PATH=${HOME}/.default
