@@ -126,7 +126,7 @@ set bs=indent,eol,start		" ---- allow backspacing over everything in insert mode
 " "           | |    + files marks saved
 " "           | + lines saved each register (old name for <, vi6.2)
 " "           + save/restore buffer list
-set viminfo='50,\"1000,:100,n~/.viminfo
+set viminfo='50,<1000,:100,n~/.viminfo
 set history=50				" ---- keep 50 lines of command line history
 set ruler					" ---- show the cursor position all the time
 set confirm					" ---- Ask to continue when necessary
