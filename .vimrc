@@ -67,6 +67,7 @@ if has("gui_running")
 	set guifont=Monospace\ 8
 	set mouse=a
 	set ttymouse=sgr
+	set termguicolors
 endif
 
 " --- setup xterm parameters {{{2

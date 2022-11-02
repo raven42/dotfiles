@@ -9,6 +9,8 @@ set hlsearch
 
 let white = '230'
 let black = '233'
+let white = 'white'
+let black = 'black'
 
 let fg = white
 let bg = black
@@ -55,7 +57,7 @@ let gray = 'Gray'
 let darkgray = 'DarkGray'
 let darkestgray = '235'
 
-execute ':highlight Normal				ctermfg=' . fg . ' ctermbg=' . bg
+execute ':highlight Normal				ctermfg=' . fg . ' ctermbg=' . bg . ' guifg=' . fg . ' guibg=' . bg
 
 execute ':highlight Comment				ctermfg=' . red
 execute ':highlight Constant			ctermfg=' . darkgray

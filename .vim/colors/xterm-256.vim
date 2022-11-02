@@ -54,7 +54,7 @@ let gray = '248'
 let darkgray = '242'
 let darkestgray = '235'
 
-execute ':highlight Normal				ctermfg=' . fg . ' ctermbg=' . bg
+execute ':highlight Normal				ctermfg=' . fg . ' ctermbg=' . bg . ' guifg=' . fg . ' guibg=' . bg
 
 execute ':highlight Comment				ctermfg=' . red
 execute ':highlight Constant			ctermfg=' . gray
