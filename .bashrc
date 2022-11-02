@@ -68,6 +68,8 @@ GIT_PROMPT=${HOME}/sbin/git-prompt.sh
 NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
 NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
 NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
+PRIVATE_RC_PATH=${HOME}/.private
+PRIVATE_RC=${PRIVATE_RC_PATH}/private_rc.sh
 RETAG_SCRIPT=${HOME}/bin/retag
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
@@ -218,6 +220,7 @@ elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
 	$ECHO "Sourcing this for now..."
 	. ${DEFAULT_RC_PATH}/common_rc
 fi
+[[ -f ${PRIVATE_RC} ]] && . ${PRIVATE_RC}
 
 # Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
