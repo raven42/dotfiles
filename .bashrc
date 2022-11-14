@@ -93,6 +93,7 @@ fi
 
 # If present, source ${CHANGE_DIR_SCRIPT} for directory tracking with 'cd'
 if [[ -f ${CHANGE_DIR_SCRIPT} ]]; then
+	$ECHO " .. sourcing [${CHANGE_DIR_SCRIPT}]"
 	. ${CHANGE_DIR_SCRIPT}
 fi
 
@@ -140,9 +141,11 @@ PS_ESC="\e"			# Escape character
 PS_BELL="\a"		# Bell character
 
 if [ -f $GIT_COMPLETION ]; then
+	$ECHO " .. sourcing [${GIT_COMPLETION}]"
 	. $GIT_COMPLETION
 fi
 if [ -f $GIT_PROMPT ]; then
+	$ECHO " .. sourcing [${GIT_PROMPT}]"
 	. $GIT_PROMPT
 fi
 
@@ -232,6 +235,7 @@ fi
 
 # Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
+	$ECHO " .. sourcing [${rc_spec}]"
 	. ${rc_spec}
 	$ECHO "  RC SPEC:${rc_spec}"
 	$ECHO "  TAGDIR:${TAGDIR}"
