@@ -84,7 +84,7 @@ create_ctags()
 	path=$2
 
 	if [ $universal_ctags -eq 1 ]; then
-		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
+		ctags_cmd="$ctags_bin --tag-relative=always --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
 	else
 		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
 	fi
@@ -95,7 +95,7 @@ create_ctags()
 	if [ -d $rootdir/$src_path/$path ]; then
 		$EXEC cd $rootdir/$src_path/$path
 		cd $rootdir/$src_path/$path
-		$EXEC $ctags_cmd 2>/dev/null
+		$EXEC $ctags_cmd 2>&1
 		echo " done"
 	else
 		echo "Path not found:$rootdir/$src_path/$path"

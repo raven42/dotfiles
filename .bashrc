@@ -58,7 +58,7 @@ fi
 
 # External resource / script files
 BLD_TARGET_SCRIPT=bld_target.sh
-DEFAULT_RC_PATH=${HOME}/.default
+DEFAULT_RC_PATH=${HOME}/.private
 CHANGE_DIR_SCRIPT=${HOME}/sbin/change_dir.sh
 COMMON_RC=${DEFAULT_RC_PATH}/common_rc.sh
 POST_RC=${DEFAULT_RC_PATH}/post_rc.sh
@@ -199,7 +199,7 @@ if [ $GIT_REPO ]; then
 
 		# Look for TAG files and if none are found, generate new ones
 		if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
-			$ECHO ' No TAGFILES found. Generating new tags in the background...'
+			$ECHO " No TAGFILES found. Generating new tags in the background at ${GIT_TAGS_PATH}..."
 			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/retag_${GIT_REPO}.log &
 		fi
 
