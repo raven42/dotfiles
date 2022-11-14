@@ -177,8 +177,6 @@ if [ $GIT_REPO ]; then
 				$ECHO "rc (${GIT_RC}) spec not found. Using defaults."
 				rc_spec=${GIT_DEFAULT_RC}
 			fi
-		else
-			$ECHO "rc spec [${GIT_DEFAULT_RC}] not found. No defaults to use."
 		fi
 	fi
 
