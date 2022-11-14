@@ -74,7 +74,7 @@ NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
 NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
 PRIVATE_RC_PATH=${HOME}/.private
 PRIVATE_RC=${PRIVATE_RC_PATH}/private_rc.sh
-RETAG_SCRIPT=${HOME}/bin/retag
+RETAG_SCRIPT=${HOME}/bin/lbin/retag
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
 if ! shopt -q login_shell ; then # We're not a login shell
@@ -216,6 +216,7 @@ fi
 
 # Include the default alias / resource definitions
 if [ -f ${COMMON_RC} ]; then
+	$ECHO " .. sourcing [${COMMON_RC}]"
 	. ${COMMON_RC}
 elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
 	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/common_rc]"
@@ -224,7 +225,10 @@ elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
 	$ECHO "Sourcing this for now..."
 	. ${DEFAULT_RC_PATH}/common_rc
 fi
-[[ -f ${PRIVATE_RC} ]] && . ${PRIVATE_RC}
+if [ -f ${PRIVATE_RC} ]; then
+	$ECHO " .. sourcing [${PRIVATE_RC}]"
+	. ${PRIVATE_RC}
+fi
 
 # Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
@@ -307,6 +311,7 @@ export PROMPT_COMMAND=set_prompt
 
 # Source the post_rc file if needed
 if [ -f ${POST_RC} ]; then
+	$ECHO " .. sourcing [${POST_RC}]"
 	. ${POST_RC}
 elif [ -f ${DEFAULT_RC_PATH}/post_rc ]; then
 	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/post_rc]"
