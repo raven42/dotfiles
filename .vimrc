@@ -241,14 +241,14 @@ if version >= 800
 	" E0B1  Right angle line			26A0 ⚠ Warning
 	" E0B2  Left angle solid			26A1 ⚡Lightning
 	" E0B3  Left angle line			2714 ✔ Checkmark
-	" E0B8  Bottom-left angle solid	2716 ✖ X-Mark
-	" E0B9  Bottom-left angle line		2718 ✘ X-Mark
-	" E0BA  Bottom-right angle solid	271A ✚ Plus-Mark
-	" E0BB  Bottom-right angle line	2260 ≠ Not Equals
-	" E0BC  Top-left angle solid		2264 ≤ Less-than or equal
-	" E0BD  Top-left angle line		2265 ≥ Greater-than or equal
-	" E0BE  Top-right angle solid		00A9 © Copyright
-	" E0BF  Top-right angle line		00AE ® Rights-Reserved
+	" E0B8 							2716 ✖ X-Mark
+	" E0B9 							2718 ✘ X-Mark
+	" E0BA 							271A ✚ Plus-Mark
+	" E0BB 							2260 ≠ Not Equals
+	" E0BC 							2264 ≤ Less-than or equal
+	" E0BD 							2265 ≥ Greater-than or equal
+	" E0BE 							00A9 © Copyright
+	" E0BF 							00AE ® Rights-Reserved
 	" 25BC ▼ Arrow Down					23F3 ⏳Timer
 	" 25B2 ▲ Arrow Up					23F0 ⏰Alarm Clock
 	" 25B6 ▶ Arrow Right
@@ -284,8 +284,8 @@ if version >= 800
 				\ 'line-added'				: '',
 				\ 'line-modified'			: '',
 				\ 'line-modified-removed'	: '',
-				\ 'line-removed-above'		: '',
-				\ 'line-removed'			: '',
+				\ 'line-removed-above'		: '◤',
+				\ 'line-removed'			: '◣',
 				\ 'modified'				: '✚',
                 \ 'staged'					: '✔',
                 \ 'untracked'				: '✭',

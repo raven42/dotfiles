@@ -233,9 +233,18 @@ while true; do
 			read -p 'Please specify remote git server: ' remote_server
 		fi
 
-		if [ "${remote_repo}" == "" ]; then
+		while [[ "${remote_repo}" == "" ]] || [[ "${remote_repo}" =~ ":" ]]; do
+			if [[ "${remote_repo}" =~ ":" ]]; then
+				remote_repos=$(echo $remote_repo | tr ':' '\n')
+				echo "Remote Repositories:"
+				for remote in $remote_repos; do
+					echo "  $remote"
+				done
+				echo "  .. (other known repositories)"
+				echo ""
+			fi
 			read -p 'Please specify remote git repository: ' remote_repo
-		fi
+		done
 
 		cd ${workspace_path}
 		[ $debug -eq 1 ] && echo "Retrieving remote branches [git ls-remote --heads ${remote_server}:${remote_repo}]..."
