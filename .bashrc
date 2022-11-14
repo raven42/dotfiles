@@ -93,7 +93,7 @@ fi
 
 # If present, source ${CHANGE_DIR_SCRIPT} for directory tracking with 'cd'
 if [[ -f ${CHANGE_DIR_SCRIPT} ]]; then
-	$ECHO " .. sourcing [${CHANGE_DIR_SCRIPT}]"
+	$ECHO "sourcing .. [${CHANGE_DIR_SCRIPT}]"
 	. ${CHANGE_DIR_SCRIPT}
 fi
 
@@ -141,11 +141,11 @@ PS_ESC="\e"			# Escape character
 PS_BELL="\a"		# Bell character
 
 if [ -f $GIT_COMPLETION ]; then
-	$ECHO " .. sourcing [${GIT_COMPLETION}]"
+	$ECHO "sourcing .. [${GIT_COMPLETION}]"
 	. $GIT_COMPLETION
 fi
 if [ -f $GIT_PROMPT ]; then
-	$ECHO " .. sourcing [${GIT_PROMPT}]"
+	$ECHO "sourcing .. [${GIT_PROMPT}]"
 	. $GIT_PROMPT
 fi
 
@@ -217,7 +217,7 @@ fi
 
 # Include the default alias / resource definitions
 if [ -f ${COMMON_RC} ]; then
-	$ECHO " .. sourcing [${COMMON_RC}]"
+	$ECHO "sourcing .. [${COMMON_RC}]"
 	. ${COMMON_RC}
 elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
 	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/common_rc]"
@@ -227,13 +227,13 @@ elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
 	. ${DEFAULT_RC_PATH}/common_rc
 fi
 if [ -f ${PRIVATE_RC} ]; then
-	$ECHO " .. sourcing [${PRIVATE_RC}]"
+	$ECHO "sourcing .. [${PRIVATE_RC}]"
 	. ${PRIVATE_RC}
 fi
 
 # Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
-	$ECHO " .. sourcing [${rc_spec}]"
+	$ECHO "sourcing .. [${rc_spec}]"
 	. ${rc_spec}
 	$ECHO "  RC SPEC:${rc_spec}"
 	$ECHO "  TAGDIR:${TAGDIR}"
@@ -313,7 +313,7 @@ export PROMPT_COMMAND=set_prompt
 
 # Source the post_rc file if needed
 if [ -f ${POST_RC} ]; then
-	$ECHO " .. sourcing [${POST_RC}]"
+	$ECHO "sourcing .. [${POST_RC}]"
 	. ${POST_RC}
 elif [ -f ${DEFAULT_RC_PATH}/post_rc ]; then
 	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/post_rc]"
