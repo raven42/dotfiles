@@ -74,7 +74,7 @@ NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
 NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
 PRIVATE_RC_PATH=${HOME}/.private
 PRIVATE_RC=${PRIVATE_RC_PATH}/private_rc.sh
-RETAG_SCRIPT=${HOME}/bin/lbin/retag
+RETAG_SCRIPT=${HOME}/sbin/retag.sh
 
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
 if ! shopt -q login_shell ; then # We're not a login shell
