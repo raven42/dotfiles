@@ -23,18 +23,16 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
 
 To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest:
 ```
-git clone --bare <dotfiles-repo.git> $HOME/.cfg
+git clone --bare git@github.com:raven42/dotfiles.git $HOME/.cfg
 alias githome='git --git-dir=$HOME/.cfg --work-tree=$HOME'
 echo ".cfg" >> .gitignore
 githome checkout
 ```
 
 
-Setup git to not show untracked files in the status output. You can also setup the username and email associated with this git repository if different than your normal username / email.
+Setup git to not show untracked files in the status output. You can also setup the username and email associated with this git repository if different than your normal username / email if desired.
 ```
 githome config --local status.showUntrackedFiles no
-githome config --local user.name "username"
-githome config --local user.email "user@email.com"
 ```
 
 Once cloned, it may be necessary to initialize / update any submodules for any git repositories that are embedded in the environment.
