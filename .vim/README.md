@@ -130,6 +130,7 @@ t]       - Jump to the next tag in the file
 :Git <cmd>                      - Run git <cmd> and display the output in a split window
 :ToggleUnicode                  - This will toggle the `g:use_unicode` flag on/off and update the character map in VIM accordinly. This will
                                   only affect the text loaded in the edit window, not the plugin character mappings
+:ToggleHex                      - Toggle the file to display hex mode or back to ascii mode using xxd
 ```
 
  
