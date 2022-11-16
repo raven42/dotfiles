@@ -31,7 +31,7 @@ bld_target=
 if [ $GIT_ROOT ]; then
 	target_rc=${GIT_ROOT}/.rc/bld_target.sh
 else
-	target_rc=${HOME}/.default/bld_target.sh
+	target_rc=${HOME}/.private/bld_target.sh
 fi
 
 # The following are used to set the pyuniti default tbc file
@@ -42,6 +42,7 @@ default_tbc_list+=("swbd165"	"ven60.tbc")
 default_tbc_list+=("swbd190"	"dart102.tbc")
 max=${#default_tbc_list[@]}
 let max=max-1
+
 arg_dist=0
 arg_tbc=1
 arg_count=2

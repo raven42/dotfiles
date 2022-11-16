@@ -29,7 +29,7 @@ export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
 export LYNX_CFG=~/.lynxrc
 export MAKEFLAGS=-s
 export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
-export MODULEPATH=$HOME/.default/modulefiles:/usr/share/Modules/modulefiles:/etc/modulefiles
+export MODULEPATH=$HOME/.default/modulefiles:$HOME/.private/modulefiles:/usr/share/modules/modulefiles:/etc/modulefiles
 #export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 export PATH=/bin:/usr/sbin:/usr/bin:/usr/local/bin
 #export PYTHONPATH=~/.local/lib/python3.5/site-packages
@@ -52,27 +52,24 @@ fi
 
 shopt -s checkwinsize
 
-if [ "$(command -v module)" ]; then
-	module purge
-fi
-
 # External resource / script files
 BLD_TARGET_SCRIPT=bld_target.sh
-DEFAULT_RC_PATH=${HOME}/.private
+DEFAULT_RC_PATH=${HOME}/.default
+GIT_RC_PATH=${GIT_ROOT}/.rc
+GIT_TAGS_PATH=${GIT_RC_PATH}/tags
+PRIVATE_RC_PATH=${HOME}/.private
+
 CHANGE_DIR_SCRIPT=${HOME}/sbin/change_dir.sh
 COMMON_RC=${DEFAULT_RC_PATH}/common_rc.sh
-POST_RC=${DEFAULT_RC_PATH}/post_rc.sh
 DIRCOLORS=${HOME}/.dircolors
-GIT_DEFAULT_RC=${DEFAULT_RC_PATH}/repo_rc.sh
-GIT_RC_PATH=${GIT_ROOT}/.rc
-GIT_RC=${GIT_RC_PATH}/rc
-GIT_TAGS_PATH=${GIT_RC_PATH}/tags
 GIT_COMPLETION=${HOME}/sbin/git-completion.bash
+GIT_PRIVATE_RC=${PRIVATE_RC_PATH}/repo_rc.sh
 GIT_PROMPT=${HOME}/sbin/git-prompt.sh
-NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
+GIT_RC=${GIT_RC_PATH}/rc
 NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
-NERDTREE_DEF_BOOKMARKS=${DEFAULT_RC_PATH}/NERDTreeDefaultBookmarks
-PRIVATE_RC_PATH=${HOME}/.private
+NERDTREE_DEF_BOOKMARKS=${PRIVATE_RC_PATH}/NERDTreeDefaultBookmarks
+NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
+POST_RC=${PRIVATE_RC_PATH}/post_rc.sh
 PRIVATE_RC=${PRIVATE_RC_PATH}/private_rc.sh
 RETAG_SCRIPT=${HOME}/sbin/retag.sh
 
@@ -166,16 +163,16 @@ if [ $GIT_REPO ]; then
 		fi
 		if [ -f ${GIT_RC} ]; then
 			rc_spec=${GIT_RC}
-		elif [ -f ${GIT_DEFAULT_RC} ]; then
+		elif [ -f ${GIT_PRIVATE_RC} ]; then
 			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
 				$ECHO "rc spec not found. Generating defaults at ${GIT_RC}..."
 				if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} ]; then
-					cp ${GIT_DEFAULT_RC} ${GIT_RC}
+					cp ${GIT_PRIVATE_RC} ${GIT_RC}
 				fi
 				rc_spec=${GIT_RC}
 			else
 				$ECHO "rc (${GIT_RC}) spec not found. Using defaults."
-				rc_spec=${GIT_DEFAULT_RC}
+				rc_spec=${GIT_PRIVATE_RC}
 			fi
 		fi
 	fi
@@ -200,18 +197,6 @@ if [ $GIT_REPO ]; then
 			$ECHO " No TAGFILES found. Generating new tags in the background at ${GIT_TAGS_PATH}..."
 			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/log/retag_${GIT_REPO}.log &
 		fi
-
-		# Look for deprecated build target scripts
-		if [ -f ${GIT_RC_PATH}/bld_target ]; then
-			$ECHO "Deprecated resource script found... [${GIT_RC_PATH}/bld_target]"
-			$ECHO "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
-			$ECHO "  mv ${GIT_RC_PATH}/bld_target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
-		fi
-		if [ -f ${GIT_RC_PATH}/target ]; then
-			$ECHO "Deprecated resource script found... [${GIT_RC_PATH}/target]"
-			$ECHO "Please move to the new location...  [${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}]"
-			$ECHO "  mv ${GIT_RC_PATH}/target ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}"
-		fi
 	fi
 fi
 
@@ -219,27 +204,19 @@ fi
 if [ -f ${COMMON_RC} ]; then
 	$ECHO "sourcing .. [${COMMON_RC}]"
 	. ${COMMON_RC}
-elif [ -f ${DEFAULT_RC_PATH}/common_rc ]; then
-	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/common_rc]"
-	$ECHO "Please move to the new location...  [${COMMON_RC}]"
-	$ECHO "   mv ${DEFAULT_RC_PATH}/common_rc ${COMMON_RC}"
-	$ECHO "Sourcing this for now..."
-	. ${DEFAULT_RC_PATH}/common_rc
 fi
+# Load the user's private rc file
 if [ -f ${PRIVATE_RC} ]; then
 	$ECHO "sourcing .. [${PRIVATE_RC}]"
 	. ${PRIVATE_RC}
 fi
-
 # Load repo / view specific resource definitions
 if [ ${rc_spec} ]; then
 	$ECHO "sourcing .. [${rc_spec}]"
 	. ${rc_spec}
-	$ECHO "  RC SPEC:${rc_spec}"
-	$ECHO "  TAGDIR:${TAGDIR}"
 fi
 
-#Display info
+# Display info
 export DISPLAY
 
 function format_prompt() {
@@ -255,8 +232,8 @@ function format_prompt() {
 
 		if [ -f ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
 			. ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}
-		elif [ -f ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
-			. ${DEFAULT_RC_PATH}/${BLD_TARGET_SCRIPT}
+		elif [ -f ${PRIVATE_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
+			. ${PRIVATE_RC_PATH}/${BLD_TARGET_SCRIPT}
 		fi
 
 		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
@@ -315,10 +292,4 @@ export PROMPT_COMMAND=set_prompt
 if [ -f ${POST_RC} ]; then
 	$ECHO "sourcing .. [${POST_RC}]"
 	. ${POST_RC}
-elif [ -f ${DEFAULT_RC_PATH}/post_rc ]; then
-	$ECHO "Deprecated resource script found... [${DEFAULT_RC_PATH}/post_rc]"
-	$ECHO "Please move to the new location...  [${POST_RC}]"
-	$ECHO "   mv ${DEFAULT_RC_PATH}/post_rc ${POST_RC}"
-	$ECHO "Sourcing this for now..."
-	. ${DEFAULT_RC_PATH}/post_rc
 fi

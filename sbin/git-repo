@@ -260,9 +260,13 @@ while true; do
 		echo ""
 		echo "${branches}"
 		echo ""
-		read -p "Which branch do you want to clone: " branch
+		read -p "Which branch do you want to clone [<enter> for default]: " branch
 		echo ""
-		git clone -b ${branch} ${remote_server}:${remote_repo} ${repo_path}
+		if [ -z "${branch}" ]; then
+			git clone ${remote_server}:${remote_repo} ${repo_path}
+		else
+			git clone -b ${branch} ${remote_server}:${remote_repo} ${repo_path}
+		fi
 		if [ $? -ne 0 ]; then
 			echo "Clone failed. Unable to create repository."
 			exit 1
