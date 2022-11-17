@@ -10,6 +10,7 @@
 " $TAGDIR			: Defines the VIM tag directory to look for ctags
 " $HOME				: Used to define 'makeprg' for make tasks
 " $USE_UNICODE		: If set use unicode characters for some plugin definitions
+" $USE_DEVPANEL		: Use the devpanel by default
 " $GIT_ROOT			: Used for repo specific bookmark file
 " $USER				: Used to filter file names for title formatting
 " $SRC_PATH_PREFIX	: Used to filter file names for title formatting
@@ -672,8 +673,16 @@ if version >= 800
 	let g:minimap_block_filetypes = ['fugitive', 'nerdtree', 'tagbar', 'qf', 'preview', 'diff']
 
 	" ---- DevPanel Configuration {{{2
-	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc'
-	" let g:devpanel_auto_open_files = 'none'
+	if $USE_DEVPANEL !=# ''
+		let g:use_devpanel = $USE_DEVPANEL
+	else
+		let g:use_devpanel = 1
+	endif
+	if g:use_devpanel
+		let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc,*.sh'
+	else
+		let g:devpanel_auto_open_files = 'no_files'
+	endif
 	let g:devpanel_panel_min = 40
 	let g:devpanel_panel_max = 45
 	let g:devpanel_open_min_width = 120

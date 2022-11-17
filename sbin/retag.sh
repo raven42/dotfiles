@@ -84,9 +84,9 @@ create_ctags()
 	path=$2
 
 	if [ $universal_ctags -eq 1 ]; then
-		ctags_cmd="$ctags_bin --tag-relative=always --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
+		ctags_cmd="$ctags_bin --tag-relative=always --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no *"
 	else
-		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no -V *"
+		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no *"
 	fi
 	#ctags_cmd="/usr/bin/ctags --tag-relative --recurse -extra=f -f $filename --links=no *"
 
