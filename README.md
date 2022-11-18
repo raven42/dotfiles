@@ -56,11 +56,12 @@ githome submodule update
 The [.bashrc](.bashrc) file is a generic resource file which defines some basics which should be compatible for any user. This script will reference the following user specific files.
 | File | Purpose |
 | --- | --- |
-| .default/common_rc.sh | This file is included prior to any repository specific resource files. Use this for common aliases and environment setup. |
+| .default/common_rc.sh | This file is included prior to any repository specific resource files. Use this for common definitions for a given site or department. This can include things like the `WORKSPACES`, `DEFAULT_GIT_SERVER`, `MODULEPATH`, etc. This is indended to be a shared common file for all users in a given group which provides any proporietary information which should not be included in a public repository like this one. |
+| .private/private_rc.sh | This file is included next and is intended to be a user specific setting. This will be a place for users to define any custom aliases or envirnoment variables. If can also be used to override anything set in the common_rc.sh script. |
 | .default/repo_rc.sh | This file is used as a template for any new repositories that use the `${GIT_REPO}` environment setup. This file is copied to `${GIT_REPO}/.rc/rc` for user generated repos |
 | ${GIT_ROOT}/.rc/rc | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
 | ${GIT_ROOT}/.rc/bld_target.sh | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
-| .default/post_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. |
+| .default/post_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. This can be used to override any defaults that were defined in any previous file. |
 
 ## Environment Variables
 There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
@@ -238,7 +239,7 @@ See the [.vim/](.vim/) file for more information on the VIM setup and configurat
 :information\_source: For full list of plugins, see the [.vim](.vim/) readme or the [.vim/pack/plugins/start](https://github.com/raven42/dotfiles/tree/master/.vim/pack/plugins/start) directory.
 
 ### VIM Compilation
-The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source.
+The VIM plugins and resource files all require VIM 8 installed. This can be compiled and installed from the source if the default version is not VIM 8 or higher.
 
 ##### Install for single user
 1. Clone the git repository:
@@ -302,41 +303,10 @@ To get unicode character support on different disrtibutions, the powerline packa
 
 > [fonts-noto](https://packages.debian.org/buster/fonts-noto)
 
-If your environment does not have any unicode fonts installed, and if you are unable to install any via the normal methods like above, another option is to copy existing fonts from another user in your organization. To manually copy / install these fonts, find another user in your organization that does have unicode fonts installed and copy them to your home path. Once copied, you can use the `fc-cache --force --verbose` to manually update your font cache and then verify that the correct directories were scanned. The paths to look at for fonts in a user profile can be found here:
-```
-<user>/.fonts
-<user>/.local/share/fonts
-```
-
-So to copy from another user and update your font cache, it would look something like this:
-```
-~$ mkdir ~/.fonts
-~$ mkdir -p ~/.local/share/fonts
-~$ cp -r /home/<another-user>/.fonts ~/.fonts
-~$ cp -r /home/<another-user>/.local/share/fonts ~/.local/share/fonts
-~$ fc-cache --force --verbose
-/usr/share/fonts: caching, new cache contents: 0 fonts, 3 dirs
-/usr/share/fonts/bitmap: caching, new cache contents: 15 fonts, 0 dirs
-/usr/share/fonts/default: caching, new cache contents: 0 fonts, 2 dirs
-/usr/share/fonts/default/Type1: caching, new cache contents: 35 fonts, 0 dirs
-/usr/share/fonts/default/ghostscript: caching, new cache contents: 13 fonts, 0 dirs
-/usr/share/fonts/liberation: caching, new cache contents: 4 fonts, 0 dirs
-/usr/share/X11/fonts/Type1: caching, new cache contents: 13 fonts, 0 dirs
-/usr/share/X11/fonts/TTF: skipping, no such directory
-/usr/local/share/fonts: skipping, no such directory
-/home/<user>/.fonts: caching, new cache contents: 250 fonts, 1 dirs
-/home/<user>/.fonts/luculent: caching, new cache contents: 0 fonts, 0 dirs
-/var/cache/fontconfig: not cleaning unwritable cache directory
-/home/<user>/.fontconfig: cleaning cache directory
-fc-cache: succeeded
-~$ 
-```
-> :warning: **Note:** After installing / updating your font cache, it may be required to reboot your system.
-
 ---
 
 ## Univeral CTAGS
-These plugins also work better with Universal CTAGS instead of Exuberant CTAGS. This can also be compiled and installed from the source.
+These plugins also work better with Universal CTAGS instead of Exuberant CTAGS. This can also be compiled and installed from the source if the distribution does not already include universal ctags.
 ```
 git clone https://github.com/universal-ctags/ctags
 cd ctags
