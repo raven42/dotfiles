@@ -62,6 +62,8 @@ else
 	src_path=""
 	echo ""
 	echo "SRC_PATH_PREFIX not defined or does not exist. Overriding and using current directory"
+	echo "  SRC_PATH_PREFIX: [$SRC_PATH_PREFIX]"
+	echo "  GIT_ROOT: [$GIT_ROOT]"
 	TAG_PATH=""
 fi
 
