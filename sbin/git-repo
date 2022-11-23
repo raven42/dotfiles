@@ -39,9 +39,13 @@
 prog=`basename $0`
 
 # Environment specific definitions
-workspaces=${WORKSPACES}
-remote_server=${DEFAULT_GIT_SERVER}
-remote_repo=${DEFAULT_GIT_REPO}
+workspaces=$HOME/projects
+remote_server=git@github.com
+remote_repo=raven42/dotfiles.git
+
+[[ ! -z "$WORKSPACES" ]] && workspaces=$WORKSPACES
+[[ ! -z "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER
+[[ ! -z "$DEFAULT_GIT_REPO" ]] && remote_repo=$DEFAULT_GIT_REPO
 
 usage="Usage: $prog [<options>] [<repo>]
 

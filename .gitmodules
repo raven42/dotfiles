@@ -49,3 +49,6 @@
 [submodule ".vim/pack/plugins/start/vim-auto-save"]
 	path = .vim/pack/plugins/start/vim-auto-save
 	url = https://github.com/907th/vim-auto-save.git
+[submodule ".vim/pack/plugins/start/yang.vim"]
+	path = .vim/pack/plugins/start/yang.vim
+	url = git@github.com:nathanalderson/yang.vim.git
