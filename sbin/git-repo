@@ -158,9 +158,9 @@ find_repo()
 	path=$(echo $workspaces | tr ':' '\n')
 	[ $debug -eq 1 ] && echo "Scanning for [${search_param}] in workspace [${path}] with depth [${search_depth}]..."
 	if [[ $search_param == "" ]]; then
-		matches=$(find $path -maxdepth $search_depth -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null)
+		matches=$(find $path/ -maxdepth $search_depth -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null)
 	else
-		matches=$(find $path -maxdepth $search_depth -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | grep "/${search_param}$")
+		matches=$(find $path/ -maxdepth $search_depth -type d -exec test -e '{}/.git' ';' -print -prune 2> /dev/null | grep "/${search_param}$")
 	fi
 	for match in ${matches}; do
 		[ $debug -eq 1 ] && echo " Found path ${match}..."
