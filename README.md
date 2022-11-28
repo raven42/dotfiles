@@ -61,7 +61,7 @@ The [.bashrc](.bashrc) file is a generic resource file which defines some basics
 | .default/repo_rc.sh | This file is used as a template for any new repositories that use the `${GIT_REPO}` environment setup. This file is copied to `${GIT_REPO}/.rc/rc` for user generated repos |
 | ${GIT_ROOT}/.rc/rc | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
 | ${GIT_ROOT}/.rc/bld_target.sh | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
-| .default/post_rc | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. This can be used to override any defaults that were defined in any previous file. |
+| .private/post_rc.sh | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. This can be used to override any defaults that were defined in any previous file. |
 
 ## Environment Variables
 There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
