@@ -51,4 +51,4 @@
 	url = https://github.com/907th/vim-auto-save.git
 [submodule ".vim/pack/plugins/start/yang.vim"]
 	path = .vim/pack/plugins/start/yang.vim
-	url = git@github.com:nathanalderson/yang.vim.git
+	url = https://github.com/nathanalderson/yang.vim.git
