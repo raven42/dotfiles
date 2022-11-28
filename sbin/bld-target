@@ -10,19 +10,15 @@ usage="Target Usage: $prog [<options>]
    * GIT_REPO/GIT_ROOT needs to be a bash env variable set to your /work workspace
 
  Options:
-   -<platform>      compile platform(s): lando (harpoon), awing, gen6, dart
-   -swbd <#>        compile specific swbd
    -pretend|-p      Show what commands would be run but don't execute
    -verbose|-v      Use the verbose flags when running crave
-   -default         Show / Set the specified swbd as default for future operations
 
  Examples
-   '$prog -lando'
-   '$prog -swbd 148'
+   '$prog swbd190'
 "
 
-shrt_opts=pvhs:
-long_opts=pretend,verbose,help,swbd:,skybolt,sb,lando,dcx,gen6,awing,dart
+shrt_opts=pvh
+long_opts=pretend,verbose,help
 
 exec=
 verbose=0
@@ -33,19 +29,6 @@ if [ $GIT_ROOT ]; then
 else
 	target_rc=${HOME}/.private/bld_target.sh
 fi
-
-# The following are used to set the pyuniti default tbc file
-pyuniti_config=${HOME}/.pyuniti/config.ini
-default_tbc_list=()
-default_tbc_list+=("swbd178"	"awing63.tbc")
-default_tbc_list+=("swbd165"	"ven60.tbc")
-default_tbc_list+=("swbd190"	"dart102.tbc")
-max=${#default_tbc_list[@]}
-let max=max-1
-
-arg_dist=0
-arg_tbc=1
-arg_count=2
 
 # Process the command line arguments
 optarg=0
@@ -69,32 +52,6 @@ while [ $1 != -- ]; do
 	--help)
 		echo "$usage"
 		exit 1
-		;;
-
-# platform types
-	-s | --swbd)
-		bld_target=$2
-		shift
-		;;
-
-	--dcx)
-		bld_target="swbd62"
-		;;
-
-	--skybolt | --sb)
-		bld_target="swbd148"
-		;;
-
-	--lando)
-		bld_target="swbd165"
-		;;
-
-	--awing)
-		bld_target="swbd178"
-		;;
-
-	--dart)
-		bld_target="swbd190"
 		;;
 
 	-h | --help)
@@ -133,25 +90,3 @@ else
 	echo "Set new default BLD_TARGET=${bld_target} in [${target_rc}]"
 	. $target_rc
 fi
-
-# Now check if we should set the pyuniti default tbc
-if [ -f $pyuniti_config ]; then
-	found=0
-	for i in `seq 0 $arg_count $max`; do
-		dist=${default_tbc_list[$i+$arg_dist]}
-		if [ "$bld_target" == "$dist" ]; then
-			pyuniti_tbc=${default_tbc_list[$i+$arg_tbc]}
-			found=1
-			break
-		fi
-	done
-
-	if [ $found -eq 1 ]; then
-		cp ${pyuniti_config} ${pyuniti_config}.bak
-		cat ${pyuniti_config} | sed -e 's|^\(tbc=.*\)/.*|\1/'${pyuniti_tbc}'|' > ${pyuniti_config}.new
-		mv ${pyuniti_config}.new ${pyuniti_config}
-		echo "pyuniti tbc set to:$(grep '^tbc=' ${pyuniti_config})"
-	fi
-
-fi
-exit 0
