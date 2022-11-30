@@ -2,6 +2,9 @@
 # .bashrc - Basic env setup and resource script file
 #
 
+# First purge any modules so we can start fresh if any were loaded
+[[ "$(command -v module)" ]] && module purge
+
 # Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
