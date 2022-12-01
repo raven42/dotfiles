@@ -2,9 +2,6 @@
 # .bashrc - Basic env setup and resource script file
 #
 
-# First purge any modules so we can start fresh if any were loaded
-[[ "$(command -v module)" ]] && module purge
-
 # Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
@@ -90,6 +87,9 @@ if [[ -f ${DIRCOLORS} ]]; then
 elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
 fi
+
+# First purge any modules so we can start fresh if any were loaded
+[[ "$(command -v module)" ]] && module purge
 
 # If present, source ${CHANGE_DIR_SCRIPT} for directory tracking with 'cd'
 if [[ -f ${CHANGE_DIR_SCRIPT} ]]; then
