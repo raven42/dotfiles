@@ -43,11 +43,11 @@ workspaces=$HOME/projects
 remote_server=git@github.com
 remote_repo=raven42/dotfiles.git
 
-[[ ! -z "$WORKSPACES" ]] && workspaces=$WORKSPACES
-[[ ! -z "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER
-[[ ! -z "$DEFAULT_GIT_REPO" ]] && remote_repo=$DEFAULT_GIT_REPO
+[[ -n "$WORKSPACES" ]] && workspaces=$WORKSPACES
+[[ -n "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER
+[[ -n "$DEFAULT_GIT_REPO" ]] && remote_repo=$DEFAULT_GIT_REPO
 
-usage="Usage: $prog [<options>] [<repo>]
+usage_string="Usage: $prog [<options>] [<repo>]
 
  Options:
    -remote-server <url>           - Specify the remote GIT server (default:$remote_server) when cloning
@@ -56,12 +56,16 @@ usage="Usage: $prog [<options>] [<repo>]
    -depth <depth>                 - Specify the depth to search in workspaces for. Larger value yeilds longer search times.
 "
 
+function usage {
+	echo -e "\n${usage_string}"
+}
+
 # Initialize some defaults
 debug=0
 repo_match=""
 num_paths=0
 
-if [ ${WORKSPACE_SEARCH_DEPTH} ]; then
+if [ "${WORKSPACE_SEARCH_DEPTH}" ]; then
 	search_depth=${WORKSPACE_SEARCH_DEPTH}
 else
 	search_depth=5
@@ -71,16 +75,13 @@ fi
 sopts="hd"
 lopts="help,debug,remote-server:,remote-repo:,workspaces:,depth:"
 
-optarg=0
-opts=`getopt -n $prog -o $sopts -ual $lopts -- $@`
-if [ $? != 0 ]; then
-	echo ""
-	echo "$usage"
-	echo ""
-	exit 2
+parsed_arguments=$(getopt -n $prog -o $sopts -ual $lopts -- $@)
+if [[ $? -ne 0 ]]; then
+	usage
+	exit 1
 fi
 
-eval set -- "$opts"
+eval set -- "$parsed_arguments"
 
 # Read in command line options
 while [ $1 != -- ]; do
@@ -112,11 +113,10 @@ while [ $1 != -- ]; do
 		;;
 
 	-h | --help)
-		echo ""
-		echo "$usage"
-		echo ""
+		usage
 		exit 0
 		;;
+
 	esac
 	shift
 done

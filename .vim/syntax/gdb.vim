@@ -5,7 +5,7 @@
 " Last Change:	2012 Oct 05
 
 " quit when a syntax file was already loaded
-if exists("b:current_syntax")
+if exists('b:current_syntax')
   finish
 endif
 
@@ -17,7 +17,7 @@ set cpo&vim
 "syn keyword gdbInfo contained locals program registers scope set sharedlibrary signals
 "syn keyword gdbInfo contained source sources stack symbol target terminal threads
 "syn keyword gdbInfo contained syn keyword tracepoints types udot variables warranty watchpoints
-"syn match gdbInfo contained "all-registers"
+"syn match gdbInfo contained 'all-registers'
 
 
 "syn keyword gdbStatement contained actions apply attach awatch backtrace break bt call catch cd clear collect commands
@@ -28,9 +28,9 @@ set cpo&vim
 "syn keyword gdbStatement contained search section set sharedlibrary shell show si signal source step stepi stepping
 "syn keyword gdbStatement contained stop target tbreak tdump tfind thbreak thread tp trace tstart tstatus tstop
 "syn keyword gdbStatement contained tty undisplay unset until up watch whatis where while ws x
-"syn match gdbFuncDef "\<define\>.*"
-"syn match gdbStatmentContainer "^\s*\S\+" contains=gdbStatement,gdbFuncDef
-"syn match gdbStatement "^\s*info" nextgroup=gdbInfo skipwhite skipempty
+"syn match gdbFuncDef '\<define\>.*'
+"syn match gdbStatmentContainer '^\s*\S\+' contains=gdbStatement,gdbFuncDef
+"syn match gdbStatement '^\s*info' nextgroup=gdbInfo skipwhite skipempty
 
 " some commonly used abbreviations
 "syn keyword gdbStatement c disp undisp disas p
@@ -86,10 +86,10 @@ syn match   gdbNumber		"\<[0-9_]\+\>"
 syn match   gdbNumber		"\<0x[0-9a-fA-F_]\+\>"
 
 
-if !exists("gdb_minlines")
+if !exists('gdb_minlines')
   let gdb_minlines = 10
 endif
-exec "syn sync ccomment gdbComment minlines=" . gdb_minlines
+exec 'syn sync ccomment gdbComment minlines=' . gdb_minlines
 
 " Define the default highlighting.
 " Only when an item doesn't have highlighting yet
@@ -110,8 +110,8 @@ hi def link gdbNumber	        Number
 hi def link gdbThread		Type
 hi def link gdbCommand	        Statement
 
-let b:current_syntax = "gdb"
+let b:current_syntax = 'gdb'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-" vim: ts=8
+" vim: ts=4

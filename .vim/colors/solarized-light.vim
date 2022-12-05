@@ -69,4 +69,8 @@ let g:lightline_colorscheme = 'solarized'
 if &filetype ==# 'diff'
 	execute ':highlight Folded ctermfg=' . blue . ' ctermbg=bg'
 endif
-autocmd FileType diff execute ':highlight Folded ctermfg=' . blue . ' ctermbg=bg'
+
+augroup colors
+	autocmd!
+	autocmd FileType diff execute ':highlight Folded ctermfg=' . blue . ' ctermbg=bg'
+augroup END

@@ -19,52 +19,53 @@
 " --- End Envonrment Variables
 
 " --- Default /etc/vimrc contents {{{2
-if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+if v:lang =~# 'utf8$' || v:lang =~# 'UTF-8$'
 	set fileencodings=utf-8
 endif
 
 " --- Encoding Setup {{{2
-if has("multi_byte")
-	if &termencoding == ""
+if has('multi_byte')
+	if &termencoding ==# ''
 		let &termencoding = &encoding
 	endif
 	set encoding=utf-8
 	setglobal fileencoding=utf-8
-	"setglobal bomb
+	" setglobal bomb
 	set fileencodings=ucs-bom,utf-8,latin1
+	scriptencoding utf-8
 endif
 
 " --- Setup textwidth for text files {{{2
-if has("autocmd")
+if has('autocmd')
 	augroup redhat
 		" In text files, always limit the width of text to 78 characters
 		"    autocmd BufRead *.txt set tw=78
 		" When editing a file, always jump to the last cursor position
 		autocmd BufReadPost *
-					\ if line("'\"") > 0 && line ("'\"") <= line("$") |
+					\ if line("'\"") > 0 && line ("'\"") <= line('$') |
 					\   exe "normal! g'\"" |
 					\ endif
 	augroup END
 endif
 
 " --- Setup cscope {{{2
-if has("cscope") && filereadable("/usr/bin/cscope")
+if has('cscope') && filereadable('/usr/bin/cscope')
 	set csprg=/usr/bin/cscope
 	set csto=0
 	set cst
 	set nocsverb
 	" add any database in current directory
-	if filereadable("cscope.out")
+	if filereadable('cscope.out')
 		cs add cscope.out
 		" else add database pointed to by environment
-	elseif $CSCOPE_DB != ""
+	elseif $CSCOPE_DB !=# ''
 		cs add $CSCOPE_DB
 	endif
 	set csverb
 endif
 
 " --- Setup GUI parameters {{{2
-if has("gui_running")
+if has('gui_running')
 	set guifont=Monospace\ 8
 	set mouse=a
 	set ttymouse=sgr
@@ -72,8 +73,8 @@ if has("gui_running")
 endif
 
 " --- setup xterm parameters {{{2
-if &term =~ "xterm"
-	if has("terminfo")
+if &term =~# 'xterm'
+	if has('terminfo')
 		set t_Co=16
 		set t_Sf=[3%p1%dm
 		set t_Sb=[4%p1%dm
@@ -117,7 +118,6 @@ colorscheme xterm
 
 let $TMPDIR=$HOME . '/tmp'
 
-set nocompatible			" ---- Use Vim defaults (much better!)
 set bs=indent,eol,start		" ---- allow backspacing over everything in insert mode
 " set viminfo=%,<800,'10,/50,:100,h,f0,n~/.vim/cache/.viminfo
 " "           | |    |   |   |    | |  + viminfo file path
@@ -161,7 +161,7 @@ set makeprg=$HOME/bin/cmk
 set clipboard=unnamed,autoselect,exclude:cons\|linux
 set number
 
-if version >= 800
+if v:version >= 800
 	set modelineexpr
 endif
 
@@ -178,16 +178,6 @@ execute 'set tags=' . tagfiles
 filetype plugin on
 filetype indent on
 
-"----- Let's try the following settings for C/C++
-autocmd FileType c,cpp
-			\	setlocal formatoptions=croql
-			\	cindent
-			\	comments=sr:/*,mb:*,ex:*/,://
-
-" --- We need real tabs for Makefiles.
-autocmd FileType make setlocal noexpandtab
-autocmd FileType make setlocal nosmarttab
-
 " --- have java highlight our functions
 "let java_highlight_functions=1
 
@@ -198,29 +188,42 @@ let php3_baselib = 1
 
 nnoremap ; :
 
-" --- :help cinoptions-values
-" NOTE: additional formatting options specified in .vim/after/ftplugin.vim
-autocmd FileType c,cpp setlocal cinoptions=>4,t0,#0,:0,l1,p2,+2s,c0,(0,m1,)50,J1,#N
-"                                          |  |  |  |  |  |  |   |  |  |  |   |  + Recognize shell/perl script comment style
-"                                          |  |  |  |  |  |  |   |  |  |  |   + Don't confuse object declarations with labels
-"                                          |  |  |  |  |  |  |   |  |  |  + Look for unclosed paranthesis 50 lines away
-"                                          |  |  |  |  |  |  |   |  |  + Line up close paren on new line with open paren
-"                                          |  |  |  |  |  |  |   |  + Line up arguments under unclosed parens
-"                                          |  |  |  |  |  |  |   + Align lines after comment opener
-"                                          |  |  |  |  |  |  + Indent continuation line by 2 shift-width
-"                                          |  |  |  |  |  + indent parameter declarations after function but before open bracket
-"                                          |  |  |  |  + align with case label instead of statement after it
-"                                          |  |  |  + case labels align with switch instead of shift-width in
-"                                          |  |  + preprocessor directives should be left aligned
-"                                          |  + function return type left justified intead of shift-width
-"                                          + normal indentation after start of a block
-autocmd FileType python,sh setlocal cinoptions=>4,t0,#s
-autocmd BufWinEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
-autocmd InsertEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+\%#\@<!$/
-autocmd InsertLeave *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
-autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
-"autocmd BufWinEnter *.py set fileformat=unix
-autocmd BufWinLeave * call clearmatches()
+" .vimrc autocmds
+augroup vimrc
+	"----- Let's try the following settings for C/C++
+	autocmd FileType c,cpp
+				\	setlocal formatoptions=croql
+				\	cindent
+				\	comments=sr:/*,mb:*,ex:*/,://
+
+	" --- We need real tabs for Makefiles.
+	autocmd FileType make setlocal noexpandtab
+	autocmd FileType make setlocal nosmarttab
+
+	" --- :help cinoptions-values
+	" NOTE: additional formatting options specified in .vim/after/ftplugin.vim
+	autocmd FileType c,cpp setlocal cinoptions=>4,t0,#0,:0,l1,p2,+2s,c0,(0,m1,)50,J1,#N
+	"                                          |  |  |  |  |  |  |   |  |  |  |   |  + Recognize shell/perl script comment style
+	"                                          |  |  |  |  |  |  |   |  |  |  |   + Don't confuse object declarations with labels
+	"                                          |  |  |  |  |  |  |   |  |  |  + Look for unclosed paranthesis 50 lines away
+	"                                          |  |  |  |  |  |  |   |  |  + Line up close paren on new line with open paren
+	"                                          |  |  |  |  |  |  |   |  + Line up arguments under unclosed parens
+	"                                          |  |  |  |  |  |  |   + Align lines after comment opener
+	"                                          |  |  |  |  |  |  + Indent continuation line by 2 shift-width
+	"                                          |  |  |  |  |  + indent parameter declarations after function but before open bracket
+	"                                          |  |  |  |  + align with case label instead of statement after it
+	"                                          |  |  |  + case labels align with switch instead of shift-width in
+	"                                          |  |  + preprocessor directives should be left aligned
+	"                                          |  + function return type left justified intead of shift-width
+	"                                          + normal indentation after start of a block
+	autocmd FileType python,sh setlocal cinoptions=>4,t0,#s
+	autocmd BufWinEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
+	autocmd InsertEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+\%#\@<!$/
+	autocmd InsertLeave *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
+	autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
+	" autocmd BufWinEnter *.py set fileformat=unix
+	autocmd BufWinLeave * call clearmatches()
+augroup END
 
 " Hit // to search for visually selected text
 vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
@@ -230,7 +233,7 @@ vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 " --- PLUGIN Configurations {{{1
 " ---- Only load plugins if VIM version 8 or higher {{{2
 
-if version >= 800
+if v:version >= 800
 
     " ---- Character Map {{{2
 	" Here are a couple unicode characters used for any formatted output
@@ -621,12 +624,6 @@ if version >= 800
 	"             \ ]
 	"         \}
 
-
-	autocmd FileType cheatsheet let g:tagbar_show_data_type = 0
-	autocmd FileType cheatsheet let g:tagbar_sort = 0
-
-	" autocmd FileType tagbar setlocal nolinebreak
-
 	" Tagbar Debug Options:
 	" Note: when using the logfile, don't VI the file or it will overwrite what is there
 	" let g:tagbar_ctags_bin = '/usr/bin/ctags' " XXX: To test with exhuberant ctags
@@ -733,10 +730,6 @@ if version >= 800
 		execute 'TagbarDebug ' . g:tagbar_logfile
 	endif
 
-	if g:have_gitgutter
-		autocmd VimEnter * call gitgutter#all(0)
-	endif
-
     " ---- LightlineFileEncoding() {{{2
 	function! LightlineFileEncoding()
 		return &filetype =~# g:ignored_filetypes ? '' :
@@ -806,19 +799,8 @@ if version >= 800
 		if !g:have_tagbar || &filetype =~# g:ignored_filetypes
 			return ''
 		endif
-		return tagbar#currenttag("%s", "", 'f', 'nearest-stl')
+		return tagbar#currenttag('%s', '', 'f', 'nearest-stl')
 	endfunction
-
-    " ---- LightlineCloseBuffer() {{{2
-	function! LightlineCloseBuffer()
-		echom 'Closing buffer ' . % . '...'
-	endfunction
-
-	" ---- LightLineColorscheme() {{{2
-	augroup LightlineColorscheme
-		autocmd!
-		autocmd ColorScheme * call LightlineColorScheme()
-	augroup END
 
 	let g:lineline_colorscheme = 'powerline'
 	function! LightlineColorScheme(...) abort
@@ -847,9 +829,9 @@ if version >= 800
 
 	function! s:lightline_colorschemes(...) abort
 		return join(map(
-					\ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
-					\ "fnamemodify(v:val,':t:r')"),
-					\ "\n")
+					\ globpath(&rtp, 'autoload/lightline/colorscheme/*.vim',1,1),
+					\ 'fnamemodify(v:val,":t:r")'),
+					\ '\n')
 	endfunction
 	command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
 				\ call s:set_lightline_colorscheme(<q-args>)
@@ -862,7 +844,7 @@ if version >= 800
 		endif
 		if &filetype !~# g:ignored_filetypes
 			let bufname = fnamemodify(bufname('%'), ':p')
-			if bufname == ''
+			if bufname ==# ''
 				let bufname = 'No Name'
 			endif
 			let t:lastfilename = bufname
@@ -886,7 +868,7 @@ if version >= 800
 
     " ---- UpdateTitle() {{{2
 	function! UpdateTitle()
-		let &titlestring = 'VIM - ' . expand("%:t")
+		let &titlestring = 'VIM - ' . expand('%:t')
 		let branch_info = ''
 		if g:have_fugitive
 			let branch = FugitiveHead()
@@ -944,7 +926,7 @@ if version >= 800
 			echo '...No more buffers to close'
 			return
 		endif
-		let bufnr = bufnr("%")
+		let bufnr = bufnr('%')
 		bprevious
 		execute 'bdelete ' . bufnr
 	endfunction
@@ -982,7 +964,7 @@ if version >= 800
 					\ $HOME . '/sbin',
 					\ $HOME . '/doc',
 				\ ]
-		if index(githome_repo, path) != -1
+		if index(githome_repo, path) !=# -1
 			" let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/'
 			let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/ --work-tree=' . $HOME
 			let g:gitgutter_diff_args = '--no-index'
@@ -1058,14 +1040,29 @@ if version >= 800
 	nmap <silent> <Leader>_ :vertical resize -5<CR>
 
 	" ---- Autocmds for all plugins {{{2
-	autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
-	autocmd BufEnter * call UpdateTitle()
-	autocmd BufWritePost *.py call Flake8Update()
-	autocmd BufEnter * call CheckForDotFiles()
+	augroup vimplugins
+		autocmd!
+
+		autocmd FileType cheatsheet let g:tagbar_show_data_type = 0
+		autocmd FileType cheatsheet let g:tagbar_sort = 0
+
+		" autocmd FileType tagbar setlocal nolinebreak
+		autocmd BufNewFile,BufReadPost *.txt let b:tagbar_ignore = 1
+
+		if g:have_gitgutter
+			autocmd VimEnter * call gitgutter#all(0)
+		endif
+
+		autocmd ColorScheme * call LightlineColorScheme()
+
+		autocmd BufEnter * call UpdateTitle()
+		autocmd BufWritePost *.py call Flake8Update()
+		autocmd BufEnter * call CheckForDotFiles()
+	augroup END
 
 	augroup quickfixclose
 		autocmd!
-		autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+		autocmd WinEnter * if winnr('$') ==# 1 && &buftype ==# "quickfix"|q|endif
 	augroup END
 
 endif
@@ -1112,9 +1109,9 @@ endfunction
 " --- FoldLevelDiff() {{{2
 function! FoldLevelDiff(lnum)
 	let line = getline(a:lnum)
-	if line =~ '^\(diff\) '
+	if line =~# '^\(diff\) '
 		return 0
-	elseif line =~ '^\(---\|+++\|index\|@@\) '
+	elseif line =~# '^\(---\|+++\|index\|@@\) '
 		return 1
 	else
 		return 2
@@ -1124,11 +1121,11 @@ endfunction
 " --- FoldLevelNewDiff() {{{2
 function! FoldLevelNewDiff(lnum)
 	let line = getline(a:lnum)
-	if line =~ '^\(diff\)'
+	if line =~# '^\(diff\)'
 		return '>1'
-	elseif line =~ '^index'
+	elseif line =~# '^index'
 		return '>3'
-	elseif line =~ '^@@'
+	elseif line =~# '^@@'
 		return '>2'
 	else
 		return '='
@@ -1203,7 +1200,7 @@ function! FoldTextFmt(fmt)
 		let text = ''
 	elseif a:fmt ==# 'log'									" LOG fold text
 		for [level, foldlevel] in g:LogLevelFoldMap
-			if foldlevel == &foldlevel
+			if foldlevel ==# &foldlevel
 				let disp_level = level
 				break
 			endif
@@ -1219,7 +1216,7 @@ function! FoldTextFmt(fmt)
 		let suba = substitute(suba, foldmarkerpat, '', 'g')
 		let suba = trim(substitute(suba, '\s*$', '', ''))
 		let text = repeat(' ', indent(v:foldstart) - 4) . suba
-		if text =~ '{$'
+		if text =~# '{$'
 			let text .= ' ... }'
 		endif
 	else													" DEFAULT fold text
@@ -1245,7 +1242,7 @@ function! FoldTextFmt(fmt)
 				\ . g:charmap['fold-rightchar']
 				\ . repeat(g:charmap['fold-fillchar'], 2)
 	let set_number = &number
-	if set_number == 0
+	if set_number ==# 0
 		let nuw = 0
 	elseif has('float')
 		let nuw = max([float2nr(log10(line('$')))+2, &numberwidth])
@@ -1273,7 +1270,7 @@ function! SetFoldMethod(fold_method, set_level)
 		let new_foldlevel = a:set_level ? 5 : current_foldlevel
 		set foldtext=FoldTextFmt('log')
 		for [level, loglevel] in g:LogLevelFoldMap
-			if loglevel == new_foldlevel
+			if loglevel ==# new_foldlevel
 				let disp_level = level
 				break
 			endif
@@ -1479,7 +1476,9 @@ nmap z9 :set foldlevel=9 \| echo 'set foldlevel=' . &foldlevel <CR>
 let c_no_comment_fold = 1
 call SetFoldMethod('default', 1)		" Default to manual folding
 
-autocmd FileType cheatsheet setlocal foldmethod=expr foldexpr=FoldLevelCheatsheet(v\:lnum) foldlevel=2
+augroup folding
+	autocmd FileType cheatsheet setlocal foldmethod=expr foldexpr=FoldLevelCheatsheet(v\:lnum) foldlevel=2
+augroup END
 " }}}1
 
 " --- Utility Functions {{{1
@@ -1500,7 +1499,7 @@ function ToggleHex()
   let &readonly=0
   let l:oldmodifiable=&modifiable
   let &modifiable=1
-  if !exists("b:editHex") || !b:editHex
+  if !exists('b:editHex') || !b:editHex
     " save old options
     let b:oldft=&ft
     let b:oldbin=&bin
@@ -1508,7 +1507,7 @@ function ToggleHex()
     setlocal binary " make sure it overrides any textwidth, etc.
     silent :e " this will reload the file without trickeries 
               "(DOS line endings will be shown entirely )
-    let &ft="xxd"
+    let &ft='xxd'
     " set status
     let b:editHex=1
     " switch to hex editor
@@ -1534,7 +1533,7 @@ endfunction
 function! GenerateUnicode(first, last)
 	let i = a:first
 	while i <= a:last
-		if (i%256 == 0)
+		if (i%256 ==# 0)
 			$put ='----------------------------------------------------'
 			$put ='     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F '
 			$put ='----------------------------------------------------'
@@ -1580,9 +1579,9 @@ command! -nargs=0 CleanWhiteSpace call CleanWhiteSpace()
 function! CleanFile()
 	call CleanWhiteSpace()
 	if g:have_autoformat
-        if !has("python") && !has("python3")
+        if !has('python') && !has('python3')
             echohl WarningMsg |
-                \ echomsg "WARNING: vim has no support for python, but it is required to run the formatter!" |
+                \ echomsg 'WARNING: vim has no support for python, but it is required to run the formatter!' |
                 \ echohl None
             return 1
         endif

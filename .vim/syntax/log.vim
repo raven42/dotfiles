@@ -4,7 +4,7 @@
 " Last Change:	2013 Nov 22
 
 " Quit when a (custom) syntax file was already loaded
-if exists("b:current_syntax")
+if exists('b:current_syntax')
 	finish
 endif
 
@@ -37,4 +37,4 @@ highlight		logVerbose		ctermfg=242
 
 highlight		logComment		ctermfg=202
 
-let b:current_sytax = "log"
+let b:current_sytax = 'log'

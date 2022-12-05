@@ -12,11 +12,11 @@
 " See FoldLevelCheatsheet() for determining fold levels.
 
 " Quit when a (custom) syntax file was already loaded
-if exists("b:current_syntax")
+if exists('b:current_syntax')
 	finish
 endif
 
-let valid_title = "[a-zA-Z0-9 \t\\-]\+"
+let valid_title = '[a-zA-Z0-9 \t\\-]\+'
 " Define the various log levels
 syntax	match	CHEATSHEET_HEADER			"^##### .*"						contains=CHEATSHEET_HEADER_TITLE containedin=CHEATSHEET_COMMENT
 syntax	match	CHEATSHEET_HEADER_TITLE		"[a-zA-Z0-9 \t\\/\(\).,:;]\+"	contained
@@ -35,4 +35,4 @@ highlight		CHEATSHEET_UNUSED			ctermfg=DarkRed
 highlight		CHEATSHEET_UNUSED_TITLE		ctermfg=Grey
 highlight		CHEATSHEET_COMMENT			ctermfg=202
 
-let b:current_sytax = "cheatsheet"
+let b:current_sytax = 'cheatsheet'
