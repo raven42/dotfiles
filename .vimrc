@@ -1601,4 +1601,4 @@ command! -nargs=+ SearchAndFold call SearchAndFold(<q-args>)
 " }}}1
 
 " --- Modeline {{{1
-" vim: foldenable foldmethod=marker foldlevel=1
+" vim: foldenable foldmethod=marker foldlevel=1 scriptencoding utf-8
