@@ -1,4 +1,11 @@
+
 # .dotfiles
+
+[![Vint](https://github.com/raven42/dotfiles/workflows/vint/badge.svg)](https://github.com/raven42/dotfiles/actions?workflow=vint)
+[![Check](https://github.com/raven42/dotfiles/workflows/flake8/badge.svg)](https://github.com/raven42/dotfiles/actions?workflow=flake8)
+[![Check](https://github.com/raven42/dotfiles/workflows/reviewdog/badge.svg)](https://github.com/raven42/dotfiles/actions?workflow=reviewdog)
+[![Check](https://github.com/raven42/dotfiles/workflows/submodules/badge.svg)](https://github.com/raven42/dotfiles/actions?workflow=submodules)
+
 Linux .dotfiles, scripts, and configurations. This setup uses a bare repository to track linux .dotfiles and configuration files.
 
 ### Contents:
