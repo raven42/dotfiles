@@ -1,4 +1,4 @@
-name: Reviewdog
+name: reviewdog
 on:
   pull_request:
     branches:
@@ -15,3 +15,4 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
+          level: info
