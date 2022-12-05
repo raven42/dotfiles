@@ -1,9 +1,7 @@
 #!/bin/bash
 #
 
-user=${USER}
-orig_dir=`pwd`
-prog=`basename $0`
+prog=$(basename $0)
 
 usage="Target Usage: $prog [<options>]
  Prerequisites:
@@ -11,47 +9,34 @@ usage="Target Usage: $prog [<options>]
 
  Options:
    -pretend|-p      Show what commands would be run but don't execute
-   -verbose|-v      Use the verbose flags when running crave
 
  Examples
    '$prog swbd190'
 "
 
 shrt_opts=pvh
-long_opts=pretend,verbose,help
+long_opts=pretend,help
 
 exec=
-verbose=0
 bld_target=
 
-if [ $GIT_ROOT ]; then
+if [ ! -z "$GIT_ROOT" ]; then
 	target_rc=${GIT_ROOT}/.rc/bld_target.sh
 else
 	target_rc=${HOME}/.private/bld_target.sh
 fi
 
 # Process the command line arguments
-optarg=0
 opts=`getopt -n $prog -o $shrt_opts -ual $long_opts -- $@`
 
 eval set -- "$opts"
 
-while [ $1 != -- ]; do
+while [ "$1" -ne "--" ]; do
 
 	case "$1" in
 # main options
 	--pretend | -p)
-		mkpretend=1
 		exec=echo
-		;;
-
-	--verbose | -v)
-		verbose=1
-		;;
-
-	--help)
-		echo "$usage"
-		exit 1
 		;;
 
 	-h | --help)
@@ -64,7 +49,7 @@ while [ $1 != -- ]; do
 		;;
 
 	*)
-		makeflags="$makeflags $opt"
+		#ignore
 		;;
 
 	esac
@@ -75,7 +60,7 @@ shift # move past the '--' from the getopt call
 if [ $# -eq 1 ]; then
 	bld_target=$1
 elif [ $# -gt 0 ]; then
-	echo "Invalid argument: $@"
+	echo "Invalid argument: $*"
 	echo ""
 	echo "$usage"
 	echo ""
