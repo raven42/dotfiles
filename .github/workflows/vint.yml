@@ -2,7 +2,7 @@ name: Reviewdog
 on:
   pull_request:
     branches:
-      -master
+      - master
 
 jobs:
   vint:
