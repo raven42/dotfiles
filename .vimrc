@@ -19,13 +19,13 @@
 " --- End Envonrment Variables
 
 " --- Default /etc/vimrc contents {{{2
-if v:lang =~ 'utf8$' || v:lang =~ 'UTF-8$'
+if v:lang =~# 'utf8$' || v:lang =~# 'UTF-8$'
 	set fileencodings=utf-8
 endif
 
 " --- Encoding Setup {{{2
 if has('multi_byte')
-	if &termencoding == ''
+	if &termencoding ==# ''
 		let &termencoding = &encoding
 	endif
 	set encoding=utf-8
@@ -72,7 +72,7 @@ if has('gui_running')
 endif
 
 " --- setup xterm parameters {{{2
-if &term =~ 'xterm'
+if &term =~# 'xterm'
 	if has('terminfo')
 		set t_Co=16
 		set t_Sf=[3%p1%dm
@@ -844,7 +844,7 @@ if version >= 800
 		endif
 		if &filetype !~# g:ignored_filetypes
 			let bufname = fnamemodify(bufname('%'), ':p')
-			if bufname == ''
+			if bufname ==# ''
 				let bufname = 'No Name'
 			endif
 			let t:lastfilename = bufname
@@ -1062,7 +1062,7 @@ if version >= 800
 
 	augroup quickfixclose
 		autocmd!
-		autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+		autocmd WinEnter * if winnr('$') ==# 1 && &buftype ==# "quickfix"|q|endif
 	augroup END
 
 endif
@@ -1109,9 +1109,9 @@ endfunction
 " --- FoldLevelDiff() {{{2
 function! FoldLevelDiff(lnum)
 	let line = getline(a:lnum)
-	if line =~ '^\(diff\) '
+	if line =~# '^\(diff\) '
 		return 0
-	elseif line =~ '^\(---\|+++\|index\|@@\) '
+	elseif line =~# '^\(---\|+++\|index\|@@\) '
 		return 1
 	else
 		return 2
@@ -1121,11 +1121,11 @@ endfunction
 " --- FoldLevelNewDiff() {{{2
 function! FoldLevelNewDiff(lnum)
 	let line = getline(a:lnum)
-	if line =~ '^\(diff\)'
+	if line =~# '^\(diff\)'
 		return '>1'
-	elseif line =~ '^index'
+	elseif line =~# '^index'
 		return '>3'
-	elseif line =~ '^@@'
+	elseif line =~# '^@@'
 		return '>2'
 	else
 		return '='
@@ -1200,7 +1200,7 @@ function! FoldTextFmt(fmt)
 		let text = ''
 	elseif a:fmt ==# 'log'									" LOG fold text
 		for [level, foldlevel] in g:LogLevelFoldMap
-			if foldlevel == &foldlevel
+			if foldlevel ==# &foldlevel
 				let disp_level = level
 				break
 			endif
@@ -1216,7 +1216,7 @@ function! FoldTextFmt(fmt)
 		let suba = substitute(suba, foldmarkerpat, '', 'g')
 		let suba = trim(substitute(suba, '\s*$', '', ''))
 		let text = repeat(' ', indent(v:foldstart) - 4) . suba
-		if text =~ '{$'
+		if text =~# '{$'
 			let text .= ' ... }'
 		endif
 	else													" DEFAULT fold text
@@ -1242,7 +1242,7 @@ function! FoldTextFmt(fmt)
 				\ . g:charmap['fold-rightchar']
 				\ . repeat(g:charmap['fold-fillchar'], 2)
 	let set_number = &number
-	if set_number == 0
+	if set_number ==# 0
 		let nuw = 0
 	elseif has('float')
 		let nuw = max([float2nr(log10(line('$')))+2, &numberwidth])
@@ -1270,7 +1270,7 @@ function! SetFoldMethod(fold_method, set_level)
 		let new_foldlevel = a:set_level ? 5 : current_foldlevel
 		set foldtext=FoldTextFmt('log')
 		for [level, loglevel] in g:LogLevelFoldMap
-			if loglevel == new_foldlevel
+			if loglevel ==# new_foldlevel
 				let disp_level = level
 				break
 			endif
@@ -1533,7 +1533,7 @@ endfunction
 function! GenerateUnicode(first, last)
 	let i = a:first
 	while i <= a:last
-		if (i%256 == 0)
+		if (i%256 ==# 0)
 			$put ='----------------------------------------------------'
 			$put ='     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F '
 			$put ='----------------------------------------------------'
