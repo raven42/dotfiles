@@ -830,7 +830,7 @@ if version >= 800
 	function! s:lightline_colorschemes(...) abort
 		return join(map(
 					\ globpath(&rtp, 'autoload/lightline/colorscheme/*.vim',1,1),
-					\ 'fnamemodify(v:val,':t:r')'),
+					\ 'fnamemodify(v:val,":t:r")'),
 					\ '\n')
 	endfunction
 	command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
