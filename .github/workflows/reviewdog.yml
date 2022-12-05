@@ -5,12 +5,12 @@ on:
       - master
 
 jobs:
-  vint:
-    name: vint
+  reviewdog:
+    name: reviewdog
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: vint
+      - name: reviewdog
         uses: reviewdog/action-vint@v1
         with:
           github_token: ${{ secrets.github_token }}
