@@ -1,6 +1,6 @@
-name: reviewdog
+name: vint
 on:
-  pull_request:
+  pull_requests:
     branches:
       - master
 
@@ -9,10 +9,11 @@ jobs:
     name: vint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: vint
-        uses: reviewdog/action-vint@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review
-          level: info
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+      - name: Setup dependencies
+        run: pip install vim-vint
+      - name: Lint Vimscript
+        run: vint .
