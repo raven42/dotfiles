@@ -192,4 +192,7 @@ let g:lightline_colorscheme = 'powerline'
 if &filetype ==# 'diff'
 	execute ':highlight Folded ctermfg=' . darkgray . ' guifg=' . s:colorNameToGui(darkgray) . ' ctermbg=' . bg . ' guibg=' . s:colorNameToGui(bg)
 endif
-autocmd FileType diff execute ':highlight Folded ctermfg=' . darkgray . ' guifg=' . s:colorNameToGui(darkgray) . ' ctermbg=' bg
+augroup colors
+	autocmd!
+	autocmd FileType diff execute ':highlight Folded ctermfg=' . darkgray . ' guifg=' . s:colorNameToGui(darkgray) . ' ctermbg=' bg
+augroup END

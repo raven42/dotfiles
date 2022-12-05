@@ -118,4 +118,7 @@ let g:lightline_colorscheme = 'powerline'
 if &filetype ==# 'diff'
 	execute ':highlight Folded ctermfg=' . darkgray . ' ctermbg=' . bg
 endif
-autocmd FileType diff execute ':highlight Folded ctermfg=' . darkgray . ' ctermbg=' bg
+augroup colors
+	autocmd!
+	autocmd FileType diff execute ':highlight Folded ctermfg=' . darkgray . ' ctermbg=' bg
+augroup END

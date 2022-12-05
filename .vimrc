@@ -809,11 +809,6 @@ if version >= 800
 		return tagbar#currenttag("%s", "", 'f', 'nearest-stl')
 	endfunction
 
-    " ---- LightlineCloseBuffer() {{{2
-	function! LightlineCloseBuffer()
-		echom 'Closing buffer ' . % . '...'
-	endfunction
-
 	" ---- LightLineColorscheme() {{{2
 	augroup LightlineColorscheme
 		autocmd!
