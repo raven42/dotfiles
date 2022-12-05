@@ -1,44 +1,37 @@
 #!/bin/bash
 #
 
-prog=$(basename $0)
+prog=$(basename "$0")
 
 usage="Target Usage: $prog [<options>]
  Prerequisites:
    * GIT_REPO/GIT_ROOT needs to be a bash env variable set to your /work workspace
 
- Options:
-   -pretend|-p      Show what commands would be run but don't execute
-
  Examples
    '$prog swbd190'
 "
 
-shrt_opts=pvh
-long_opts=pretend,help
+shrt_opts=h
+long_opts=help
 
-exec=
 bld_target=
 
-if [ ! -z "$GIT_ROOT" ]; then
+if [ -n "$GIT_ROOT" ]; then
 	target_rc=${GIT_ROOT}/.rc/bld_target.sh
 else
 	target_rc=${HOME}/.private/bld_target.sh
 fi
 
 # Process the command line arguments
-opts=`getopt -n $prog -o $shrt_opts -ual $long_opts -- $@`
+opts=$(getopt -n $prog -o $shrt_opts -ual $long_opts -- $*)
 
 eval set -- "$opts"
 
-while [ "$1" -ne "--" ]; do
+while [ "$1" != "--" ]; do
 
 	case "$1" in
-# main options
-	--pretend | -p)
-		exec=echo
-		;;
 
+	# main options
 	-h | --help)
 		echo "$usage"
 		exit 0
@@ -71,14 +64,14 @@ fi
 if [ "${bld_target}" == "" ]; then
 	echo "Current build bld_target is BLD_TARGET=${BLD_TARGET}"
 else
-	if [[ $(grep -c "export BLD_TARGET" $target_rc) -gt 0 ]]; then
-		cp $target_rc $target_rc.tmp
-		cat $target_rc.tmp | sed "s/\(export BLD_TARGET=\).*/\1${bld_target}/" > $target_rc
-		rm $target_rc.tmp
+	if [[ $(grep -c "export BLD_TARGET" "$target_rc") -gt 0 ]]; then
+		cp "$target_rc" "$target_rc.tmp"
+		cat "$target_rc.tmp" | sed "s/\(export BLD_TARGET=\).*/\1${bld_target}/" > "$target_rc"
+		rm "$target_rc.tmp"
 	else
-		echo "export BLD_TARGET=${bld_target}" >> $target_rc
+		echo "export BLD_TARGET=${bld_target}" >> "$target_rc"
 	fi
 
 	echo "Set new default BLD_TARGET=${bld_target} in [${target_rc}]"
-	. $target_rc
+	. "$target_rc"
 fi
