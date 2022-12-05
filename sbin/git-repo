@@ -77,7 +77,6 @@ lopts="help,debug,remote-server:,remote-repo:,workspaces:,depth:"
 
 parsed_arguments=$(getopt -n $prog -o $sopts -ual $lopts -- $@)
 if [[ $? -ne 0 ]]; then
-	echo "Parsed arguments failed"
 	usage
 	exit 1
 fi
@@ -87,7 +86,6 @@ eval set -- "$parsed_arguments"
 # Read in command line options
 while [ $1 != -- ]; do
 
-	echo "Looking at: [$1]"
 	case "$1" in
 
 	--remote-server)

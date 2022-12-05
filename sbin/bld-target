@@ -23,7 +23,7 @@ else
 fi
 
 # Process the command line arguments
-opts=$(getopt -n $prog -o $shrt_opts -ual $long_opts -- $*)
+opts=$(getopt -n $prog -o $shrt_opts -ual $long_opts -- $@)
 
 eval set -- "$opts"
 
