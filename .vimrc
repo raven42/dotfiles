@@ -57,7 +57,7 @@ if has('cscope') && filereadable('/usr/bin/cscope')
 	if filereadable('cscope.out')
 		cs add cscope.out
 		" else add database pointed to by environment
-	elseif $CSCOPE_DB != ''
+	elseif $CSCOPE_DB !=# ''
 		cs add $CSCOPE_DB
 	endif
 	set csverb
@@ -117,7 +117,6 @@ colorscheme xterm
 
 let $TMPDIR=$HOME . '/tmp'
 
-set nocompatible			" ---- Use Vim defaults (much better!)
 set bs=indent,eol,start		" ---- allow backspacing over everything in insert mode
 " set viminfo=%,<800,'10,/50,:100,h,f0,n~/.vim/cache/.viminfo
 " "           | |    |   |   |    | |  + viminfo file path
@@ -161,7 +160,7 @@ set makeprg=$HOME/bin/cmk
 set clipboard=unnamed,autoselect,exclude:cons\|linux
 set number
 
-if version >= 800
+if v:version >= 800
 	set modelineexpr
 endif
 
@@ -233,7 +232,7 @@ vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 " --- PLUGIN Configurations {{{1
 " ---- Only load plugins if VIM version 8 or higher {{{2
 
-if version >= 800
+if v:version >= 800
 
     " ---- Character Map {{{2
 	" Here are a couple unicode characters used for any formatted output
@@ -964,7 +963,7 @@ if version >= 800
 					\ $HOME . '/sbin',
 					\ $HOME . '/doc',
 				\ ]
-		if index(githome_repo, path) != -1
+		if index(githome_repo, path) !=# -1
 			" let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/'
 			let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/ --work-tree=' . $HOME
 			let g:gitgutter_diff_args = '--no-index'
