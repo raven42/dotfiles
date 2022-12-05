@@ -21,6 +21,7 @@
 " --- Default /etc/vimrc contents {{{2
 if v:lang =~# 'utf8$' || v:lang =~# 'UTF-8$'
 	set fileencodings=utf-8
+	scriptencoding utf-8
 endif
 
 " --- Encoding Setup {{{2
@@ -1601,4 +1602,4 @@ command! -nargs=+ SearchAndFold call SearchAndFold(<q-args>)
 " }}}1
 
 " --- Modeline {{{1
-" vim: foldenable foldmethod=marker foldlevel=1 scriptencoding utf-8
+" vim: foldenable foldmethod=marker foldlevel=1
