@@ -21,7 +21,6 @@
 " --- Default /etc/vimrc contents {{{2
 if v:lang =~# 'utf8$' || v:lang =~# 'UTF-8$'
 	set fileencodings=utf-8
-	scriptencoding utf-8
 endif
 
 " --- Encoding Setup {{{2
@@ -33,6 +32,7 @@ if has('multi_byte')
 	setglobal fileencoding=utf-8
 	" setglobal bomb
 	set fileencodings=ucs-bom,utf-8,latin1
+	scriptencoding utf-8
 endif
 
 " --- Setup textwidth for text files {{{2
