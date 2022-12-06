@@ -138,9 +138,10 @@ set tabstop=4				" ---- set tabs to 4 spaces
 set shiftwidth=4			" ---- set shift width to 4 spaces
 set softtabstop=4			" ---- set tabs to 4 spaces when using softtabs
 set noexpandtab				" ---- use real tab characters
-set ttymouse=xterm2			" ---- turn on the mouse in the xterm
+set ttymouse=sgr			" ---- turn on the mouse in the xterm
 set mouse=a					" ---- enable mouse for all VIM options
-set iskeyword+="-."
+set mousetime=1000			" ---- increase the mouse double click time to 1 second
+set iskeyword=@,48-57,_,192-255,.,-
 set showcmd					" ---- show the command in the status line
 set noerrorbells			" ---- STOP BEEPING!
 set showmatch				" ---- show matching brackets
@@ -163,6 +164,7 @@ set number
 
 if v:version >= 800
 	set modelineexpr
+	set modeline
 endif
 
 let tagfiles = ''
