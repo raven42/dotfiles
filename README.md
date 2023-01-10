@@ -261,7 +261,17 @@ git pull
 ```
 3. Now you can configure, build, and install vim
 ```
-./configure --prefix=${HOME} --enable-python3interp --enable-perlinterp --enable-gnome-check --enable-gui=auto --enable-gtk2-check --with-x --enable-fontset --enable-gtk2-check
+./configure --with-features=huge \
+    --enable-multibyte \
+    --enable-rubyinterp=yes \
+    --enable-python3interp=yes \
+    --with-python3-command=$PYTHON_VER \
+    --with-python3-config-dir=$(python3-config --configdir) \
+    --enable-perlinterp=yes \
+    --enable-gui=gtk2 \
+    --enable-cscope \
+    --enable-fontset \
+    --prefix=${HOME}/bin/vim-9.0
 make
 make install
 ```
