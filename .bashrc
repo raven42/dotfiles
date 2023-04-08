@@ -88,6 +88,14 @@ elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
 fi
 
+# Powerline Configuration
+if [ -f /usr/share/powerline/bindings/bash/powerline.sh ]; then
+  powerline-daemon -q
+  POWERLINE_BASH_CONTINUATION=1
+  POWERLINE_BASH_SELECT=1
+  source /usr/share/powerline/bindings/bash/powerline.sh
+fi
+
 # First purge any modules so we can start fresh if any were loaded
 [[ "$(command -v module)" ]] && module purge
 

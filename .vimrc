@@ -230,6 +230,14 @@ augroup END
 " Hit // to search for visually selected text
 vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 
+" --- Powerline setup {{{2
+" Powerline Configuration
+python3 from powerline.vim import setup as powerline_setup
+python3 powerline_setup()
+python3 del powerline_setup
+
+set laststatus=2
+
 " }}}1
 
 " --- PLUGIN Configurations {{{1
