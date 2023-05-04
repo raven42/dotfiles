@@ -15,3 +15,7 @@ augroup quickfix
 	autocmd!
     autocmd FileType qf setlocal nobuflisted
 augroup end
+
+augroup yang
+	autocmd FileType yang setlocal ts=2 sts=2 sw=2 expandtab
+augroup end

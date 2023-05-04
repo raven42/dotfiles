@@ -81,7 +81,15 @@ if ! shopt -q login_shell ; then # We're not a login shell
 		fi
 	done
 	unset i
+
+	for i in ${HOME}/bin/completions/*.bash; do
+		if [ -r "$i" ]; then
+			. $i
+		fi
+	done
+	unset i
 fi
+
 if [[ -f ${DIRCOLORS} ]]; then
 	eval `dircolors -b ${DIRCOLORS}`
 elif [[ -f /etc/DIR_COLORS ]]; then

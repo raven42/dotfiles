@@ -189,6 +189,9 @@ let php3_minlines = 3000
 let php3_baselib = 1
 
 nnoremap ; :
+nnoremap qq :q<CR>
+" nnoremap wqq :wq<CR>
+nnoremap W b
 
 " .vimrc autocmds
 augroup vimrc
@@ -225,6 +228,9 @@ augroup vimrc
 	autocmd BufWinEnter *.py 2match Whitespace /^\t\+/
 	" autocmd BufWinEnter *.py set fileformat=unix
 	autocmd BufWinLeave * call clearmatches()
+
+	" When we attempt to do a :quit then instead do a :quitall
+	" autocmd QuitPre * qa
 augroup END
 
 " Hit // to search for visually selected text
