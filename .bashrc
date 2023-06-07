@@ -52,6 +52,13 @@ fi
 
 shopt -s checkwinsize
 
+# If present, source ${GIT_ENVIRONMENT} for git environment variable tracking as directories change
+GIT_ENVIRONMENT="$HOME/sbin/git-environment.bash"
+if [[ -f ${GIT_ENVIRONMENT} ]]; then
+	$ECHO "sourcing .. [${GIT_ENVIRONMENT}]"
+	. ${GIT_ENVIRONMENT}
+fi
+
 # External resource / script files
 BLD_TARGET_SCRIPT=bld_target.sh
 DEFAULT_RC_PATH=${HOME}/.default
@@ -157,8 +164,9 @@ if [ -f $GIT_PROMPT ]; then
 	. $GIT_PROMPT
 fi
 
+# Setup some GIT repository defaults
 if [ $GIT_REPO ]; then
-	$ECHO "Setting up GIT environment variables for ${GIT_REPO}..."
+	$ECHO "init git .. [$GIT_REPO]"
 	if [ ! -d ${GIT_ROOT} ]; then
 		$ECHO "GIT_ROOT:${GIT_ROOT} not found."
 	else

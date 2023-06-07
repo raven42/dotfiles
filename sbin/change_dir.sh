@@ -1,6 +1,6 @@
 #!/bin/bash
 
-change_dir()
+function change_dir()
 {
 	local stack_dir new_dir idx_dir idx
 	local -i cnt stack_size
@@ -47,6 +47,9 @@ change_dir()
 		fi
 		cnt=$((cnt + 1))
 	done
+
+	# If we have the update_git_environment function in the shell, then call it when we change directories
+	[[ $(type -t update_git_environment) == function ]] && update_git_environment
 
 	return 0
 }

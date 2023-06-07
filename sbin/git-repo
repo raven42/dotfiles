@@ -1,16 +1,8 @@
 #!/bin/bash
 #
 # This script is used to help control repository specific environment setting. It will look for a matching
-# repository name and enter a new shell environment and setup a few key environment variables. This can also
-# be used to clone a new repository from a git server somewhere and clone a given repository.
-#
-# The key environment variables that are setup in thie script are as follows:
-#	GIT_ROOT - This will define the root level directory where the repository is stored
-#	GIT_REPO - This will define the name you wish to use for the repository directory
-#	GIT_PATH - This is defined as ${GIT_ROOT}/${GIT_REPO}
-#
-# These environment variables can then be used with other resource / env scripts to do things like create
-# aliases, or setup script locations and such.
+# repository name and enter a new shell environment. This can also be used to clone a new repository from
+# a git server somewhere and clone a given repository.
 #
 # The following ENV vars are needed to properly use this script:
 #
@@ -296,7 +288,9 @@ if [ ! -d $repo_path ]; then
 	exit 1
 fi
 
-env_args="GIT_ROOT=${repo_path} GIT_PATH=$(dirname ${repo_path}) GIT_REPO=$(basename ${repo_path}) GIT_DIR=${repo_path}/.git GIT_WORK_TREE=${repo_path} ${SHELL}"
+# NOTE: This script no longer controls the GIT_REPO / GIT_ROOT / GIT_PATH env vars. This is now handled
+# automatically in the git-environment.bash resource file.
+env_args="${SHELL}"
 
 [ $debug -eq 1 ] && echo "env_args [$env_args]"
 
