@@ -196,7 +196,7 @@ while true; do
 					break
 					;;
 
-				[Nn]*) 
+				[Nn]*)
 					echo "Available repositories:"
 					find_repo
 					echo "${repo_match}" | tr ':' '\n'
@@ -290,11 +290,11 @@ fi
 
 # NOTE: This script no longer controls the GIT_REPO / GIT_ROOT / GIT_PATH env vars. This is now handled
 # automatically in the git-environment.bash resource file.
+
+# env_args="GIT_ROOT=${repo_path} GIT_PATH=$(dirname ${repo_path}) GIT_REPO=$(basename ${repo_path}) GIT_DIR=${repo_path}/.git GIT_WORK_TREE=${repo_path} ${SHELL}"
 env_args="${SHELL}"
 
 [ $debug -eq 1 ] && echo "env_args [$env_args]"
 
 cd $repo_path
 env $env_args ; exit
-
-exit 0
