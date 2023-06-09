@@ -2,7 +2,6 @@
 # .bashrc - Basic env setup and resource script file
 #
 
-# Note: Build alias definitions moved to ~/.default_rc or ${GIT_ROOT}/.rc/rc files
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
@@ -35,6 +34,7 @@ export PATH=/bin:/usr/sbin:/usr/bin:/usr/local/bin:/cmd
 #export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export PYTHONPATH=
 export SHOW_TARGET_IN_PROMPT=1
+export SILENT_SOURCING=1
 export TAGDIR=$HOME/.default/tags
 export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
@@ -46,34 +46,107 @@ export VISUAL=vim
 # need to do at least basic PATH setup and other common env vars
 if [ -z "$PS1" ]; then
 	ECHO=:
+	SOURCE_ECHO=:
 else
 	ECHO='echo -e'
+	if [[ $SILENT_SOURCING == 1 ]]; then
+		SOURCE_ECHO=:
+	else
+		SOURCE_ECHO='echo -e'
+	fi
 fi
 
 shopt -s checkwinsize
 
-# If present, source ${GIT_ENVIRONMENT} for git environment variable tracking as directories change
-GIT_ENVIRONMENT="$HOME/sbin/git-environment.bash"
-if [[ -f ${GIT_ENVIRONMENT} ]]; then
-	$ECHO "sourcing .. [${GIT_ENVIRONMENT}]"
-	. ${GIT_ENVIRONMENT}
-fi
+##############################
+# initialize_git_repository()
+#
+# Params: GIT_RC_PATH - The path to the GIT_ROOT/.rc path controlled and sourced by git-environment.bash
+#
+# This function is called from within the git-environment.bash:update_git_environment() function after we've changed
+# directories and have updated the git environment variables. This will create the GIT_RC_PATH and GIT_TAGS_PATH
+# directories if needed. If there are no tag files found in the GIT_TAGS_PATH, then it will use the RETAG_SCRIPT
+# to start a background process generating the ctags files. If there is a NERDTREE_BOOKMARKS file and the default
+# one has been modified since the existing one, then it will generate a new bookmarks file based on the default.
+#
+function initialize_git_repository() {
+
+	# If we are not in a git repository, just ignore this
+	if [[ -z "$GIT_REPO" ]]; then
+		export __CACHED_GIT_ROOT=''
+		return
+	fi
+	GIT_RC_PATH=$1
+
+	GIT_TAGS_PATH=$GIT_RC_PATH/tags
+	NERDTREE_BOOKMARKS=$GIT_RC_PATH/NERDTreeBookmarks
+
+	if [[ "$__CACHED_GIT_ROOT" != "$GIT_ROOT" ]]; then
+		export __CACHED_GIT_ROOT=$GIT_ROOT
+
+		if [ ! -d $GIT_ROOT ]; then
+
+			$ECHO "GIT_ROOT:$GIT_ROOT not found - Ignoring any initial setup."
+
+		elif [[ $GIT_ROOT =~ $USER ]]; then
+
+			# If not in a $USER path, then don't attempt to create any resource files
+
+			# Setup some GIT repository defaults
+			$SOURCE_ECHO "init git .. [$GIT_REPO:$GIT_RC_PATH]"
+
+			if [ ! -d $GIT_RC_PATH -a -w $GIT_ROOT ]; then
+				$ECHO "Creating repo rc directory at $GIT_RC_PATH..."
+				mkdir $GIT_RC_PATH
+			fi
+			if [ ! -d $GIT_TAGS_PATH -a -w $GIT_RC_PATH ]; then
+				$ECHO "Creating ctags output directory at $GIT_TAGS_PATH..."
+				mkdir $GIT_TAGS_PATH
+			fi
+
+			# Look for REPO specific NERDTree File and if not exists, then generate it
+			if [[ -f $NERDTREE_GEN_SCRIPT && -f $NERDTREE_DEF_BOOKMARKS ]]; then
+				if [[ -f $NERDTREE_BOOKMARKS && $NERDTREE_DEF_BOOKMARKS -nt $NERDTREE_BOOKMARKS ]]; then
+					$ECHO "NERDTree Bookmarks out of date. Generating new file..."
+					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
+				elif [[ ! -f $NERDTREE_BOOKMARKS ]]; then
+					$ECHO "Generating NERDTree Bookmarks file..."
+					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
+				fi
+			fi
+
+			# Look for TAG files and if none are found, generate new ones
+			if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
+				$ECHO " No TAGFILES found. Generating new tags in the background at $GIT_TAGS_PATH..."
+				nohup $RETAG_SCRIPT -a --dir $GIT_TAGS_PATH 2>&1 1> $HOME/var/log/retag_$GIT_REPO.log &
+			fi
+		fi
+	fi
+}
+
+###########
+# source()
+# Params: <file> - File to be sourced
+#
+# This function will help provide a consisten means to source any resource files overriding the default built-in
+function source() {
+	# echo "$FUNCNAME(argc:$# argv:$@)"
+	file=$1
+	if [[ ! -z "$file" && -f $file ]]; then
+		$SOURCE_ECHO "sourcing .. [$file]"
+		. $file
+	elif [[ ! -z "$file" ]]; then
+		$SOURCE_ECHO "File [$file] not found."
+	fi
+}
 
 # External resource / script files
-BLD_TARGET_SCRIPT=bld_target.sh
 DEFAULT_RC_PATH=${HOME}/.default
-GIT_RC_PATH=${GIT_ROOT}/.rc
-GIT_TAGS_PATH=${GIT_RC_PATH}/tags
 PRIVATE_RC_PATH=${HOME}/.private
-
+BLD_TARGET_SCRIPT=${PRIVATE_RC_PATH}/bld_target.sh
 CHANGE_DIR_SCRIPT=${HOME}/sbin/change_dir.sh
 COMMON_RC=${DEFAULT_RC_PATH}/common_rc.sh
 DIRCOLORS=${HOME}/.dircolors
-GIT_COMPLETION=${HOME}/sbin/git-completion.bash
-GIT_PRIVATE_RC=${PRIVATE_RC_PATH}/repo_rc.sh
-GIT_PROMPT=${HOME}/sbin/git-prompt.sh
-GIT_RC=${GIT_RC_PATH}/rc
-NERDTREE_BOOKMARKS=${GIT_RC_PATH}/NERDTreeBookmarks
 NERDTREE_DEF_BOOKMARKS=${PRIVATE_RC_PATH}/NERDTreeDefaultBookmarks
 NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
 POST_RC=${PRIVATE_RC_PATH}/post_rc.sh
@@ -106,11 +179,13 @@ fi
 # First purge any modules so we can start fresh if any were loaded
 [[ "$(command -v module)" ]] && module purge
 
-# If present, source ${CHANGE_DIR_SCRIPT} for directory tracking with 'cd'
-if [[ -f ${CHANGE_DIR_SCRIPT} ]]; then
-	$ECHO "sourcing .. [${CHANGE_DIR_SCRIPT}]"
-	. ${CHANGE_DIR_SCRIPT}
-fi
+# Source various other bash resource scripts to enhance our shell environment
+source $HOME/sbin/git-completion.bash
+source $HOME/sbin/git-prompt.sh
+source $HOME/sbin/git-environment.bash
+source $CHANGE_DIR_SCRIPT
+source $COMMON_RC
+source $PRIVATE_RC
 
 # 030m - Black
 # 031m - Red
@@ -155,134 +230,21 @@ PS_CR="\r"			# Carriage return
 PS_ESC="\e"			# Escape character
 PS_BELL="\a"		# Bell character
 
-if [ -f $GIT_COMPLETION ]; then
-	$ECHO "sourcing .. [${GIT_COMPLETION}]"
-	. $GIT_COMPLETION
-fi
-if [ -f $GIT_PROMPT ]; then
-	$ECHO "sourcing .. [${GIT_PROMPT}]"
-	. $GIT_PROMPT
-fi
-
-# Setup some GIT repository defaults
-if [ $GIT_REPO ]; then
-	$ECHO "init git .. [$GIT_REPO]"
-	if [ ! -d ${GIT_ROOT} ]; then
-		$ECHO "GIT_ROOT:${GIT_ROOT} not found."
-	else
-		if [[ ${GIT_ROOT} =~ ${USER} ]]; then
-			if [ ! -d ${GIT_RC_PATH} -a -w ${GIT_ROOT} ]; then
-				$ECHO "Creating repo rc directory at ${GIT_RC_PATH}..."
-				mkdir ${GIT_RC_PATH}
-			fi
-			if [ ! -d ${GIT_TAGS_PATH} -a -w ${GIT_RC_PATH} ]; then
-				$ECHO "Creating ctags output directory at ${GIT_TAGS_PATH}..."
-				mkdir ${GIT_TAGS_PATH}
-			fi
-		fi
-		if [ -f ${GIT_RC} ]; then
-			rc_spec=${GIT_RC}
-		elif [ -f ${GIT_PRIVATE_RC} ]; then
-			if [[ ${GIT_ROOT} =~ ${USER} ]]; then
-				$ECHO "rc spec not found. Generating defaults at ${GIT_RC}..."
-				if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} ]; then
-					cp ${GIT_PRIVATE_RC} ${GIT_RC}
-				fi
-				rc_spec=${GIT_RC}
-			else
-				$ECHO "rc (${GIT_RC}) spec not found. Using defaults."
-				rc_spec=${GIT_PRIVATE_RC}
-			fi
-		fi
-	fi
-
-	if [[ ${GIT_ROOT} =~ ${USER} ]]; then
-
-		# Look for REPO specific NERDTree File and if not exists, then generate it
-		if [ -f ${NERDTREE_GEN_SCRIPT} -a -f ${NERDTREE_DEF_BOOKMARKS} ]; then
-			if [ -f ${NERDTREE_BOOKMARKS} ]; then
-				if [[ ${NERDTREE_DEF_BOOKMARKS} -nt ${NERDTREE_BOOKMARKS} ]]; then
-					$ECHO "NERDTree Bookmarks out of date. Generating new file..."
-					${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
-				fi
-			else
-				$ECHO "Generating NERDTree Bookmarks file..."
-				${NERDTREE_GEN_SCRIPT} -q -i ${NERDTREE_DEF_BOOKMARKS} -o ${NERDTREE_BOOKMARKS}
-			fi
-		fi
-
-		# Look for TAG files and if none are found, generate new ones
-		if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
-			$ECHO " No TAGFILES found. Generating new tags in the background at ${GIT_TAGS_PATH}..."
-			nohup ${RETAG_SCRIPT} -a --dir ${GIT_TAGS_PATH} 2>&1 1> ${HOME}/var/log/retag_${GIT_REPO}.log &
-		fi
-	fi
-fi
-
-# Include the default alias / resource definitions
-if [ -f ${COMMON_RC} ]; then
-	$ECHO "sourcing .. [${COMMON_RC}]"
-	. ${COMMON_RC}
-fi
-# Load the user's private rc file
-if [ -f ${PRIVATE_RC} ]; then
-	$ECHO "sourcing .. [${PRIVATE_RC}]"
-	. ${PRIVATE_RC}
-fi
-# Load repo / view specific resource definitions
-if [ ${rc_spec} ]; then
-	$ECHO "sourcing .. [${rc_spec}]"
-	. ${rc_spec}
-fi
-
 # Display info
 export DISPLAY
 
 function format_prompt() {
 	# The prompt is set by exporting the PS1 variable with any string
-	if [ $GIT_REPO ]; then
-		if [[ ! ${GIT_ROOT} =~ ${USER} ]]; then
-			PS_COLOR=${FG_PINK}
-		elif [[ ${USER_HOSTNAME} =~ ${HOSTNAME} ]]; then
-			PS_COLOR=${FG_ORANGE}
-		else
-			PS_COLOR=${FG_CYAN}
-		fi
-
-		if [ -f ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
-			. ${GIT_RC_PATH}/${BLD_TARGET_SCRIPT}
-		elif [ -f ${PRIVATE_RC_PATH}/${BLD_TARGET_SCRIPT} ]; then
-			. ${PRIVATE_RC_PATH}/${BLD_TARGET_SCRIPT}
-		fi
-
-		if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
-			TARGET_STRING="${FG_YELLOW}${BLD_TARGET}${FG_RESET} "
-		else
-			TARGET_STRING=""
-		fi
-		# branch code $'\xee\x82\xa0'
-		PS_INFO="$GIT_REPO\$(__git_ps1)"
-		# PS_INFO=$'$GIT_REPO \xee\x82\xa0$(__git_ps1)'
+	if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
+		TARGET_STRING="${FG_YELLOW}${BLD_TARGET}${FG_RESET} "
 	else
-		PS_COLOR=${FG_GREEN}
-		PS_INFO="${PS_HOST}${FG_YELLOW}\$(__git_ps1)${FG_RESET}"
 		TARGET_STRING=""
 	fi
-	export PS1="${TARGET_STRING}${PS_COLOR}${PS_INFO}${FG_RESET} ${PS_DIR}${PS_SYMB} "
+	export PS1="${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
-	# To change the window title, do an 'echo -ne "\033]0;<string>\007"'
-	if [ $GIT_REPO ]; then
-		if [ $USE_UNICODE -eq 1 ]; then
-			TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
-		else
-			TITLE_INFO="$(__git_ps1)"
-		fi
-	else
-		TITLE_INFO="${USER}"
-	fi
-	echo -ne "\033]0;${PWD} ${TITLE_INFO}\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
+	echo -ne "\033]0;${PWD} $(git_title_format)\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
 }
 
 function set_prompt() {
@@ -294,14 +256,17 @@ function set_prompt() {
 		history -r	# read from history file into memory
 	fi
 
+	if [ -f $BLD_TARGET_SCRIPT ]; then
+		# $ECHO "sourcing .. [$BLD_TARGET_SCRIPT]"
+		. $BLD_TARGET_SCRIPT
+	else
+		unset BLD_TARGET
+	fi
+
 	format_prompt
 	format_title
 }
 
 export PROMPT_COMMAND=set_prompt
 
-# Source the post_rc file if needed
-if [ -f ${POST_RC} ]; then
-	$ECHO "sourcing .. [${POST_RC}]"
-	. ${POST_RC}
-fi
+source $POST_RC
