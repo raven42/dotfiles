@@ -16,7 +16,7 @@ long_opts=help
 
 bld_target=
 
-if [ -n "$GIT_ROOT" ]; then
+if [[ $GITRC_ENVIRONMENT == 1 && -n "$GIT_ROOT" ]]; then
 	target_rc=${GIT_ROOT}/.rc/bld_target.sh
 else
 	target_rc=${HOME}/.private/bld_target.sh

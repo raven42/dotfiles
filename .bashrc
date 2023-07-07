@@ -41,6 +41,7 @@ export TZ=/usr/share/zoneinfo/US/Central
 export UNIFIED_HISTORY=0
 export USE_UNICODE=1
 export VISUAL=vim
+export GITRC_ENVIRONMENT=1
 
 # If not an interactive shell, don't proceed any further (ex. SCP commands)
 # need to do at least basic PATH setup and other common env vars
@@ -70,6 +71,10 @@ shopt -s checkwinsize
 # one has been modified since the existing one, then it will generate a new bookmarks file based on the default.
 #
 function initialize_git_repository() {
+
+	if [[ $GITRC_ENVIRONMENT == 0 ]]; then
+		return
+	fi
 
 	# If we are not in a git repository, just ignore this
 	if [[ -z "$GIT_REPO" ]]; then
@@ -182,10 +187,10 @@ fi
 # Source various other bash resource scripts to enhance our shell environment
 source $HOME/sbin/git-completion.bash
 source $HOME/sbin/git-prompt.sh
-source $HOME/sbin/git-environment.bash
 source $CHANGE_DIR_SCRIPT
 source $COMMON_RC
 source $PRIVATE_RC
+source $HOME/sbin/git-environment.bash		# should be after PRIVATE_RC so user settings can be applied
 
 # 030m - Black
 # 031m - Red

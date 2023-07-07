@@ -180,6 +180,13 @@ execute 'set tags=' . tagfiles
 filetype plugin on
 filetype indent on
 
+augroup jsonfiles
+	autocmd FileType json set expandtab
+	autocmd FileType json set tabstop=4
+	autocmd FileType json set softtabstop=4
+	autocmd FileType json set shiftwidth=4
+augroup END
+
 " --- have java highlight our functions
 "let java_highlight_functions=1
 
@@ -345,7 +352,7 @@ if v:version >= 800
 				\ 'fold-fillchar'			: '-',
 				\ 'fold-leftchar'			: '|',
 				\ 'fold-rightchar'			: '|'
-				\ }	
+				\ }
 
 	let g:nummap_unicode = {
 				\ 1:  '❶',  2: '❷', 3:  '❸',  4: '❹', 5:  '❺',
@@ -1513,7 +1520,7 @@ function ToggleHex()
     let b:oldbin=&bin
     " set new options
     setlocal binary " make sure it overrides any textwidth, etc.
-    silent :e " this will reload the file without trickeries 
+    silent :e " this will reload the file without trickeries
               "(DOS line endings will be shown entirely )
     let &ft='xxd'
     " set status

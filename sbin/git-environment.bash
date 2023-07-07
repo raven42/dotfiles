@@ -85,7 +85,7 @@ function update_external_environment() {
 	# Other environment variable settings
 	export GIT_RC_PATH="$GIT_ROOT/.rc"
 
-	if [[ ! -z "$GIT_REPO" ]]; then
+	if [[ $GITRC_ENVIRONMENT == 1 && ! -z "$GIT_REPO" ]]; then
 		export BLD_TARGET_SCRIPT=$GIT_RC_PATH/bld_target.sh
 	else
 		export BLD_TARGET_SCRIPT=$PRIVATE_RC_PATH/bld_target.sh
