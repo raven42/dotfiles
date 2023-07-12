@@ -34,6 +34,7 @@ prog=`basename $0`
 workspaces=$HOME/projects
 remote_server=git@github.com
 remote_repo=raven42/dotfiles.git
+git_env_scipr=${HOME}/sbin/git-environment.bash
 
 [[ -n "$WORKSPACES" ]] && workspaces=$WORKSPACES
 [[ -n "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER
@@ -57,7 +58,7 @@ debug=0
 repo_match=""
 num_paths=0
 
-if [ "${WORKSPACE_SEARCH_DEPTH}" ]; then
+if [ ! -z "${WORKSPACE_SEARCH_DEPTH}" ]; then
 	search_depth=${WORKSPACE_SEARCH_DEPTH}
 else
 	search_depth=5
@@ -288,11 +289,15 @@ if [ ! -d $repo_path ]; then
 	exit 1
 fi
 
-# NOTE: This script no longer controls the GIT_REPO / GIT_ROOT / GIT_PATH env vars. This is now handled
-# automatically in the git-environment.bash resource file.
+# NOTE: Is using the git-environment.bash, then this script no longer controls the GIT_REPO / GIT_ROOT / GIT_PATH env
+# vars. This is now handled automatically in the git-environment.bash resource file.
 
-# env_args="GIT_ROOT=${repo_path} GIT_PATH=$(dirname ${repo_path}) GIT_REPO=$(basename ${repo_path}) GIT_DIR=${repo_path}/.git GIT_WORK_TREE=${repo_path} ${SHELL}"
-env_args="${SHELL}"
+# If we have GIT_ENVIRONMENT_INTEGRATION set, then rely on that to control the GIT_REPO / GIT_ROOT / GIT_PATH etc.
+if [[ "$GIT_ENVIRONMENT_INTEGRATION" == "1" ]]; then
+	env_args="${SHELL}"
+else
+	env_args="GIT_ROOT=${repo_path} GIT_PATH=$(dirname ${repo_path}) GIT_REPO=$(basename ${repo_path}) GIT_DIR=${repo_path}/.git GIT_WORK_TREE=${repo_path} ${SHELL}"
+fi
 
 [ $debug -eq 1 ] && echo "env_args [$env_args]"
 

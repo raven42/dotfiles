@@ -31,6 +31,7 @@
 
 # These files need to be sourced again when we change a directory incase any aliases have changed.
 export GIT_ENVIRONMENT_DEBUG=0
+export GIT_ENVIRONMENT_INTEGRATION=1
 
 # 030m - Black
 # 031m - Red
