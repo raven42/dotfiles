@@ -4,6 +4,16 @@
 # repository name and enter a new shell environment. This can also be used to clone a new repository from
 # a git server somewhere and clone a given repository.
 #
+# The key environment variables that are setup in thie script are as follows ONLY if the
+# GIT_ENVIRONMENT_INTEGRATION != 1:
+#	GIT_ROOT - This will define the root level directory where the repository is stored
+#	GIT_REPO - This will define the name you wish to use for the repository directory
+#	GIT_PATH - This is defined as ${GIT_ROOT}/${GIT_REPO}
+#
+# These environment variables can then be used with other resource / env scripts to do things like create
+# aliases, or setup script locations and such. If the `GIT_ENVIRONMENT_INTEGRATION = 1`, then the git-environment.bash
+# script controls these values instead.
+#
 # The following ENV vars are needed to properly use this script:
 #
 # WORKSPACES - This variable is a ':' delimited list of directories where to look for a given repositories.
@@ -36,9 +46,9 @@ remote_server=git@github.com
 remote_repo=raven42/dotfiles.git
 git_env_scipr=${HOME}/sbin/git-environment.bash
 
-[[ -n "$WORKSPACES" ]] && workspaces=$WORKSPACES
-[[ -n "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER
-[[ -n "$DEFAULT_GIT_REPO" ]] && remote_repo=$DEFAULT_GIT_REPO
+[[ ! -z "$WORKSPACES" ]] && workspaces=$WORKSPACES
+[[ ! -z "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER
+[[ ! -z "$DEFAULT_GIT_REPO" ]] && remote_repo=$DEFAULT_GIT_REPO
 
 usage_string="Usage: $prog [<options>] [<repo>]
 
