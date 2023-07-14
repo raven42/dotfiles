@@ -267,7 +267,7 @@ function format_prompt() {
 	else
 		TARGET_STRING=""
 	fi
-	export PS1="${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
+	export PS1="${PROMPT_PREFIX}${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
@@ -283,17 +283,25 @@ function set_prompt() {
 		history -r	# read from history file into memory
 	fi
 
-	if [ -f $BLD_TARGET_SCRIPT ]; then
-		# $ECHO "sourcing .. [$BLD_TARGET_SCRIPT]"
-		. $BLD_TARGET_SCRIPT
-	else
-		unset BLD_TARGET
+	if [ -d $PROMPT_COMMAND_PATH ]; then
+		for i in ${PROMPT_COMMAND_PATH}/*.sh; do
+			if [ -r "$i" ]; then
+				. $i
+			fi
+		done
+		unset i
 	fi
 
 	format_prompt
 	format_title
 }
 
+# The PROMPT_COMMAND_PATH directory is used to keep any files that should be
+# sourced during the execution of PROMPT_COMAMND. This allows for updating env
+# variables on each command if needed, or adjusting the information displayed
+# in the prompt. To add a resource script to the prompt command path, just put
+# the <file>.sh script in this directory
+export PROMPT_COMMAND_PATH=$PRIVATE_RC_PATH/prompt_command
 export PROMPT_COMMAND=set_prompt
 
 source $POST_RC
