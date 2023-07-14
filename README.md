@@ -33,8 +33,10 @@ To setup on a new system, use the following commands. This creates an alias call
 git clone --bare git@github.com:raven42/dotfiles.git $HOME/.cfg
 alias githome='git --git-dir=$HOME/.cfg --work-tree=$HOME'
 echo ".cfg" >> .gitignore
-githome checkout
+githome config --local --add remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+githome fetch
 githome branch --set-upstream-to origin/master
+githome checkout
 ```
 
 
