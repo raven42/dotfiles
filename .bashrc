@@ -60,6 +60,13 @@ fi
 
 shopt -s checkwinsize
 
+# vscode:
+# This will ensure we have the `code` program in our PATH. This allows opening remote files with `code <file>`
+if [[ -d "$HOME/.vscode-server" ]]; then
+	code_latest_version=$(ls -tral -1 --ignore=.* ~/.vscode-server/bin | sed -n '2p' | rev | cut -d' ' -f1 | rev)
+	export PATH=$HOME/.vscode-server/bin/${code_latest_version}bin/remote-cli:$PATH
+fi
+
 ##############################
 # initialize_git_repository()
 #
