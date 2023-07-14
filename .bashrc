@@ -84,7 +84,7 @@ function initialize_git_repository() {
 	fi
 	GIT_RC_PATH=$1
 	GIT_RC=$2
-	$ECHO "Initializing GIT RC environment .. [$GIT_RC_PATH]
+	$ECHO "Initializing GIT RC environment .. [$GIT_RC_PATH]"
 
 	GIT_TAGS_PATH=$GIT_RC_PATH/tags
 	NERDTREE_BOOKMARKS=$GIT_RC_PATH/NERDTreeBookmarks
