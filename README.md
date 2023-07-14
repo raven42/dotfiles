@@ -28,12 +28,13 @@ Linux .dotfiles, scripts, and configurations. This setup uses a bare repository 
 
 :warning: **Warning:** This process may overwrite existing scripts and resource files such as `~/.bashrc` and `~/.vimrc` as well as others if they are the same as what you already have. It is a good idea to backup any existing scripts you have before doing this process.
 
-To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest:
+To setup on a new system, use the following commands. This creates an alias called `githome` which is used in place of the regular `git` program. This is done to allow automatically setting the git directory for a bare repository. A bare repsitory is used to avoid having a git path in your home directory which could lead toward accidental `git` commands run from your home directory. This new bare repository will be located at `$HOME/.cfg`. After cloning the repo, because this is a bare repository, a `checkout` is needed to update everything to the latest and then you must also set the upstream branch to track the origin:
 ```
 git clone --bare git@github.com:raven42/dotfiles.git $HOME/.cfg
 alias githome='git --git-dir=$HOME/.cfg --work-tree=$HOME'
 echo ".cfg" >> .gitignore
 githome checkout
+githome branch --set-upstream-to origin/master
 ```
 
 
