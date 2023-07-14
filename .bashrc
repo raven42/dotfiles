@@ -301,7 +301,7 @@ function set_prompt() {
 # variables on each command if needed, or adjusting the information displayed
 # in the prompt. To add a resource script to the prompt command path, just put
 # the <file>.sh script in this directory
-export PROMPT_COMMAND_PATH=$PRIVATE_RC_PATH/prompt_command
+export PROMPT_COMMAND_PATH=$HOME/bin/prompt_command
 export PROMPT_COMMAND=set_prompt
 
 source $POST_RC
