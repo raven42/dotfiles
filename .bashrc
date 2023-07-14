@@ -42,6 +42,7 @@ export UNIFIED_HISTORY=0
 export USE_UNICODE=1
 export VISUAL=vim
 export GITRC_ENVIRONMENT=1
+export GIT_PRIVATE_RC=$HOME/.private/repo_rc.sh
 
 # If not an interactive shell, don't proceed any further (ex. SCP commands)
 # need to do at least basic PATH setup and other common env vars
@@ -58,6 +59,13 @@ else
 fi
 
 shopt -s checkwinsize
+
+# vscode:
+# This will ensure we have the `code` program in our PATH. This allows opening remote files with `code <file>`
+if [[ -d "$HOME/.vscode-server" ]]; then
+	code_latest_version=$(ls -tral -1 --ignore=.* ~/.vscode-server/bin | sed -n '2p' | rev | cut -d' ' -f1 | rev)
+	export PATH=$HOME/.vscode-server/bin/${code_latest_version}bin/remote-cli:$PATH
+fi
 
 ##############################
 # initialize_git_repository()
@@ -82,6 +90,8 @@ function initialize_git_repository() {
 		return
 	fi
 	GIT_RC_PATH=$1
+	GIT_RC=$2
+	$ECHO "Initializing GIT RC environment .. [$GIT_RC_PATH]"
 
 	GIT_TAGS_PATH=$GIT_RC_PATH/tags
 	NERDTREE_BOOKMARKS=$GIT_RC_PATH/NERDTreeBookmarks
@@ -101,29 +111,41 @@ function initialize_git_repository() {
 			$SOURCE_ECHO "init git .. [$GIT_REPO:$GIT_RC_PATH]"
 
 			if [ ! -d $GIT_RC_PATH -a -w $GIT_ROOT ]; then
-				$ECHO "Creating repo rc directory at $GIT_RC_PATH..."
+				$ECHO -n "Creating repo rc directory at $GIT_RC_PATH .."
 				mkdir $GIT_RC_PATH
+				$ECHO " done."
 			fi
 			if [ ! -d $GIT_TAGS_PATH -a -w $GIT_RC_PATH ]; then
-				$ECHO "Creating ctags output directory at $GIT_TAGS_PATH..."
+				$ECHO -n "Creating ctags output directory at $GIT_TAGS_PATH .."
 				mkdir $GIT_TAGS_PATH
+				$ECHO " done."
+			fi
+
+			# If needed, copy the GIT_RC from the .private location to the GIT_RC path
+			if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} -a -f ${GIT_PRIVATE_RC} ]; then
+				$ECHO -n "rc spec not found. Generating defaults at ${GIT_RC} from ${GIT_PRIVATE_RC} .."
+				cp ${GIT_PRIVATE_RC} ${GIT_RC}
+				$ECHO " done."
 			fi
 
 			# Look for REPO specific NERDTree File and if not exists, then generate it
 			if [[ -f $NERDTREE_GEN_SCRIPT && -f $NERDTREE_DEF_BOOKMARKS ]]; then
 				if [[ -f $NERDTREE_BOOKMARKS && $NERDTREE_DEF_BOOKMARKS -nt $NERDTREE_BOOKMARKS ]]; then
-					$ECHO "NERDTree Bookmarks out of date. Generating new file..."
+					$ECHO -n "NERDTree Bookmarks out of date. Generating new file .."
 					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
+					$ECHO " done."
 				elif [[ ! -f $NERDTREE_BOOKMARKS ]]; then
-					$ECHO "Generating NERDTree Bookmarks file..."
+					$ECHO -n "Generating NERDTree Bookmarks file .."
 					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
+					$ECHO " done."
 				fi
 			fi
 
 			# Look for TAG files and if none are found, generate new ones
 			if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
-				$ECHO " No TAGFILES found. Generating new tags in the background at $GIT_TAGS_PATH..."
+				$ECHO -n "No TAGFILES found. Generating new tags in the background at $GIT_TAGS_PATH .."
 				nohup $RETAG_SCRIPT -a --dir $GIT_TAGS_PATH 2>&1 1> $HOME/var/log/retag_$GIT_REPO.log &
+				$ECHO " done."
 			fi
 		fi
 	fi
@@ -245,7 +267,7 @@ function format_prompt() {
 	else
 		TARGET_STRING=""
 	fi
-	export PS1="${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
+	export PS1="${PROMPT_PREFIX}${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
@@ -261,17 +283,25 @@ function set_prompt() {
 		history -r	# read from history file into memory
 	fi
 
-	if [ -f $BLD_TARGET_SCRIPT ]; then
-		# $ECHO "sourcing .. [$BLD_TARGET_SCRIPT]"
-		. $BLD_TARGET_SCRIPT
-	else
-		unset BLD_TARGET
+	if [ -d $PROMPT_COMMAND_PATH ]; then
+		for i in ${PROMPT_COMMAND_PATH}/*.sh; do
+			if [ -r "$i" ]; then
+				. $i
+			fi
+		done
+		unset i
 	fi
 
 	format_prompt
 	format_title
 }
 
+# The PROMPT_COMMAND_PATH directory is used to keep any files that should be
+# sourced during the execution of PROMPT_COMAMND. This allows for updating env
+# variables on each command if needed, or adjusting the information displayed
+# in the prompt. To add a resource script to the prompt command path, just put
+# the <file>.sh script in this directory
+export PROMPT_COMMAND_PATH=$HOME/bin/prompt_command
 export PROMPT_COMMAND=set_prompt
 
 source $POST_RC

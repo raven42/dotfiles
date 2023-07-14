@@ -195,9 +195,8 @@ function update_git_environment() {
 	fi
 
 	update_external_environment
+	[[ $(type -t initialize_git_repository) == function ]] && initialize_git_repository $GIT_RC_PATH $GIT_ROOT/.rc/rc
 	souce_resouce_files
-
-	[[ $(type -t initialize_git_repository) == function ]] && initialize_git_repository $GIT_RC_PATH
 
 	_print_git_env "POST"
 }
