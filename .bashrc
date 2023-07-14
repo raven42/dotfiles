@@ -42,6 +42,7 @@ export UNIFIED_HISTORY=0
 export USE_UNICODE=1
 export VISUAL=vim
 export GITRC_ENVIRONMENT=1
+export GIT_PRIVATE_RC=$HOME/.private/repo_rc.sh
 
 # If not an interactive shell, don't proceed any further (ex. SCP commands)
 # need to do at least basic PATH setup and other common env vars
@@ -82,6 +83,7 @@ function initialize_git_repository() {
 		return
 	fi
 	GIT_RC_PATH=$1
+	GIT_RC=$2
 
 	GIT_TAGS_PATH=$GIT_RC_PATH/tags
 	NERDTREE_BOOKMARKS=$GIT_RC_PATH/NERDTreeBookmarks
@@ -101,29 +103,41 @@ function initialize_git_repository() {
 			$SOURCE_ECHO "init git .. [$GIT_REPO:$GIT_RC_PATH]"
 
 			if [ ! -d $GIT_RC_PATH -a -w $GIT_ROOT ]; then
-				$ECHO "Creating repo rc directory at $GIT_RC_PATH..."
+				$ECHO -n "Creating repo rc directory at $GIT_RC_PATH .."
 				mkdir $GIT_RC_PATH
+				$ECHO " done."
 			fi
 			if [ ! -d $GIT_TAGS_PATH -a -w $GIT_RC_PATH ]; then
-				$ECHO "Creating ctags output directory at $GIT_TAGS_PATH..."
+				$ECHO -n "Creating ctags output directory at $GIT_TAGS_PATH .."
 				mkdir $GIT_TAGS_PATH
+				$ECHO " done."
+			fi
+
+			# If needed, copy the GIT_RC from the .private location to the GIT_RC path
+			if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} -a -f ${GIT_PRIVATE_RC} ]; then
+				$ECHO -n "rc spec not found. Generating defaults at ${GIT_RC} from ${GIT_PRIVATE_RC} .."
+				cp ${GIT_PRIVATE_RC} ${GIT_RC}
+				$ECHO " done."
 			fi
 
 			# Look for REPO specific NERDTree File and if not exists, then generate it
 			if [[ -f $NERDTREE_GEN_SCRIPT && -f $NERDTREE_DEF_BOOKMARKS ]]; then
 				if [[ -f $NERDTREE_BOOKMARKS && $NERDTREE_DEF_BOOKMARKS -nt $NERDTREE_BOOKMARKS ]]; then
-					$ECHO "NERDTree Bookmarks out of date. Generating new file..."
+					$ECHO -n "NERDTree Bookmarks out of date. Generating new file .."
 					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
+					$ECHO " done."
 				elif [[ ! -f $NERDTREE_BOOKMARKS ]]; then
-					$ECHO "Generating NERDTree Bookmarks file..."
+					$ECHO -n "Generating NERDTree Bookmarks file .."
 					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
+					$ECHO " done."
 				fi
 			fi
 
 			# Look for TAG files and if none are found, generate new ones
 			if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
-				$ECHO " No TAGFILES found. Generating new tags in the background at $GIT_TAGS_PATH..."
+				$ECHO -n "No TAGFILES found. Generating new tags in the background at $GIT_TAGS_PATH .."
 				nohup $RETAG_SCRIPT -a --dir $GIT_TAGS_PATH 2>&1 1> $HOME/var/log/retag_$GIT_REPO.log &
+				$ECHO " done."
 			fi
 		fi
 	fi
