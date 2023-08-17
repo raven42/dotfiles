@@ -43,6 +43,7 @@ export USE_UNICODE=1
 export VISUAL=vim
 export GITRC_ENVIRONMENT=1
 export GIT_PRIVATE_RC=$HOME/.private/repo_rc.sh
+export XDG_CACHE_HOME=/work/${USER}/.cache
 
 # If not an interactive shell, don't proceed any further (ex. SCP commands)
 # need to do at least basic PATH setup and other common env vars
@@ -66,6 +67,29 @@ if [[ -d "$HOME/.vscode-server" ]]; then
 	code_latest_version=$(ls -tral -1 --ignore=.* ~/.vscode-server/bin | sed -n '2p' | rev | cut -d' ' -f1 | rev)
 	export PATH=$HOME/.vscode-server/bin/${code_latest_version}bin/remote-cli:$PATH
 fi
+
+# Setup and refresh the XDG_CACHE_HOME directory if needed
+if [[ ! -d $XDG_CACHE_HOME ]]; then
+	if [[ ! -d $(dirname $XDG_CACHE_HOME) ]]; then
+		# Parent directory doesn't exist. Reset to $HOME
+		export XDG_CACHE_HOME=$HOME/.cache
+	else
+		mkdir $XDG_CACHE_HOME
+	fi
+fi
+
+##############################
+# refresh_vscode_ipc()
+#
+# This is a helper routine to refresh the VSCODE_IPC_HOOK_CLI env variable. In some instances this can be left stale
+# pointing to a vscode-server instance that is no longer there. When this occurs, the `code <file>` command may produce
+# an error indicating an IPC sock error. Refreshing this env variable should fix the problem.
+function refresh_vscode_ipc() {
+	echo -n "Refreshing the VSCODE_IPC_HOOK_CLI env variable ..."
+	export VSCODE_IPC_HOOK_CLI=$(lsof 2> /dev/null | grep $USER | grep vscode-ipc | awk '{print $(NF-1)}' | head -n 1)
+	echo " done [$VSCODE_IPC_HOOK_CLI]."
+}
+alias vscode-refresh=refresh_vscode_ipc
 
 ##############################
 # initialize_git_repository()
