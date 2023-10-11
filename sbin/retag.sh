@@ -60,11 +60,12 @@ if [ $SRC_PATH_PREFIX -a -d $rootdir/$SRC_PATH_PREFIX ]; then
 	src_path=${SRC_PATH_PREFIX}
 else
 	src_path=""
+	TAG_PATH=""
 	echo ""
 	echo "SRC_PATH_PREFIX not defined or does not exist. Overriding and using current directory"
 	echo "  SRC_PATH_PREFIX: [$SRC_PATH_PREFIX]"
 	echo "  GIT_ROOT: [$GIT_ROOT]"
-	TAG_PATH=""
+	echo "  TAG_PATH: [$TAG_PATH]"
 fi
 
 ctags_bin=ctags
@@ -86,21 +87,27 @@ create_ctags()
 	path=$2
 
 	if [ $universal_ctags -eq 1 ]; then
-		ctags_cmd="$ctags_bin --tag-relative=always --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no *"
+		ctags_cmd="$ctags_bin --tag-relative=always --recurse -f $dir/$filename --links=no --extras=+F --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no ."
 	else
-		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no *"
+		ctags_cmd="$ctags_bin --tag-relative --recurse -f $dir/$filename --links=no --extra= --file-scope=yes --format=2 --excmd=pattern --fields=nksSar --sort=no --append=no ."
 	fi
 	#ctags_cmd="/usr/bin/ctags --tag-relative --recurse -extra=f -f $filename --links=no *"
 
-	echo -n "  $path -> $filename ..."
-	
-	if [ -d $rootdir/$src_path/$path ]; then
-		$EXEC cd $rootdir/$src_path/$path
-		cd $rootdir/$src_path/$path
+	exec_path=$rootdir
+	[[ ! -z "$src_path" ]] && exec_path+="/$src_path"
+	[[ ! -z "$path" ]] && exec_path+="/$path"
+
+	# [[ $pretend == 1 ]] && echo "rootdir:[$rootdir] src_path:[$src_path] path:[$path] exec_path:[$exec_path]"
+
+	echo -n "  $exec_path -> $filename ..."
+
+	if [ -d $exec_path ]; then
+		$EXEC cd $exec_path
+		cd $exec_path
 		$EXEC $ctags_cmd 2>&1
 		echo " done"
 	else
-		echo "Path not found:$rootdir/$src_path/$path"
+		echo "Path not found:$exec_path"
 	fi
 }
 
@@ -111,10 +118,10 @@ print_tagpath()
 		echo "  TAG_PATH:"
 		echo "    Def TagFile         Path:"
 		echo "$(echo $TAG_PATH | tr ' ' '\n' | tr ':' '\t' | sed -e 's/^\([01]\)/    \1/')"
-		echo ""
 	else
 		echo "  TAG_PATH: not defined."
 	fi
+	echo "  OUTPUT DIR: ${dir}"
 }
 
 optarg=0
@@ -191,25 +198,27 @@ if [[ "$TAG_PATH" != "" ]]; then
 		fi
 	done
 	# Now look for any extraneous files
-	files=$(ls $TAGDIR)
-	rm_files=""
-	for file in $files; do
-		if [[ ! "${TAG_PATH}" =~ "${file}" ]]; then
-			echo "  Extraneous file found [$file]"
-			rm_files+=" $file"
+	if [[ $pretend == 0 ]]; then
+		files=$(ls $TAGDIR)
+		rm_files=""
+		for file in $files; do
+			if [[ ! "${TAG_PATH}" =~ "${file}" ]]; then
+				echo "  Extraneous file found [$file]"
+				rm_files+=" $file"
+			fi
+		done
+		if [[ "$rm_files" != "" ]]; then
+			echo ""
+			echo "Possible extraneous files found that are not part of the TAG_PATH definition."
+			echo "This is possibly due to leftover files from an out-dated version of this script,"
+			echo "or if your TAG_PATH environment variables have changed."
+			echo ""
+			echo "To remove, use the following command:"
+			echo "  cd $TAGDIR && rm$rm_files"
 		fi
-	done
-	if [[ "$rm_files" != "" ]]; then
-		echo ""
-		echo "Possible extraneous files found that are not part of the TAG_PATH definition."
-		echo "This is possibly due to leftover files from an out-dated version of this script,"
-		echo "or if your TAG_PATH environment variables have changed."
-		echo ""
-		echo "To remove, use the following command:"
-		echo "  cd $TAGDIR && rm$rm_files"
 	fi
 else
-	create_ctags ctags ./
+	create_ctags tags
 fi
 
 
