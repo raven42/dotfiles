@@ -1,5 +1,20 @@
 #!/bin/bash
 
+################################################################################
+# change_dir()
+#
+# This function will change the current directory and update the directory stack.
+# It has integration support for the git environment variables and will update
+# the git environment variables when the directory is changed using the
+# `update_git_environment` function defined in the `git-environment.bash` script.
+#
+# Params:
+#   $1 - The directory to change to. If not provided, the home directory will be used.
+#
+# Returns:
+#   0 - Success
+#   1 - Failure
+#
 function change_dir()
 {
 	local stack_dir new_dir idx_dir idx
@@ -50,6 +65,7 @@ function change_dir()
 
 	# If we have the update_git_environment function in the shell, then call it when we change directories
 	[[ $(type -t update_git_environment) == function ]] && update_git_environment
+	[[ $(type -t activate_python_venv) == function ]] && activate_python_venv
 
 	return 0
 }

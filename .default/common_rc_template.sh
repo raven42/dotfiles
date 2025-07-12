@@ -30,7 +30,7 @@ export USE_UNICODE=1
 export AUTOSAVE=0
 
 # Setting this to 0 will not show the current $BLD_TARGET in the command prompt. By default the prompt will look like this:
-#   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$ 
+#   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$
 # Setting this to 0 will result in the following:
 #   $GIT_REPO (<git-branch>) <directory>$
 export SHOW_TARGET_IN_PROMPT=1
