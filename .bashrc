@@ -3,7 +3,7 @@
 #
 
 alias dirs='dirs -v'
-alias githome='git --git-dir $HOME/.cfg/ --work-tree $HOME'
+alias githome='git --git-dir $HOME/.cfg --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
 alias rebash='unset LOADEDMODULES _LMFILES_ ; source ~/.bashrc'
 alias scp="scp -oStrictHostKeyChecking=no"
@@ -40,6 +40,7 @@ export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
 export UNIFIED_HISTORY=0
 export USE_UNICODE=1
+export USE_UNICODE_TITLE=0
 export VISUAL=vim
 export GITRC_ENVIRONMENT=1
 export GIT_PRIVATE_RC=$HOME/.private/repo_rc.sh
@@ -67,6 +68,7 @@ if [[ -d "$HOME/.vscode-server" ]]; then
 	code_latest_version=$(ls -tral -1 --ignore=.* ~/.vscode-server/bin | sed -n '2p' | rev | cut -d' ' -f1 | rev)
 	export PATH=$HOME/.vscode-server/bin/${code_latest_version}bin/remote-cli:$PATH
 fi
+export NODE_OPTIONS="--max-old-space-size=16384"
 
 # Setup and refresh the XDG_CACHE_HOME directory if needed
 if [[ ! -d $XDG_CACHE_HOME ]]; then
@@ -86,7 +88,7 @@ fi
 # an error indicating an IPC sock error. Refreshing this env variable should fix the problem.
 function refresh_vscode_ipc() {
 	echo -n "Refreshing the VSCODE_IPC_HOOK_CLI env variable ..."
-	export VSCODE_IPC_HOOK_CLI=$(lsof 2> /dev/null | grep $USER | grep vscode-ipc | awk '{print $(NF-1)}' | head -n 1)
+	export VSCODE_IPC_HOOK_CLI=$(lsof -u $(id -u) 2> /dev/null | grep vscode-ipc | awk '{print $(NF-1)}' | head -n 1)
 	echo " done [$VSCODE_IPC_HOOK_CLI]."
 }
 alias vscode-refresh=refresh_vscode_ipc
@@ -230,6 +232,9 @@ fi
 # First purge any modules so we can start fresh if any were loaded
 [[ "$(command -v module)" ]] && module purge
 
+# Set default pyenv version
+# export PYENV_VERSION=pyuniti-3.11.3
+
 # Source various other bash resource scripts to enhance our shell environment
 source $HOME/sbin/git-completion.bash
 source $HOME/sbin/git-prompt.sh
@@ -284,6 +289,12 @@ PS_BELL="\a"		# Bell character
 # Display info
 export DISPLAY
 
+# Uncomment the following to call the corresponding function prior to executing any command from the shell
+# function pre_command() {
+# 	# execute this prior to running any command
+# }
+# trap pre_command DEBUG
+
 function format_prompt() {
 	# The prompt is set by exporting the PS1 variable with any string
 	if [ $SHOW_TARGET_IN_PROMPT -eq 1 -a "$BLD_TARGET" != "" ]; then
@@ -291,11 +302,17 @@ function format_prompt() {
 	else
 		TARGET_STRING=""
 	fi
-	export PS1="${PROMPT_PREFIX}${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
+	if [ ! -z "$DOCKER_IMAGE" ]; then
+		DOCKER_STRING="[${FG_PINK}${DOCKER_IMAGE}${FG_RESET}] "
+	else
+		DOCKER_STRING=""
+	fi
+	# export PS1="$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
+	export PS1="${DOCKER_STRING}${PROMPT_PREFIX}${TARGET_STRING}$(git_prompt_format) ${PS_DIR}${PS_SYMB} "
 }
 
 function format_title() {
-	echo -ne "\033]0;${PWD} $(git_title_format)\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
+	echo -ne "\033]0;${PWD}$(git_title_format)\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
 }
 
 function set_prompt() {

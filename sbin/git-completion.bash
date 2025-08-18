@@ -1552,6 +1552,59 @@ _git_checkout ()
 	esac
 }
 
+_git_sub_checkout ()
+{
+	__git_has_doubledash && return
+
+	case "$cur" in
+	--conflict=*)
+		__gitcomp "diff3 merge" "" "${cur##--conflict=}"
+		;;
+	--*)
+		__gitcomp_builtin checkout
+		;;
+	*)
+		local dwim_opt="$(__git_checkout_default_dwim_mode)"
+		local prevword prevword="${words[cword-1]}"
+
+		case "$prevword" in
+			-b|-B|--orphan)
+				# Complete local branches (and DWIM branch
+				# remote branch names) for an option argument
+				# specifying a new branch name. This is for
+				# convenience, assuming new branches are
+				# possibly based on pre-existing branch names.
+				__git_complete_refs $dwim_opt --mode="heads"
+				return
+				;;
+			*)
+				;;
+		esac
+
+		# At this point, we've already handled special completion for
+		# the arguments to -b/-B, and --orphan. There are 3 main
+		# things left we can possibly complete:
+		# 1) a start-point for -b/-B, -d/--detach, or --orphan
+		# 2) a remote head, for --track
+		# 3) an arbitrary reference, possibly including DWIM names
+		#
+
+		if [ -n "$(__git_find_on_cmdline "-b -B -d --detach --orphan")" ]; then
+			__git_complete_refs --mode="refs"
+		elif [ -n "$(__git_find_on_cmdline "--track")" ]; then
+			__git_complete_refs --mode="remote-heads"
+		else
+			__git_complete_refs $dwim_opt --mode="refs"
+		fi
+		;;
+	esac
+}
+
+_git_subcheckout ()
+{
+	_git_sub_checkout
+}
+
 __git_sequencer_inprogress_options="--continue --quit --abort --skip"
 
 __git_cherry_pick_inprogress_options=$__git_sequencer_inprogress_options

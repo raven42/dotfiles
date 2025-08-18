@@ -16,13 +16,17 @@ long_opts=help
 
 bld_target=
 
-if [[ $GITRC_ENVIRONMENT == 1 && -n "$GIT_ROOT" ]]; then
-	target_rc=${GIT_ROOT}/.rc/bld_target.sh
-else
-	if [[ ! -d $HOME/bin/prompt_command ]]; then
-		mkdir -p $HOME/bin/prompt_command
+if [[ -z "$BLD_TARGET_SCRIPT" ]]; then
+	if [[ $GITRC_ENVIRONMENT == 1 && -n "$GIT_ROOT" ]]; then
+		target_rc=${GIT_ROOT}/.rc/bld_target.sh
+	else
+		if [[ ! -d $HOME/bin/prompt_command ]]; then
+			mkdir -p $HOME/bin/prompt_command
+		fi
+		target_rc=${HOME}/bin/prompt_command/bld_target.sh
 	fi
-	target_rc=${HOME}/bin/prompt_command/bld_target.sh
+else
+	target_rc=$BLD_TARGET_SCRIPT
 fi
 
 # Process the command line arguments

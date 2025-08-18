@@ -1,8 +1,12 @@
 #!/bin/bash
-
+#
+# Copyright (c) 2023 David Hegland <david.hegland@broadcom.com>
 #
 # This shell environment resource file will help track various paths and such based on the active repository and
-# any submodules. The following environment variables will be set:
+# any submodules. This will also display a message when entering / leaving a git repository by default. This can
+# be disabled by setting the $GIT_ENVIRONMENT_SILENT=1
+#
+# The following environment variables will be set:
 #
 #   GIT_ROOT:
 #       This always points to the top most repository root. Even when inside a sub-module. This value will be
@@ -78,6 +82,8 @@ PS_BELL="\a"		# Bell character
 
 if [ -z "$PS1" ]; then
 	ECHO=:
+elif [[ "$GIT_ENVIRONMENT_SILENT" == "1" ]]; then
+	ECHO=:
 else
 	ECHO='echo -e'
 fi
@@ -94,7 +100,7 @@ function update_external_environment() {
 }
 
 function souce_resouce_files() {
-	RESOURCE_FILES="$HOME/.private/aliases.sh:$HOME/.aliases:$GIT_ROOT/.rc/rc"
+	RESOURCE_FILES="$HOME/.private/aliases.sh:$HOME/.aliases:$GIT_ROOT/.rc/rc:$BLD_TARGET_SCRIPT"
 
 	# After we've updated any environment variables, we should source our resource files again to update any aliases
 	resource_files=$(echo $RESOURCE_FILES | tr ':' '\n')
@@ -122,7 +128,7 @@ function _print_git_env() {
 }
 
 function git_title_format() {
-	if [[ ! -z "$GIT_REPO" && ! -z "$USE_UNICODE" ]]; then
+	if [[ ! -z "$GIT_REPO" && "$USE_UNICODE_TITLE" == "1" ]]; then
 		GIT_TITLE_INFO="\xee\x82\xa0$(__git_ps1)"
 	elif [[ ! -z "$GIT_REPO" ]]; then
 		GIT_TITLE_INFO="$(__git_ps1)"
@@ -135,10 +141,10 @@ function git_title_format() {
 function git_prompt_format() {
 	if [ $GIT_REPO ]; then
 		# branch code $'\xee\x82\xa0'
-		GIT_PS_INFO="${FG_ORANGE}${GIT_REPO}\$(__git_ps1)${FG_RESET}"
+		GIT_PS_INFO="${FG_ORANGE}${GIT_REPO}${FG_MAGENTA}\$(__git_ps1)${FG_RESET}"
 		# PS_INFO=$'$GIT_REPO \xee\x82\xa0$(__git_ps1)'
 	else
-		GIT_PS_INFO="${FG_GREEN}${PS_HOST}${FG_YELLOW}\$(__git_ps1)${FG_RESET}"
+		GIT_PS_INFO="${FG_GREEN}${PS_HOST}${FG_YELLOW}${FG_MAGENTA}\$(__git_ps1)${FG_RESET}"
 	fi
 	printf -- "$GIT_PS_INFO"
 }
@@ -167,6 +173,14 @@ function update_git_environment() {
 		unset GIT_SUPERPROJECT
 		$ECHO "Entering main repository .. [$GIT_ROOT $GIT_REPO@$GIT_REMOTE]"
 	elif [[ ! -z "$git_superproject" && "$git_superproject" != "$GIT_SUPERPROJECT" ]]; then
+		# We have entered a direcotry that is a submodule, and has a different superproject
+		export GIT_ROOT=$git_superproject
+		export GIT_REPO=$(basename $git_toplevel)
+		export GIT_PATH=$(dirname $git_toplevel)
+		export GIT_REMOTE=$(echo $git_remote | sed -e 's|.*:||' -e 's|\.git||')
+		export GIT_SUPERPROJECT=$GIT_ROOT
+		$ECHO "Entering sub-module repository .. [$GIT_ROOT $GIT_REPO@$GIT_REMOTE]"
+	elif [[ ! -z "$git_superproject" && "$git_repository" != "$GIT_REPO" ]]; then
 		# We have entered a direcotry that is a submodule, and has a different superproject
 		export GIT_ROOT=$git_superproject
 		export GIT_REPO=$(basename $git_toplevel)

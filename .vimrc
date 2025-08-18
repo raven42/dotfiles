@@ -236,6 +236,36 @@ augroup vimrc
 	" autocmd BufWinEnter *.py set fileformat=unix
 	autocmd BufWinLeave * call clearmatches()
 
+	" use "<ctrl-k> <ctrl-f>" key sequence to format the current line
+	map <C-K><C-F> :call FormatLine()<cr>
+	imap <C-K><C-F> <c-o>:call FormatLine()<cr>
+
+	" use "<ctrl-k> <ctrl-a>" key sequence to format the entire file
+	map <C-K><C-A> :call FormatFile()<cr>
+
+	" for c files, when semi-colon is typed in insert mode, send the semi-colon character, then format the line
+	autocmd BufWinEnter *.c,*.cpp,*.h,*.py imap ; ;<c-o>:call FormatLine()<cr>
+	autocmd BufWinLeave * silent! iunmap ;
+
+	function FormatLine()
+		call ClangFormat('current')
+	endfunction
+
+	function FormatFile()
+		call ClangFormat('all')
+	endfunction
+
+	function ClangFormat(lines)
+		if a:lines == 'all'
+			let l:lines = 'all'
+		endif
+	  	if has('python')
+	  		pyf /projects/bsnsweng/dh404494/clang-format-20.0.0/clang-format.py
+	  	elseif has('python3')
+	  		py3f /projects/bsnsweng/dh404494/clang-format-20.0.0/clang-format.py
+	  	endif
+	endfunction
+
 	" When we attempt to do a :quit then instead do a :quitall
 	" autocmd QuitPre * qa
 augroup END
@@ -531,6 +561,8 @@ if v:version >= 800
 	" let g:tagbar_sort = 0
 	" let g:tagbar_width = max([40, winwidth(0) / 6])
 	" let g:tagbar_wrap = 1
+	" let g:tagbar_show_prefix = 1
+	" let g:tagbar_show_suffix = 1
 
 	" let g:tagbar_long_help = 1
 	" let g:tagbar_compact = 1
@@ -627,10 +659,11 @@ if v:version >= 800
 
 	" let g:tagbar_type_asciidoc2 = {
 	"             \ 'ctagstype': 'asciidoc2',
-	"             \ 'deffile': '/home/dh404494/.vim/vim-asciidoc/ctags/asciidoc.cnf',
+	"             \ 'deffile': '~/projects/tagbar-test-files/ctags/asciidoc.cnf',
 	"             \ 'sort': 0,
 	"             \ 'kinds': [
 	"                 \ 's:Table of Contents',
+	"                 \ 'S:Sections',
 	"                 \ 'i:Included Files',
 	"                 \ 'I:Images',
 	"                 \ 'v:Videos',
@@ -688,7 +721,7 @@ if v:version >= 800
 	if $USE_DEVPANEL !=# ''
 		let g:use_devpanel = $USE_DEVPANEL
 	else
-		let g:use_devpanel = 1
+		let g:use_devpanel = 0
 	endif
 	if g:use_devpanel
 		let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc,*.sh'
@@ -814,7 +847,7 @@ if v:version >= 800
 		if !g:have_tagbar || &filetype =~# g:ignored_filetypes
 			return ''
 		endif
-		return tagbar#currenttag('%s', '', 'f', 'nearest-stl')
+		return tagbar#currenttag('%s', '', 'f', 'scoped-stl')
 	endfunction
 
 	let g:lineline_colorscheme = 'powerline'
@@ -1053,6 +1086,7 @@ if v:version >= 800
 	nmap <silent> <Leader>- :resize -5<CR>
 	nmap <silent> <Leader>+ :vertical resize +5<CR>
 	nmap <silent> <Leader>_ :vertical resize -5<CR>
+
 
 	" ---- Autocmds for all plugins {{{2
 	augroup vimplugins

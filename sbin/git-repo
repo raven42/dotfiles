@@ -44,7 +44,6 @@ prog=`basename $0`
 workspaces=$HOME/projects
 remote_server=git@github.com
 remote_repo=raven42/dotfiles.git
-git_env_scipr=${HOME}/sbin/git-environment.bash
 
 [[ ! -z "$WORKSPACES" ]] && workspaces=$WORKSPACES
 [[ ! -z "$DEFAULT_GIT_SERVER" ]] && remote_server=$DEFAULT_GIT_SERVER

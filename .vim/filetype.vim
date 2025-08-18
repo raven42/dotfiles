@@ -10,4 +10,5 @@ augroup	filetypedetect
 	au! BufRead,BufNewFile	*.cheat				setfiletype cheatsheet
 	au!	BufRead,BufNewFile	*.gdb				setfiletype	gdb
 	au! BufRead,BufNewFile	*.colors,*.color	setfiletype 256colors
+	au! BufRead,BufNewFile	*.asciidoc2			setfiletype asciidoc2
 augroup	END
