@@ -226,8 +226,8 @@ source $HOME/sbin/path-functions.bash
 source $HOME/sbin/git-completion.bash
 source $HOME/sbin/git-prompt.sh
 source $HOME/sbin/change_dir.sh
+source $HOME/sbin/vscode_env.bash
 source $DEFAULT_RC_PATH/common_rc.sh
-source $DEFAULT_RC_PATH/vscode_env.bash
 source $PRIVATE_RC_PATH/private_rc.sh
 source $HOME/sbin/git-environment.bash		# should be after PRIVATE_RC so user settings can be applied
 
