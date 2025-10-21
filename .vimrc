@@ -228,6 +228,7 @@ augroup vimrc
 	"                                          |  |  + preprocessor directives should be left aligned
 	"                                          |  + function return type left justified intead of shift-width
 	"                                          + normal indentation after start of a block
+
 	autocmd FileType python,sh setlocal cinoptions=>4,t0,#s
 	autocmd BufWinEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+$/
 	autocmd InsertEnter *.c,*.cpp,*.h,*.py match Whitespace /\s\+\%#\@<!$/
@@ -735,6 +736,15 @@ if v:version >= 800
 	let g:devpanel_use_tagbar = 1
 	let g:devpanel_use_minimap = 0
 	let g:devpanel_use_flake8 = 1
+
+	" ---- rhysd/vim-clang-format configuration {{{2
+	" let g:clang_format#command = '/projects/bsnswtools/clang-format-20.0.0/clang-format'
+	" let g:clang_format#detect_style_file = 1			" Use the .clang-format style file
+	" let g:clang_format#auto_format = 1					" Auto-format the file on save
+	" let g:clang_format#auto_format_on_insert_leave = 1	" Auto-format the file on leaving insert mode
+
+	" autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
+	" autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 
 	" ---- Generic definitions used by functions for plugins {{{2
 	let g:ignored_filetypes = '\v(nerdtree|tagbar|undotree|qf)'

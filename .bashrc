@@ -5,12 +5,13 @@
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg --work-tree $HOME'
 alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
-alias rebash='unset LOADEDMODULES _LMFILES_ ; source ~/.bashrc'
+alias rebash='source ~/.bashrc'
 alias scp="scp -oStrictHostKeyChecking=no"
 alias ssh="ssh -e  -oStrictHostKeyChecking=no"
 alias telnet="telnet -e ^B"
 alias vi="vim"
 
+################################################################################
 # Setup our environment:
 export AUTOSAVE=0							# by default, don't autosave in vim
 export EDITOR=vim
@@ -28,23 +29,37 @@ export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
 export LYNX_CFG=~/.lynxrc
 export MAKEFLAGS=-s
 export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
-export MODULEPATH=$HOME/.default/modulefiles:$HOME/.private/modulefiles:/usr/share/modules/modulefiles:/etc/modulefiles
 #export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 export PATH=/bin:/usr/sbin:/usr/bin:/usr/local/bin:/cmd
 #export PYTHONPATH=~/.local/lib/python3.5/site-packages
 export PYTHONPATH=
-export SHOW_TARGET_IN_PROMPT=1
 export SILENT_SOURCING=1
 export TAGDIR=$HOME/.ctags
 export TMOUT=0
 export TZ=/usr/share/zoneinfo/US/Central
-export UNIFIED_HISTORY=0
-export USE_UNICODE=1
 export USE_UNICODE_TITLE=0
 export VISUAL=vim
 export GITRC_ENVIRONMENT=1
 export GIT_PRIVATE_RC=$HOME/.private/repo_rc.sh
 export XDG_CACHE_HOME=/work/${USER}/.cache
+
+# To disable unicode characters in VIM and bash prompts. There are unicode characters used for the terminal window title,
+# and in VIM, unicode characters are used in the status line, buffer line, and window title.
+export USE_UNICODE=1
+
+# Set autosave option for vim
+export AUTOSAVE=0
+
+# Setting this to 0 will not show the current $BLD_TARGET in the command prompt. By default the prompt will look like this:
+#   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$
+# Setting this to 0 will result in the following:
+#   $GIT_REPO (<git-branch>) <directory>$
+export SHOW_TARGET_IN_PROMPT=1
+
+# UNIFIED_HISTORY - This env var is used to determine if a unified history should be used between all sessions into a host.
+# This will enable the 'history' command to use a file instead of in memory history so the shell history is updated every
+# command across all sessions, not just the current session as is the default
+export UNIFIED_HISTORY=0
 
 # If not an interactive shell, don't proceed any further (ex. SCP commands)
 # need to do at least basic PATH setup and other common env vars
@@ -62,14 +77,6 @@ fi
 
 shopt -s checkwinsize
 
-# vscode:
-# This will ensure we have the `code` program in our PATH. This allows opening remote files with `code <file>`
-if [[ -d "$HOME/.vscode-server" ]]; then
-	code_latest_version=$(ls -tral -1 --ignore=.* ~/.vscode-server/bin | sed -n '2p' | rev | cut -d' ' -f1 | rev)
-	export PATH=$HOME/.vscode-server/bin/${code_latest_version}bin/remote-cli:$PATH
-fi
-export NODE_OPTIONS="--max-old-space-size=16384"
-
 # Setup and refresh the XDG_CACHE_HOME directory if needed
 if [[ ! -d $XDG_CACHE_HOME ]]; then
 	if [[ ! -d $(dirname $XDG_CACHE_HOME) ]]; then
@@ -80,20 +87,7 @@ if [[ ! -d $XDG_CACHE_HOME ]]; then
 	fi
 fi
 
-##############################
-# refresh_vscode_ipc()
-#
-# This is a helper routine to refresh the VSCODE_IPC_HOOK_CLI env variable. In some instances this can be left stale
-# pointing to a vscode-server instance that is no longer there. When this occurs, the `code <file>` command may produce
-# an error indicating an IPC sock error. Refreshing this env variable should fix the problem.
-function refresh_vscode_ipc() {
-	echo -n "Refreshing the VSCODE_IPC_HOOK_CLI env variable ..."
-	export VSCODE_IPC_HOOK_CLI=$(lsof -u $(id -u) 2> /dev/null | grep vscode-ipc | awk '{print $(NF-1)}' | head -n 1)
-	echo " done [$VSCODE_IPC_HOOK_CLI]."
-}
-alias vscode-refresh=refresh_vscode_ipc
-
-##############################
+################################################################################
 # initialize_git_repository()
 #
 # Params: GIT_RC_PATH - The path to the GIT_ROOT/.rc path controlled and sourced by git-environment.bash
@@ -177,7 +171,7 @@ function initialize_git_repository() {
 	fi
 }
 
-###########
+################################################################################
 # source()
 # Params: <file> - File to be sourced
 #
@@ -193,19 +187,16 @@ function source() {
 	fi
 }
 
+################################################################################
 # External resource / script files
 DEFAULT_RC_PATH=${HOME}/.default
 PRIVATE_RC_PATH=${HOME}/.private
-BLD_TARGET_SCRIPT=${PRIVATE_RC_PATH}/bld_target.sh
-CHANGE_DIR_SCRIPT=${HOME}/sbin/change_dir.sh
-COMMON_RC=${DEFAULT_RC_PATH}/common_rc.sh
 DIRCOLORS=${HOME}/.dircolors
 NERDTREE_DEF_BOOKMARKS=${PRIVATE_RC_PATH}/NERDTreeDefaultBookmarks
 NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
-POST_RC=${PRIVATE_RC_PATH}/post_rc.sh
-PRIVATE_RC=${PRIVATE_RC_PATH}/private_rc.sh
 RETAG_SCRIPT=${HOME}/sbin/retag.sh
 
+################################################################################
 # colors for ls, etc.  Prefer ~/.dir_colors #64489
 if ! shopt -q login_shell ; then # We're not a login shell
 	for i in /etc/profile.d/*.sh; do
@@ -229,20 +220,18 @@ elif [[ -f /etc/DIR_COLORS ]]; then
 	eval `dircolors -b /etc/DIR_COLORS`
 fi
 
-# First purge any modules so we can start fresh if any were loaded
-[[ "$(command -v module)" ]] && module purge
-
-# Set default pyenv version
-# export PYENV_VERSION=pyuniti-3.11.3
-
+################################################################################
 # Source various other bash resource scripts to enhance our shell environment
+source $HOME/sbin/path-functions.bash
 source $HOME/sbin/git-completion.bash
 source $HOME/sbin/git-prompt.sh
-source $CHANGE_DIR_SCRIPT
-source $COMMON_RC
-source $PRIVATE_RC
+source $HOME/sbin/change_dir.sh
+source $DEFAULT_RC_PATH/common_rc.sh
+source $DEFAULT_RC_PATH/vscode_env.bash
+source $PRIVATE_RC_PATH/private_rc.sh
 source $HOME/sbin/git-environment.bash		# should be after PRIVATE_RC so user settings can be applied
 
+################################################################################
 # 030m - Black
 # 031m - Red
 # 032m - Green
@@ -286,9 +275,11 @@ PS_CR="\r"			# Carriage return
 PS_ESC="\e"			# Escape character
 PS_BELL="\a"		# Bell character
 
+################################################################################
 # Display info
 export DISPLAY
 
+################################################################################
 # Uncomment the following to call the corresponding function prior to executing any command from the shell
 # function pre_command() {
 # 	# execute this prior to running any command
@@ -345,4 +336,4 @@ function set_prompt() {
 export PROMPT_COMMAND_PATH=$HOME/bin/prompt_command
 export PROMPT_COMMAND=set_prompt
 
-source $POST_RC
+source $PRIVATE_RC_PATH/post_rc.sh

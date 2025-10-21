@@ -99,14 +99,11 @@ function update_external_environment() {
 	fi
 }
 
-function souce_resouce_files() {
-	RESOURCE_FILES="$HOME/.private/aliases.sh:$HOME/.aliases:$GIT_ROOT/.rc/rc:$BLD_TARGET_SCRIPT"
-
-	# After we've updated any environment variables, we should source our resource files again to update any aliases
-	resource_files=$(echo $RESOURCE_FILES | tr ':' '\n')
-	for resource_file in $resource_files; do
-		source $resource_file
-	done
+function source_resource_files() {
+	source $HOME/.private/aliases.sh
+	source $HOME/.aliases
+	source $GIT_ROOT/.rc/rc
+	source $BLD_TARGET_SCRIPT
 }
 
 function _print_git_env() {
@@ -210,12 +207,12 @@ function update_git_environment() {
 
 	update_external_environment
 	[[ $(type -t initialize_git_repository) == function ]] && initialize_git_repository $GIT_RC_PATH $GIT_ROOT/.rc/rc
-	souce_resouce_files
+	source_resource_files
 
 	_print_git_env "POST"
 }
 
-# When this file is sourced, call the main funciton
+# When this file is sourced, call the main function
 update_git_environment
 update_external_environment
 
