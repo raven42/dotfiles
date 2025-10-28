@@ -7,14 +7,11 @@
 ################################################################################
 # vscode:
 # This will ensure we have the `code` program in our PATH. This allows opening remote files with `code <file>`
-VCF_INSTALL_PATH="/work/$USER/.vscode-vcf/.vscode-server/"
-BCP_INSTALL_PATH="$HOME/.vscode-server/"
-if [[ -d $VCF_INSTALL_PATH ]]; then
-	code_latest_version=$(dirname $(ls -tra -1 $(find $VCF_INSTALL_PATH -name code) | sed -n '2p'))
-elif [[ -d $BCP_INSTALL_PATH ]]; then
-	code_latest_version=$(dirname $(ls -tra -1 $(find $BCP_INSTALL_PATH -name code) | sed -n '2p'))
+VSCODE_INSTALL_PATH="$HOME/.vscode-server/"
+if [[ -d $VSCODE_INSTALL_PATH ]]; then
+	code_latest_version=$(dirname $(ls -tra -1 $(find $VSCODE_INSTALL_PATH -name code) | sed -n '2p'))
+	export PATH=${code_latest_version}:$PATH
 fi
-export PATH=${code_latest_version}:$PATH
 export NODE_OPTIONS="--max-old-space-size=16384"
 
 ################################################################################
