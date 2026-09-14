@@ -148,7 +148,7 @@ set showmatch				" ---- show matching brackets
 set ttyfast					" ---- smoother output
 set laststatus=2			" ---- Always show the status line
 set showtabline=2			" ---- Always show tabline, even if only one file open
-set updatetime=1000			" ---- Default updatetime=4000 to slow
+" set updatetime=1000			" ---- Default updatetime=4000 to slow
 set hidden					" ---- Don't close buffers when switching
 set splitbelow				" ---- Open all new splits below current window
 set cindent					" ---- Enabled C indenting
@@ -676,7 +676,7 @@ if v:version >= 800
 	" Tagbar Debug Options:
 	" Note: when using the logfile, don't VI the file or it will overwrite what is there
 	" let g:tagbar_ctags_bin = '/usr/bin/ctags' " XXX: To test with exhuberant ctags
-	" let g:tagbar_logfile = $HOME . '/tagbar.log'
+	let g:tagbar_logfile = $HOME . '/tagbar.log'
 	" let g:tagbar_no_autocmds = 1
 	" let g:tagbar_ignore_anonymous = 1
 	" let g:tagbar_width = max([25, winwidth(0) / 5])
@@ -722,7 +722,7 @@ if v:version >= 800
 	if $USE_DEVPANEL !=# ''
 		let g:use_devpanel = $USE_DEVPANEL
 	else
-		let g:use_devpanel = 0
+		let g:use_devpanel = 1
 	endif
 	if g:use_devpanel
 		let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc,*.sh'
