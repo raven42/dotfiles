@@ -63,104 +63,50 @@ githome submodule update
 ---
 
 ## Bash Configuration
-The [.bashrc](.bashrc) file is a generic resource file which defines some basics which should be compatible for any user. This script will reference the following user specific files.
-| File | Purpose |
+[.bashrc](.bashrc) is a small, generic loader. It defines a `source` wrapper (so every sourced file is
+tracked, for tooling that wants to answer "where did this come from"), a recursive loader that walks
+[.rc/](.rc/) in a fixed, numbered order, and the prompt-update machinery. All the actual environment setup —
+exports, aliases, functions — lives under `.rc/`, not in `.bashrc` itself.
+
+See [.rc/README.md](.rc/README.md) for the full description: how the loader orders things, the `xx-*` prefix
+that disables an entry without deleting it, and the layout this repo ships:
+
+| Path | Contents |
 | --- | --- |
-| .default/common_rc.sh | This file is included prior to any repository specific resource files. Use this for common definitions for a given site or department. This can include things like the `WORKSPACES`, `DEFAULT_GIT_SERVER`, `MODULEPATH`, etc. This is indended to be a shared common file for all users in a given group which provides any proporietary information which should not be included in a public repository like this one. |
-| .private/private_rc.sh | This file is included next and is intended to be a user specific setting. This will be a place for users to define any custom aliases or envirnoment variables. If can also be used to override anything set in the common_rc.sh script. |
-| .default/repo_rc.sh | This file is used as a template for any new repositories that use the `${GIT_REPO}` environment setup. This file is copied to `${GIT_REPO}/.rc/rc` for user generated repos |
-| ${GIT_ROOT}/.rc/rc | If the `${GIT_ROOT}` envinroment variable is set, this will look for and source any resource file located in this path. This can be used to specify repository specific aliases and environment setup. |
-| ${GIT_ROOT}/.rc/bld_target.sh | This file is used to define a specific platform to set for the current command shell. See **Build Target** discussion below |
-| .private/post_rc.sh | This file is included at the very end of the `.bashrc` file for any thing to be done at the end of the environment setup. This can be used to override any defaults that were defined in any previous file. |
+| `.rc/00-core/` | Generic bash environment: exports, path helpers, a `cd` replacement, generic aliases. |
+| `.rc/10-vendor/` | Vendored third-party scripts (git prompt/completion, a VS Code IPC helper). |
+| `.rc/templates/` | Reference-only starter files for building your own site-specific tier. Never loaded. |
+
+This repo intentionally ships only generic, site-agnostic content — no proprietary server names, internal git
+remotes, or company-specific shortcuts. If you also have a private/team config repo of your own (this
+author's is `raven42/binfiles` — see its README for the install steps), you add it as one or more numbered
+tiers **symlinked** into `.rc/`, e.g. `.rc/20-team -> ~/some-private-repo/rc/20-team`. Because the loader only
+cares about the `NN-*` naming convention and whether an entry is a file or directory — not where it physically
+lives — a symlinked tier loads exactly like `00-core`/`10-vendor` do, no changes needed here.
 
 ## Environment Variables
-There are a few environmental configuration options which can be toggled in a user private `.default/common_rc.sh` script.
-```bash
-#!/bin/bash
+The generic variables and toggles this repo defines live in [.rc/00-core/00-vars.sh](.rc/00-core/00-vars.sh)
+— things like:
 
-# Default resource file
-#
-# .default/common_rc.sh -	Set user specific environment options. This should include any aliases, environment path
-#							variables, and any other user specific environment options.
-#
-# This file is sourced in the .bashrc script after defaults have been initialized but before any processing of the env
-# variables or execution of supporting scripts This allows the user to override some defaults, or setup other parameters
-# prior to executing further env setup scripts. This can be used in conjunction with the .default/post_rc.sh script to
-# control and override environment default set in the .bashrc script on a per user basis in the event .bashrc is a common
-# file.
-#
-# The general order of loading resource scripts is as follows:
-#	.bashrc
-#		// setup any bash environment and other variables
-#		// initialize any common ENV vars (PATH / LD_RUN_PATH / etc)
-#		// determine env specific resource script based on GIT_REPO
-#		. .default/common_rc.sh		# load common_rc.sh script to set any user specific env variables
-#		. ${GIT_REPO}/.rc/rc		# load env specific resource script
-#		// process any ENV variables needed
-#		// setup prompt / title routines
-#		. .default/post_rc.sh		# load post_rc.sh script to override anything that was done so far
+- `USE_UNICODE` — enable unicode characters in the bash prompt/window title and in VIM's status/buffer lines.
+- `AUTOSAVE` — autosave setting for VIM.
+- `SHOW_TARGET_IN_PROMPT` — show the current `$BLD_TARGET` in the prompt (see **Build Target** below). When
+  set, the prompt looks like `$BLD_TARGET $GIT_REPO (<git-branch>) <directory>$`; when unset, just
+  `$GIT_REPO (<git-branch>) <directory>$`.
+- `SRC_PATH_PREFIX` — used by `.vimrc` to shorten path names in the window title, and by the `retag` script
+  when generating ctags for a repository. E.g. `SRC_PATH_PREFIX="common/path/to/src"` turns
+  `/<repo>/common/path/to/src/lib/` into `/<repo>/../lib/` in the title.
+- `UNIFIED_HISTORY` — when set, `history` is backed by a file shared across every session into a host instead
+  of each session's own in-memory history.
 
-# To disable unicode characters in VIM and bash prompts. There are unicode characters used for the terminal window title,
-# and in VIM, unicode characters are used in the status line, buffer line, and window title.
-export USE_UNICODE=1
-
-# Set autosave for option vim
-export AUTOSAVE=0
-
-# Setting this to 0 will not show the current $BLD_TARGET in the command prompt. By default the prompt will look like this:
-#   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$ 
-# Setting this to 0 will result in the following:
-#   $GIT_REPO (<git-branch>) <directory>$
-export SHOW_TARGET_IN_PROMPT=1
-
-# This env variable is used by the .vimrc to shorten path names for window title
-# Example: SRC_PATH_PREFIX="common/path/to/src" will result in truncating that
-# portion out of the window path title. So if for example you were in the path
-#     /<repo>/common/path/to/src/lib/
-# then the window title would show
-#     /<repo>/../lib/
-# This variable is also used by the retag script to generate ctags for a repository.
-export SRC_PATH_PREFIX="projects"
-
-# UNIFIED_HISTORY - This env var is used to determine if a unified history should be used between all sessions into a host.
-# This will enable the 'history' command to use a file instead of in memory history so the shell history is updated every
-# command across all sessions, not just the current session as is the default
-export UNIFIED_HISTORY=0
-
-# Setup source code path prefix based on GIT_ROOT, also setup TAGDIR which is used by VIM to look for any ctags
-if [ $GIT_ROOT ]; then
-	ROOT_PATH=${GIT_ROOT}
-	if [ -d ${GIT_ROOT}/.rc/tags ]; then
-		TAGDIR=${GIT_ROOT}/.rc/tags
-	else
-		TAGDIR=${HOME}/.default/tags
-	fi
-else
-	TAGDIR=${HOME}/.default/tags
-fi
-
-# TAG_PATH - The TAG_PATH variable defines a list of paths to parse for the retag script. This is
-# a whitespace delimited list of path definitions. Each path definition is a colon delimited list
-# consisting of <default>:<tag-file>:<path> with the following definitions:
-#     <default> - 0|1  if 0, then only process this path if the retag -a option is given
-#     <tag-file> - The filename to use for the output
-#     <path> - The path to start a recursive tag search in
-# This is all run from the ${GIT_ROOT}/${SRC_PATH_PREFIX} location. All paths should be
-# relative from that directory
-TAG_PATH="1:tags_src:src"
-TAG_PATH="$TAG_PATH 1:tags_inc:inc"
-export TAG_PATH
-
-# Set defaults needed for ~/sbin/git-repo script to work with our environment
-export WORKSPACES=${HOME}/work:${HOME}/projects
-export WORKSPACE_SEARCH_DEPTH=5
-export DEFAULT_GIT_SERVER=git@github.com
-```
+Site- or team-specific variables (`WORKSPACES`, `DEFAULT_GIT_SERVER`, `DEFAULT_GIT_REPO`, `TAGDIR`/`TAG_PATH`
+derivation from `GIT_ROOT`, etc.) are intentionally **not** defined here — they belong in whatever private
+tier you symlink in, as described above. See [.rc/templates/](.rc/templates/) for a starting point.
 
 ### GIT REPO Setup
 There is a script at `sbin/git-repo` which can be used to setup a new sub-shell environment to set repository specific environment variables and other such parameters. This script will set a few env variables and enter a new sub-shell with these variables defined and change directories to the root level of that repository. This script will use the `$WORKSPACES` environment variable to scan for valid git repositories matching the given name, or if no repository is specified, it will list all respositories.
 
-The `git-repo` script can also be used to clone a new repository if needed. To use this script properly, there are a few key environment variables which should be set in `.default/common_rc`. These variables are as follows:
+The `git-repo` script can also be used to clone a new repository if needed. To use this script properly, there are a few key environment variables which should be set in whatever private tier you've added (see **Environment Variables** above) — this repo doesn't define them itself. These variables are as follows:
 ```bash
 # WORKSPACES - This is a `:` delimited list of paths to search for repositories in. When used with the git-repo script, these paths
 # will be searched for any repo name specified on the command line
@@ -197,9 +143,7 @@ Multiple repositories found. Please specify which repository.
 /home/raven42/projects/ctags
 
 Please entry repository path: dotfiles
-Setting up GIT environment variables for dotfiles...
-  RC SPEC:/home/raven42/projects/dotfiles/.rc/rc
-  TAGDIR:/home/raven42/projects/dotfiles/.rc/tags
+Entering main repository .. [/home/raven42/projects/dotfiles dotfiles@raven42/dotfiles]
 dotfiles (master) dotfiles$ git status
 On branch master
 Your branch is up to date with 'origin/master'.
@@ -208,31 +152,44 @@ nothing to commit, working tree clean
 dotfiles (master) dotfiles$ exit
 exit
 dev-server ~$ git-repo dotfiles
-Setting up GIT environment variables for dotfiles...
-  RC SPEC:/home/raven42/projects/dotfiles/.rc/rc
-  TAGDIR:/home/raven42/projects/dotfiles/.rc/tags
+Entering main repository .. [/home/raven42/projects/dotfiles dotfiles@raven42/dotfiles]
 dotfiles (master) dotfiles$ exit
 exit
 dev-server ~$
 ```
 
+`Entering main repository ..` (and the matching `Leaving repository ..` on the way back out) come from
+[.rc/10-vendor/git-environment.sh](.rc/10-vendor/git-environment.sh), which also sets `$GIT_ROOT`/`$GIT_REPO`/
+`$GIT_PATH`/`$GIT_REMOTE` on every directory change, not just from `git-repo`. Set `$GIT_ENVIRONMENT_SILENT=1`
+to suppress these messages.
+
 ### Build Target
-The `${GIT_ROOT}/.rc/bld_target.sh` file is sourced after every command as part of the `PROMPT_COMMAND` function call. This can be used to set a current `$BLD_TARGET` environment variable which can be used for all future commands. This variable is also displayed on the bash prompt. This can be used to create common aliases / scripts using this environement variable. This build target can be modified using the following script.
+`$BLD_TARGET` is a per-shell "current build target" value, shown in the prompt when `$SHOW_TARGET_IN_PROMPT=1`
+(see **Environment Variables** above) and available for aliases/scripts to key off of, e.g.
+`alias cp-img='cp ${GIT_ROOT}/<build-path>/${BLD_TARGET}/<path-to-image> <dest-path>'`.
+
+It's read from a small resource file, sourced automatically on every prompt, whose location resolves in a
+tiered fallback: a per-repo `${GIT_ROOT}/.rc/bld_target.sh` override takes priority if present; otherwise a
+personal, non-per-repo file is used, checked in this order so the same tooling works whether or not a given
+machine has migrated to this `~/.rc/` layout: `~/.rc/prompt.d/bld_target.sh`, then the older
+`~/.private/bld_target.sh`, then the older still `~/bin/prompt_command/bld_target.sh`. (This fallback chain
+is implemented once, in `raven42/binfiles`' `bld_target_resolve.bash`, and shared by `mk`/`mkesm`/`bld-target`
+— see that repo for details.)
+
+View or set it with the `bld-target` script (or `mk -d <target>`):
+
 ```
 some_target <git-repo> (master) proj$ bld-target
-Current build target is BLD_TARGET=some_target
+Current build bld_target is BLD_TARGET=some_target
 some_target <git-repo> (master) proj$ bld-target another_target
-Set new default BLD_TARGET=another_target in [<git-repo>/.rc/bld_target.sh]
+Set new default BLD_TARGET=another_target in [~/.rc/prompt.d/bld_target.sh]
 another_target <git-repo> (master) proj$
 ```
 
-This file should contain as little as possible. Ideally only exporting the $BLD_TARGET environment variable.
+This file should contain as little as possible — ideally just exporting the `$BLD_TARGET` environment variable:
 ```bash
 export BLD_TARGET=<build-target>
 ```
-
-Example:
-`alias cp-img='cp ${GIT_ROOT}/<build-path>/${BLD_TARGET}/<path-to-image> <dest-path>'`
 
 ---
 
@@ -313,7 +270,7 @@ Host *.<trusted-network>
 > :warning: **Note:** Also special handling is needed when using visual mode selection. This is set to automatically copy to the system clipboard. If you select something using the mouse, and then while it is still selected use the scroll wheel to move the window down, additional content will be put in the clipboard other than just what was selected.
 
 ## Unicode Character Support
-While not strictly needed, the vim configuration can make use of unicode characters to make things look a little nicer. To make use of this, the `USE_UNICODE` environment variable needs to be set to `1` in your `.default/common_rc` or similar. You must also make sure to have a font installed that has unicode characters. All the examples in the vim usage and configuration are shown with unicode characters enabled.
+While not strictly needed, the vim configuration can make use of unicode characters to make things look a little nicer. This is controlled by the `USE_UNICODE` environment variable, set (and defaulted to `1`) in [.rc/00-core/00-vars.sh](.rc/00-core/00-vars.sh) — override it to `0` in a later-loading tier if you'd rather not use them. You must also make sure to have a font installed that has unicode characters. All the examples in the vim usage and configuration are shown with unicode characters enabled.
 
 To get unicode character support on different disrtibutions, the powerline package may need to be installed. It may also be advantagous to install the additional font packages listed here:
 
