@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 
 # This file provides some basic path manipulation functions to append / prepend to environment variables such as the
 # $PATH or $MANPATH environment variables.

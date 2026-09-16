@@ -2,282 +2,77 @@
 # .bashrc - Basic env setup and resource script file
 #
 
-alias dirs='dirs -v'
-alias githome='git --git-dir $HOME/.cfg --work-tree $HOME'
-alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
-alias rebash='source ~/.bashrc'
-alias scp="scp -oStrictHostKeyChecking=no"
-alias ssh="ssh -e  -oStrictHostKeyChecking=no"
-alias telnet="telnet -e ^B"
-alias vi="vim"
-
 ################################################################################
-# Setup our environment:
-export AUTOSAVE=0							# by default, don't autosave in vim
-export EDITOR=vim
-export HISTTIMEFORMAT='%m/%d/%Y-%T '
-export HISTCONTROL=ignoredups				# Don't save commands leading with a whitespace, or duplicated commands
-export HISTFILE=$HOME/.history-$HOSTNAME	# Specific history file per host
-export HISTIGNORE="pwd:ls:ls -al:ll:history:h:h[dh]:h [0-9]*:h[dh] [0-9]*"
-export HISTSIZE=5000
-export HISTFILESIZE=999999					# Enable huge history
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-export LD_LIBRARY_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib
-export LD_RUN_PATH=~/local/lib:/lib:/usr/lib:/usr/local/lib:~/local/lib
-export LYNX_CFG=~/.lynxrc
-export MAKEFLAGS=-s
-export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
-#export PATH=.:~/bin:~/sbin:~/bin/cron:~/.local/bin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
-export PATH=/bin:/usr/sbin:/usr/bin:/usr/local/bin:/cmd
-#export PYTHONPATH=~/.local/lib/python3.5/site-packages
-export PYTHONPATH=
-export SILENT_SOURCING=1
-export TAGDIR=$HOME/.ctags
-export TMOUT=0
-export TZ=/usr/share/zoneinfo/US/Central
-export USE_UNICODE_TITLE=0
-export VISUAL=vim
-export GITRC_ENVIRONMENT=1
-export GIT_PRIVATE_RC=$HOME/.private/repo_rc.sh
-export XDG_CACHE_HOME=/work/${USER}/.cache
-
-# To disable unicode characters in VIM and bash prompts. There are unicode characters used for the terminal window title,
-# and in VIM, unicode characters are used in the status line, buffer line, and window title.
-export USE_UNICODE=1
-
-# Set autosave option for vim
-export AUTOSAVE=0
-
-# Setting this to 0 will not show the current $BLD_TARGET in the command prompt. By default the prompt will look like this:
-#   $BLD_TARGET $GIT_REPO (<git-branch>) <directory>$
-# Setting this to 0 will result in the following:
-#   $GIT_REPO (<git-branch>) <directory>$
-export SHOW_TARGET_IN_PROMPT=1
-
-# UNIFIED_HISTORY - This env var is used to determine if a unified history should be used between all sessions into a host.
-# This will enable the 'history' command to use a file instead of in memory history so the shell history is updated every
-# command across all sessions, not just the current session as is the default
-export UNIFIED_HISTORY=0
-
-# If not an interactive shell, don't proceed any further (ex. SCP commands)
-# need to do at least basic PATH setup and other common env vars
-if [ -z "$PS1" ]; then
-	ECHO=:
-	SOURCE_ECHO=:
-else
-	ECHO='echo -e'
-	if [[ $SILENT_SOURCING == 1 ]]; then
-		SOURCE_ECHO=:
-	else
-		SOURCE_ECHO='echo -e'
-	fi
-fi
-
-shopt -s checkwinsize
-
-# Setup and refresh the XDG_CACHE_HOME directory if needed
-if [[ ! -d $XDG_CACHE_HOME ]]; then
-	if [[ ! -d $(dirname $XDG_CACHE_HOME) ]]; then
-		# Parent directory doesn't exist. Reset to $HOME
-		export XDG_CACHE_HOME=$HOME/.cache
-	else
-		mkdir $XDG_CACHE_HOME
-	fi
-fi
-
-################################################################################
-# initialize_git_repository()
-#
-# Params: GIT_RC_PATH - The path to the GIT_ROOT/.rc path controlled and sourced by git-environment.bash
-#
-# This function is called from within the git-environment.bash:update_git_environment() function after we've changed
-# directories and have updated the git environment variables. This will create the GIT_RC_PATH and GIT_TAGS_PATH
-# directories if needed. If there are no tag files found in the GIT_TAGS_PATH, then it will use the RETAG_SCRIPT
-# to start a background process generating the ctags files. If there is a NERDTREE_BOOKMARKS file and the default
-# one has been modified since the existing one, then it will generate a new bookmarks file based on the default.
-#
-function initialize_git_repository() {
-
-	if [[ $GITRC_ENVIRONMENT == 0 ]]; then
-		return
-	fi
-
-	# If we are not in a git repository, just ignore this
-	if [[ -z "$GIT_REPO" ]]; then
-		export __CACHED_GIT_ROOT=''
-		return
-	fi
-	GIT_RC_PATH=$1
-	GIT_RC=$2
-	$ECHO "Initializing GIT RC environment .. [$GIT_RC_PATH]"
-
-	GIT_TAGS_PATH=$GIT_RC_PATH/tags
-	NERDTREE_BOOKMARKS=$GIT_RC_PATH/NERDTreeBookmarks
-
-	if [[ "$__CACHED_GIT_ROOT" != "$GIT_ROOT" ]]; then
-		export __CACHED_GIT_ROOT=$GIT_ROOT
-
-		if [ ! -d $GIT_ROOT ]; then
-
-			$ECHO "GIT_ROOT:$GIT_ROOT not found - Ignoring any initial setup."
-
-		elif [[ $GIT_ROOT =~ $USER ]]; then
-
-			# If not in a $USER path, then don't attempt to create any resource files
-
-			# Setup some GIT repository defaults
-			$SOURCE_ECHO "init git .. [$GIT_REPO:$GIT_RC_PATH]"
-
-			if [ ! -d $GIT_RC_PATH -a -w $GIT_ROOT ]; then
-				$ECHO -n "Creating repo rc directory at $GIT_RC_PATH .."
-				mkdir $GIT_RC_PATH
-				$ECHO " done."
-			fi
-			if [ ! -d $GIT_TAGS_PATH -a -w $GIT_RC_PATH ]; then
-				$ECHO -n "Creating ctags output directory at $GIT_TAGS_PATH .."
-				mkdir $GIT_TAGS_PATH
-				$ECHO " done."
-			fi
-
-			# If needed, copy the GIT_RC from the .private location to the GIT_RC path
-			if [ ! -f ${GIT_RC} -a -w ${GIT_RC_PATH} -a -f ${GIT_PRIVATE_RC} ]; then
-				$ECHO -n "rc spec not found. Generating defaults at ${GIT_RC} from ${GIT_PRIVATE_RC} .."
-				cp ${GIT_PRIVATE_RC} ${GIT_RC}
-				$ECHO " done."
-			fi
-
-			# Look for REPO specific NERDTree File and if not exists, then generate it
-			if [[ -f $NERDTREE_GEN_SCRIPT && -f $NERDTREE_DEF_BOOKMARKS ]]; then
-				if [[ -f $NERDTREE_BOOKMARKS && $NERDTREE_DEF_BOOKMARKS -nt $NERDTREE_BOOKMARKS ]]; then
-					$ECHO -n "NERDTree Bookmarks out of date. Generating new file .."
-					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
-					$ECHO " done."
-				elif [[ ! -f $NERDTREE_BOOKMARKS ]]; then
-					$ECHO -n "Generating NERDTree Bookmarks file .."
-					$NERDTREE_GEN_SCRIPT -q -i $NERDTREE_DEF_BOOKMARKS -o $NERDTREE_BOOKMARKS
-					$ECHO " done."
-				fi
-			fi
-
-			# Look for TAG files and if none are found, generate new ones
-			if [ ! "$(ls -A $GIT_TAGS_PATH)" ]; then
-				$ECHO -n "No TAGFILES found. Generating new tags in the background at $GIT_TAGS_PATH .."
-				nohup $RETAG_SCRIPT -a --dir $GIT_TAGS_PATH 2>&1 1> $HOME/var/log/retag_$GIT_REPO.log &
-				$ECHO " done."
-			fi
-		fi
-	fi
-}
+# $ECHO is real echo for interactive shells, a no-op otherwise. Used elsewhere for status messages (e.g.
+# git-environment.sh's "Entering repository .." lines).
+[[ -n $PS1 ]] && ECHO='echo -e' || ECHO=:
 
 ################################################################################
 # source()
 # Params: <file> - File to be sourced
 #
-# This function will help provide a consisten means to source any resource files overriding the default built-in
+# Consistent way to source resource files, overriding the built-in. Set SILENT_SOURCING=0 to log every file
+# sourced (interactive shells only). Also records every file into __sourced_files, which _which()
+# (20-team/10-env.sh) greps to show where an alias/function came from.
+export SILENT_SOURCING=1
+declare -a __sourced_files=()
+__source_depth=0
 function source() {
 	# echo "$FUNCNAME(argc:$# argv:$@)"
 	file=$1
+	local verbose; [[ -n $PS1 && $SILENT_SOURCING != 1 ]] && verbose=1
 	if [[ ! -z "$file" && -f $file ]]; then
-		$SOURCE_ECHO "sourcing .. [$file]"
+		__sourced_files+=("$file")
+		(( __source_depth += 2))
+		[[ $verbose ]] && printf '%*ssource .. %s\n' $__source_depth "" $file
 		. $file
+		(( __source_depth -= 2))
 	elif [[ ! -z "$file" ]]; then
-		$SOURCE_ECHO "File [$file] not found."
+		[[ $verbose ]] && echo -e "File [$file] not found."
 	fi
 }
 
 ################################################################################
-# External resource / script files
-DEFAULT_RC_PATH=${HOME}/.default
-PRIVATE_RC_PATH=${HOME}/.private
-DIRCOLORS=${HOME}/.dircolors
-NERDTREE_DEF_BOOKMARKS=${PRIVATE_RC_PATH}/NERDTreeDefaultBookmarks
-NERDTREE_GEN_SCRIPT=${HOME}/sbin/gen_nerdtree_bookmarks.py
-RETAG_SCRIPT=${HOME}/sbin/retag.sh
+# Loads ~/.rc recursively: within any directory, numbered 00-89 entries load first (numeric order), then
+# unnumbered files, then numbered 90-99 entries last. A numbered entry that's a directory (00-core, 10-vendor,
+# 20-team, 30-user, 90-post, ...) recurses with the same rule, so a tier's own files are ordered the same way
+# the tiers themselves are. An unnumbered directory (e.g. templates/) is never recursed into or sourced --
+# only unnumbered files are. $HOME/.rc is hardcoded below rather than $RC_PATH since $RC_PATH is defined by
+# one of the files this loads.
+function __rc_load_entry() {
+	if [[ -d "$1" ]]; then
+		__rc_load "$1"
+	elif [[ -f "$1" ]]; then
+		# readlink -f resolves symlinks first: a symlink named without a .sh/.bash suffix of its own (but
+		# pointing at a real script) would otherwise be silently skipped, even though -f above already
+		# confirmed it resolves to a regular file. A no-op for non-symlinks.
+		case "$(readlink -f -- "$1")" in
+			*.sh | *.bash) source "$1" ;;
+		esac
+	fi
+}
 
-################################################################################
-# colors for ls, etc.  Prefer ~/.dir_colors #64489
-if ! shopt -q login_shell ; then # We're not a login shell
-	for i in /etc/profile.d/*.sh; do
-		if [ -r "$i" ]; then
-			. $i
-		fi
+function __rc_load() {
+	local dir="$1" entry
+
+	for entry in "$dir"/[0-8][0-9]-*; do
+		__rc_load_entry "$entry"
 	done
-	unset i
-
-	for i in ${HOME}/bin/completions/*.bash; do
-		if [ -r "$i" ]; then
-			. $i
-		fi
+	for entry in "$dir"/*.{sh,bash}; do
+		[[ -f "$entry" ]] || continue
+		case "$(basename "$entry")" in
+			[0-9][0-9]-*) continue ;;
+			xx-*) continue ;;
+		esac
+		__rc_load_entry "$entry"
 	done
-	unset i
-fi
+	for entry in "$dir"/9[0-9]-*; do
+		__rc_load_entry "$entry"
+	done
+}
 
-if [[ -f ${DIRCOLORS} ]]; then
-	eval `dircolors -b ${DIRCOLORS}`
-elif [[ -f /etc/DIR_COLORS ]]; then
-	eval `dircolors -b /etc/DIR_COLORS`
-fi
-
-################################################################################
-# Source various other bash resource scripts to enhance our shell environment
-source $HOME/sbin/path-functions.bash
-source $HOME/sbin/git-completion.bash
-source $HOME/sbin/git-prompt.sh
-source $HOME/sbin/change_dir.sh
-source $HOME/sbin/vscode_env.bash
-source $DEFAULT_RC_PATH/common_rc.sh
-source $PRIVATE_RC_PATH/private_rc.sh
-source $HOME/sbin/git-environment.bash		# should be after PRIVATE_RC so user settings can be applied
-
-################################################################################
-# 030m - Black
-# 031m - Red
-# 032m - Green
-# 033m - Yellow
-# 034m - Blue
-# 035m - Purple
-# 036m - Cyan
-# 037m - White
-# 0m   - Reset
-
-FG_BLACK="\[\033[0;30m\]"
-FG_RED="\[\033[0;31m\]"
-FG_GREEN="\[\033[0;32m\]"
-FG_YELLOW="\[\033[0;33m\]"
-FG_BLUE="\[\033[0;34m\]"
-FG_MAGENTA="\[\033[0;35m\]"
-FG_CYAN="\[\033[0;36m\]"
-FG_WHITE="\[\033[0;37m\]"
-FG_RESET="\[\033[0;0m\]"
-
-FG_PINK="\[\033[38;5;212m\]"
-FG_ORANGE="\[\033[38;5;202m\]"
-
-PS_DATE="\d"		# Date in "Tue May 26" format
-PS_HOST="\h"		# Hostname to first '.'
-PS_FULLHOST="\h"	# Full hostname
-PS_JOBS="\j"		# Number of jobs currently managed by shell
-PS_DEVNAME="\l"		# basename of the shell's terminal device name
-PS_SHELL="\s"		# name of the shell
-PS_24TIME="\t"		# Time in 24 hour HH:MM:SS format
-PS_12TIME="\T"		# Time in 12 hour HH:MM:SS format
-PS_TIME="\@"		# Time in am/pm format
-PS_USER="\u"		# Username
-PS_CWD="\w"			# Current working directory
-PS_DIR="\W"			# Basename of current working directory
-PS_HIST="\!"		# History number of this command
-PS_CMDNUM="\#"		# Command number of this command
-PS_SYMB="\$"		# If you are root '#', else '$'
-PS_NL="\n"			# Newline character
-PS_CR="\r"			# Carriage return
-PS_ESC="\e"			# Escape character
-PS_BELL="\a"		# Bell character
-
-################################################################################
-# Display info
-export DISPLAY
+__rc_load "$HOME/.rc"
+__source_depth=0
 
 ################################################################################
 # Uncomment the following to call the corresponding function prior to executing any command from the shell
@@ -316,7 +111,7 @@ function set_prompt() {
 	fi
 
 	if [ -d $PROMPT_COMMAND_PATH ]; then
-		for i in ${PROMPT_COMMAND_PATH}/*.sh; do
+		for i in ${PROMPT_COMMAND_PATH}/*.{sh,bash}; do
 			if [ -r "$i" ]; then
 				. $i
 			fi
@@ -328,12 +123,8 @@ function set_prompt() {
 	format_title
 }
 
-# The PROMPT_COMMAND_PATH directory is used to keep any files that should be
-# sourced during the execution of PROMPT_COMAMND. This allows for updating env
-# variables on each command if needed, or adjusting the information displayed
-# in the prompt. To add a resource script to the prompt command path, just put
-# the <file>.sh script in this directory
-export PROMPT_COMMAND_PATH=$HOME/bin/prompt_command
+# PROMPT_COMMAND_PATH (exported by ~/.rc/00-core/00-vars.sh, points at ~/.rc/prompt.d) holds files that should
+# be sourced during the execution of PROMPT_COMMAND. This allows for updating env variables on each command if
+# needed, or adjusting the information displayed in the prompt. To add a resource script to the prompt
+# command path, just put the <file>.sh script in that directory.
 export PROMPT_COMMAND=set_prompt
-
-source $PRIVATE_RC_PATH/post_rc.sh

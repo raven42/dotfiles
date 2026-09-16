@@ -23,7 +23,7 @@ export NODE_OPTIONS="--max-old-space-size=16384"
 #
 # This is relatively expensive since it invokes `code --status` (spawns Node) once per candidate socket found in
 # /run/user/$(id -u)/, so it should not be called unconditionally on every prompt. Pass -q to suppress output, which
-# is used by the automatic PROMPT_COMMAND check in ~/bin/prompt_command/vscode_ipc_check.sh.
+# is used by the automatic PROMPT_COMMAND check in $PROMPT_COMMAND_PATH/30-vscode-ipc-check.sh.
 function refresh_vscode_ipc() {
 	local quiet=0
 	if [[ "$1" == "-q" ]]; then

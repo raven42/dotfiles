@@ -1,5 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+################################################################################
+# change_dir()
+#
+# A `cd` replacement that maintains a directory stack (via pushd/popd), supports `cd -N` to jump to the Nth
+# stack entry, and `cd --` to list the stack. Calls `update_git_environment` after every directory change if
+# that function is defined in the shell (see 10-vendor/git-environment.sh).
 function change_dir()
 {
 	local stack_dir new_dir idx_dir idx

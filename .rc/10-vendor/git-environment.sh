@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Copyright (c) 2023 David Hegland <david.hegland@broadcom.com>
 #
@@ -37,48 +37,7 @@
 export GIT_ENVIRONMENT_DEBUG=0
 export GIT_ENVIRONMENT_INTEGRATION=1
 
-# 030m - Black
-# 031m - Red
-# 032m - Green
-# 033m - Yellow
-# 034m - Blue
-# 035m - Purple
-# 036m - Cyan
-# 037m - White
-# 0m   - Reset
-
-FG_BLACK="\[\033[0;30m\]"
-FG_RED="\[\033[0;31m\]"
-FG_GREEN="\[\033[0;32m\]"
-FG_YELLOW="\[\033[0;33m\]"
-FG_BLUE="\[\033[0;34m\]"
-FG_MAGENTA="\[\033[0;35m\]"
-FG_CYAN="\[\033[0;36m\]"
-FG_WHITE="\[\033[0;37m\]"
-FG_RESET="\[\033[0;0m\]"
-
-FG_PINK="\[\033[38;5;212m\]"
-FG_ORANGE="\[\033[38;5;202m\]"
-
-PS_DATE="\d"		# Date in "Tue May 26" format
-PS_HOST="\h"		# Hostname to first '.'
-PS_FULLHOST="\h"	# Full hostname
-PS_JOBS="\j"		# Number of jobs currently managed by shell
-PS_DEVNAME="\l"		# basename of the shell's terminal device name
-PS_SHELL="\s"		# name of the shell
-PS_24TIME="\t"		# Time in 24 hour HH:MM:SS format
-PS_12TIME="\T"		# Time in 12 hour HH:MM:SS format
-PS_TIME="\@"		# Time in am/pm format
-PS_USER="\u"		# Username
-PS_CWD="\w"			# Current working directory
-PS_DIR="\W"			# Basename of current working directory
-PS_HIST="\!"		# History number of this command
-PS_CMDNUM="\#"		# Command number of this command
-PS_SYMB="\$"		# If you are root '#', else '$'
-PS_NL="\n"			# Newline character
-PS_CR="\r"			# Carriage return
-PS_ESC="\e"			# Escape character
-PS_BELL="\a"		# Bell character
+# FG_*/PS_* color and prompt-escape constants now live in 00-core/00-vars.sh, which loads before this file.
 
 if [ -z "$PS1" ]; then
 	ECHO=:
@@ -87,24 +46,6 @@ elif [[ "$GIT_ENVIRONMENT_SILENT" == "1" ]]; then
 else
 	ECHO='echo -e'
 fi
-
-function update_external_environment() {
-	# Other environment variable settings
-	export GIT_RC_PATH="$GIT_ROOT/.rc"
-
-	if [[ $GITRC_ENVIRONMENT == 1 && ! -z "$GIT_REPO" ]]; then
-		export BLD_TARGET_SCRIPT=$GIT_RC_PATH/bld_target.sh
-	else
-		export BLD_TARGET_SCRIPT=$PRIVATE_RC_PATH/bld_target.sh
-	fi
-}
-
-function source_resource_files() {
-	source $HOME/.private/aliases.sh
-	source $HOME/.aliases
-	source $GIT_ROOT/.rc/rc
-	source $BLD_TARGET_SCRIPT
-}
 
 function _print_git_env() {
 	if [[ $GIT_ENVIRONMENT_DEBUG > 0 ]]; then
@@ -118,7 +59,6 @@ function _print_git_env() {
 		echo "  GIT_REMOTE:$GIT_REMOTE"
 		echo "  GIT_SUPERPROJECT:$GIT_SUPERPROJECT"
 		echo "  GIT_WORK_TREE:$GIT_WORK_TREE"
-		echo "  BLD_TARGET_SCRIPT:$BLD_TARGET_SCRIPT"
 		echo "  BLD_TARGET:$BLD_TARGET"
 		echo ""
 	fi
@@ -205,15 +145,15 @@ function update_git_environment() {
 		return
 	fi
 
-	update_external_environment
-	[[ $(type -t initialize_git_repository) == function ]] && initialize_git_repository $GIT_RC_PATH $GIT_ROOT/.rc/rc
-	source_resource_files
+	# GIT_ROOT-dependent vars (FABOS_ROOT, PYUNITI_ROOT, TAGDIR, TAG_PATH, etc. in 20-team/00-vars.sh) need
+	# recomputing whenever GIT_ROOT changes. Aliases don't: they're single-quoted and resolve $GIT_ROOT-derived
+	# variables lazily at invocation time, so they never go stale and never need re-sourcing here.
+	[[ -f $HOME/.rc/20-team/00-vars.sh ]] && source $HOME/.rc/20-team/00-vars.sh
 
 	_print_git_env "POST"
 }
 
 # When this file is sourced, call the main function
 update_git_environment
-update_external_environment
 
 _print_git_env "INIT-DONE"

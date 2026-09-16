@@ -1,0 +1,38 @@
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+.*.sw[a-z]
+vobs/projects/springboard/fos_linux/linux-yocto/SWBD*
+vobs/projects/springboard/dist/bsnfosbuild
+crave.conf
+crave_logs/
+cli_to_rest_mapping.tar.gz
+coverity/.coverity_validated
+_full_cov_output*
+*.code-workspace
+.vscode/
+run-as-me.sh
+.cfg
+.cache/
+compile_commands.json
+node_modules
+# *.asan/
+*.orig
+*.rej
+__pycache__/
+**/.claude/settings.local.json
+
+# raven42/binfiles (private) owns everything under ~/bin, wherever it physically lives (rc/, private/, and
+# the flat work-tier scripts alike) -- this repo must never track any of it.
+/bin/
+# ~/.rc/20-team, 30-user, and prompt.d are symlinks into ~/bin/rc/... (see the dotfiles reorg plan). /bin/
+# above already covers their real content; these cover the symlinks themselves, which live directly under
+# $HOME outside of ~/bin. No trailing slash: git doesn't treat a symlink-to-a-directory as a directory for
+# gitignore matching purposes, so a trailing-slash pattern silently fails to match it.
+# /.rc/20-team
+# /.rc/30-user
+# /.rc/prompt.d
+
