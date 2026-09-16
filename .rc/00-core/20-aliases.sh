@@ -12,7 +12,11 @@ function _dita_to_html() {
 # Core aliases
 alias dirs='dirs -v'
 alias githome='git --git-dir $HOME/.cfg --work-tree $HOME'
-alias ls="ls -F -T 0 --color=auto"	# Add class indicator, spaces instead of tabs
+if [[ $OSTYPE == darwin* ]]; then
+	alias ls='ls -FG'             # BSD ls: class indicators and native colors
+else
+	alias ls='ls -F -T 0 --color=auto'
+fi
 alias rebash='source ~/.bashrc'
 alias scp="scp -oStrictHostKeyChecking=no"
 alias ssh="ssh -e  -oStrictHostKeyChecking=no"

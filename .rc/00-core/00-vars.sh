@@ -27,6 +27,7 @@ export LYNX_CFG=~/.lynxrc
 export MAKEFLAGS=-s
 export MANPATH=~/local/man:/usr/man:/usr/local/man:/usr/share/man
 export PATH=/bin:/usr/sbin:/usr/bin:/usr/local/bin:/cmd
+export PROMPT_PREFIX=
 export PYTHONPATH=
 export TAGDIR=$HOME/.ctags
 export TMOUT=0

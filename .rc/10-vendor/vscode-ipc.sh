@@ -7,11 +7,36 @@
 ################################################################################
 # vscode:
 # This will ensure we have the `code` program in our PATH. This allows opening remote files with `code <file>`
-VSCODE_INSTALL_PATH="$HOME/.vscode-server/"
-if [[ -d $VSCODE_INSTALL_PATH ]]; then
-	code_latest_version=$(dirname $(ls -tra -1 $(find $VSCODE_INSTALL_PATH -name code) | sed -n '2p'))
-	export PATH=${code_latest_version}:$PATH
-fi
+# Keep the CLI supplied by an existing terminal/Remote SSH session.
+# Otherwise find the desktop macOS CLI or the newest installed remote CLI.
+VSCODE_INSTALL_PATH="${VSCODE_INSTALL_PATH:-$HOME/.vscode-server}"
+__vscode_setup_path() {
+	command -v code >/dev/null 2>&1 && return 0
+	local candidate latest=
+	if [[ $OSTYPE == darwin* ]]; then
+		for candidate in "$HOME/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" \
+			"/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; do
+			if [[ -x $candidate ]]; then
+				export PATH="${candidate%/*}:$PATH"
+				return 0
+			fi
+		done
+	fi
+	if [[ -d $VSCODE_INSTALL_PATH ]]; then
+		while IFS= read -r -d '' candidate; do
+			[[ -x $candidate ]] || continue
+			if [[ -z $latest || $candidate -nt $latest ]]; then
+				latest=$candidate
+			fi
+		done < <(find "$VSCODE_INSTALL_PATH" -type f -path '*/bin/*' -name code -print0 2>/dev/null)
+		if [[ -n $latest ]]; then
+			export PATH="${latest%/*}:$PATH"
+		fi
+	fi
+	return 0
+}
+__vscode_setup_path
+unset -f __vscode_setup_path
 export NODE_OPTIONS="--max-old-space-size=16384"
 
 ################################################################################

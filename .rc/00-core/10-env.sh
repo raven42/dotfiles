@@ -31,11 +31,21 @@ if ! shopt -q login_shell ; then # We're not a login shell
 fi
 
 DIRCOLORS=${HOME}/.dircolors
-if [[ -f ${DIRCOLORS} ]]; then
-	eval `dircolors -b ${DIRCOLORS}`
-elif [[ -f /etc/DIR_COLORS ]]; then
-	eval `dircolors -b /etc/DIR_COLORS`
+# GNU coreutils may expose this as gdircolors on macOS. BSD ls needs neither.
+_dircolors_command=
+if command -v dircolors >/dev/null 2>&1; then
+	_dircolors_command=dircolors
+elif command -v gdircolors >/dev/null 2>&1; then
+	_dircolors_command=gdircolors
 fi
+if [[ -n $_dircolors_command ]]; then
+	if [[ -f $DIRCOLORS ]]; then
+		eval "$("$_dircolors_command" -b "$DIRCOLORS")"
+	elif [[ -f /etc/DIR_COLORS ]]; then
+		eval "$("$_dircolors_command" -b /etc/DIR_COLORS)"
+	fi
+fi
+unset _dircolors_command
 
 ################################################################################
 # Display info
