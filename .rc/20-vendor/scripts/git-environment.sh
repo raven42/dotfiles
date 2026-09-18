@@ -33,20 +33,6 @@
 #		 to how git normally manages this.
 #
 
-# These files need to be sourced again when we change a directory incase any aliases have changed.
-export GIT_ENVIRONMENT_DEBUG=0
-export GIT_ENVIRONMENT_INTEGRATION=1
-
-# FG_*/PS_* color and prompt-escape constants now live in 00-core/00-vars.sh, which loads before this file.
-
-if [ -z "$PS1" ]; then
-	ECHO=:
-elif [[ "$GIT_ENVIRONMENT_SILENT" == "1" ]]; then
-	ECHO=:
-else
-	ECHO='echo -e'
-fi
-
 function _print_git_env() {
 	if [[ $GIT_ENVIRONMENT_DEBUG > 0 ]]; then
 		state=$1
@@ -72,7 +58,7 @@ function git_title_format() {
 	else
 		GIT_TITLE_INFO="$USER"
 	fi
-	printf -- "$GIT_TITLE_INFO"
+	printf '%b' "$GIT_TITLE_INFO"
 }
 
 function git_prompt_format() {
@@ -83,10 +69,13 @@ function git_prompt_format() {
 	else
 		GIT_PS_INFO="${FG_GREEN}${PS_HOST}${FG_YELLOW}${FG_MAGENTA}\$(__git_ps1)${FG_RESET}"
 	fi
-	printf -- "$GIT_PS_INFO"
+	printf '%s' "$GIT_PS_INFO"
 }
 
 function update_git_environment() {
+	local ECHO=$ECHO
+	local previous_git_root=${GIT_ROOT:-}
+	[[ $GIT_ENVIRONMENT_SILENT != 1 ]] || ECHO=:
 	_print_git_env "PRE"
 	# Save off the current $GIT_DIR so it can be checked later. We need to `unset` it to avoid git using
 	# the cached value and force it to recompute the rev-parse so we can properly determine if the directory
@@ -95,33 +84,33 @@ function update_git_environment() {
 
 	# Recalculate the git_toplevel and git_superproject
 	git_toplevel=$(git rev-parse --show-toplevel 2>/dev/null)
-	git_repository=$(basename $git_toplevel 2>/dev/null)
+	git_repository=$(basename "$git_toplevel" 2>/dev/null)
 	git_superproject=$(git rev-parse --show-superproject-working-tree 2>/dev/null)
 	git_remote=$(git config --get remote.origin.url 2>/dev/null)
 
 	_print_git_env "PRE-CHECK"
 
-	if [[ -z "$git_superproject" && ! -z "$git_toplevel" && "$git_repository" != "$GIT_REPO" ]]; then
+	if [[ -z "$git_superproject" && ! -z "$git_toplevel" && "$git_toplevel" != "${GIT_PATH:+$GIT_PATH/}$GIT_REPO" ]]; then
 		# We have entered a directory that is not a submodule and is different than our previous GIT_ROOT
 		export GIT_ROOT=$git_toplevel
-		export GIT_REPO=$(basename $GIT_ROOT)
-		export GIT_PATH=$(dirname $GIT_ROOT)
+		export GIT_REPO=$(basename "$GIT_ROOT")
+		export GIT_PATH=$(dirname "$GIT_ROOT")
 		export GIT_REMOTE=$(echo $git_remote | sed -e 's|.*:||' -e 's|\.git||')
 		unset GIT_SUPERPROJECT
 		$ECHO "Entering main repository .. [$GIT_ROOT $GIT_REPO@$GIT_REMOTE]"
 	elif [[ ! -z "$git_superproject" && "$git_superproject" != "$GIT_SUPERPROJECT" ]]; then
 		# We have entered a direcotry that is a submodule, and has a different superproject
 		export GIT_ROOT=$git_superproject
-		export GIT_REPO=$(basename $git_toplevel)
-		export GIT_PATH=$(dirname $git_toplevel)
+		export GIT_REPO=$(basename "$git_toplevel")
+		export GIT_PATH=$(dirname "$git_toplevel")
 		export GIT_REMOTE=$(echo $git_remote | sed -e 's|.*:||' -e 's|\.git||')
 		export GIT_SUPERPROJECT=$GIT_ROOT
 		$ECHO "Entering sub-module repository .. [$GIT_ROOT $GIT_REPO@$GIT_REMOTE]"
-	elif [[ ! -z "$git_superproject" && "$git_repository" != "$GIT_REPO" ]]; then
+	elif [[ ! -z "$git_superproject" && "$git_toplevel" != "${GIT_PATH:+$GIT_PATH/}$GIT_REPO" ]]; then
 		# We have entered a direcotry that is a submodule, and has a different superproject
 		export GIT_ROOT=$git_superproject
-		export GIT_REPO=$(basename $git_toplevel)
-		export GIT_PATH=$(dirname $git_toplevel)
+		export GIT_REPO=$(basename "$git_toplevel")
+		export GIT_PATH=$(dirname "$git_toplevel")
 		export GIT_REMOTE=$(echo $git_remote | sed -e 's|.*:||' -e 's|\.git||')
 		export GIT_SUPERPROJECT=$GIT_ROOT
 		$ECHO "Entering sub-module repository .. [$GIT_ROOT $GIT_REPO@$GIT_REMOTE]"
@@ -129,7 +118,7 @@ function update_git_environment() {
 	# 	# We have entered the main githome repository
 	# 	export GIT_ROOT=$HOME
 	# 	export GIT_REPO="githome"
-	# 	export GIT_PATH=$(dirname $GIT_ROOT)
+	# 	export GIT_PATH=$(dirname "$GIT_ROOT")
 	# 	export GIT_WORK_TREE=$HOME
 	# 	$ECHO "Entering githome repository .. [$GIT_ROOT $GIT_REPO@$GIT_REMOTE]"
 	elif [[ -z "$git_toplevel" && ! -z "$GIT_ROOT" ]]; then
@@ -145,15 +134,10 @@ function update_git_environment() {
 		return
 	fi
 
-	# GIT_ROOT-dependent vars (FABOS_ROOT, PYUNITI_ROOT, TAGDIR, TAG_PATH, etc. in 20-team/00-vars.sh) need
-	# recomputing whenever GIT_ROOT changes. Aliases don't: they're single-quoted and resolve $GIT_ROOT-derived
-	# variables lazily at invocation time, so they never go stale and never need re-sourcing here.
-	[[ -f $HOME/.rc/20-team/00-vars.sh ]] && source $HOME/.rc/20-team/00-vars.sh
+	# Notify listeners after the new Git context has been exported.
+	if [[ ${__RC_LOADING:-0} != 1 ]]; then
+		rc_emit git_environment_changed "$previous_git_root" "${GIT_ROOT:-}" || :
+	fi
 
 	_print_git_env "POST"
 }
-
-# When this file is sourced, call the main function
-update_git_environment
-
-_print_git_env "INIT-DONE"

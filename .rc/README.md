@@ -1,103 +1,89 @@
-# ~/.rc — Shell Environment Layout
+# Shell configuration
 
-`~/.rc/` holds this shell setup's environment configuration, organized into numbered directories ("trust
-tiers") that `.bashrc` loads automatically and in a predictable order. This file describes the generic
-mechanism that ships in this public repo; see "Site-specific tiers" below for how a team or individual adds
-their own configuration without it ever needing to live here.
+`.bashrc` loads numbered tier directories under `~/.rc` in order. The standard
+layout is `00-core`, `10-profile`, `20-vendor`, `30-team`, `40-user`.
+The private tiers are optional symlinks selected by `~/bin/.rc/setup-rc home|work`.
+Core defaults support loading without a profile; team settings load only at work.
 
-## Quick Start
+Each tier uses:
 
-This environment loads resource files in a tiered approach following this rough load order.
-
-```text
-. .bashrc
-  .rc/00-core/
-      . 00-vars.sh
-      . 05-path-func.sh
-      . 10-env.sh
-      . 20-aliases.sh
-      . 50-change-dir.sh
-  .rc/10-vendor/
-      . git-completion.bash
-      . git-environment.sh
-      . git-prompt.sh
-      . vscode-ipc.sh
-  .rc/20-team/              // if present
-      . // load team/site specific resource files
-  .rc/30-user/              // if present
-      . // load user specific resource files
-  .rc/<other-non-tiered-files>
-  .rc/90-post/
-      . // load any post resource files at the end
-```
-
-## How loading works
-
-`.bashrc` calls a small recursive loader (`__rc_load`) once, at shell startup, against `~/.rc` itself. Within
-any directory it processes, entries load in this order:
-
-1. Numbered entries `00` through `89`, in numeric order. A numbered entry that's a directory recurses with
-   the same rule (so a tier's own files are ordered the same way the tiers themselves are); a numbered entry
-   that's a `.sh`/`.bash` file just sources.
-2. Unnumbered files, in alphabetical order.
-3. Numbered entries `90` through `99`, last — reserved for anything that needs to run after everything else
-   (an override/cleanup band).
-
-An **unnumbered directory** is never recursed into or sourced — only unnumbered *files* are. This is what
-lets a directory like `templates/` sit at the top level purely as reference material, safe from ever being
-loaded by accident.
-
-An entry prefixed with `xx-` is always skipped, regardless of what (if anything) follows it — a way to
-disable something without deleting it (e.g. rename `20-something.sh` to `xx-20-something.sh`).
-
-## Layout shipped in this repo
-
-| Path | Contents |
+| File | Responsibility |
 | --- | --- |
-| `00-core/` | Generic bash environment: exports, path helpers, a `cd` replacement, generic aliases. Safe for anyone. |
-| `10-vendor/` | Vendored third-party scripts, kept under their own upstream names, not the file-kind convention. |
-| `templates/` | Reference-only starter files for adding your own site-specific tiers. Never loaded. |
+| `00-vars.sh` | Re-sourceable defaults and derived/exported variables |
+| `10-func.sh` | Helper function definitions |
+| `20-env.sh` | PATH changes and one-time initialization |
+| `50-aliases.sh` | Aliases/command-like functions, with local `$CD` detection |
+| `90-post.sh` | Final startup overrides |
 
-The gaps in the numbering (`05`, `15`, ..., `40`-`89`) are intentional room to insert something later without
-renumbering anything else.
+Within a directory, numbered `00`–`89` entries load first, unnumbered shell files
+next, and `90`–`99` entries last. Numbered directories recurse; unnumbered directories
+(such as `scripts`, `templates`, `tests`, and `prompt.d`) are not auto-loaded.
+Entries beginning with `xx-` are disabled. Vendor files retain their names under
+`20-vendor/scripts`, explicitly sourced from numbered wrappers.
 
-## The file-kind convention within a tier (a pattern, not a requirement)
+`source` tracks unique files in `__sourced_files`. Set `SILENT_SOURCING=0` after
+startup to trace subsequent includes. The wrapper quotes filenames and preserves
+source arguments/status.
 
-Nothing about the loader enforces this, but the tiers in this repo follow a consistent sub-convention so the
-same number means the same kind of thing in any tier: `00` for variable/export declarations, `10` for
-functions and one-time setup, `20` for aliases, `90` for an end-of-tier override hook. Adopt it, ignore it, or
-invent your own — the loader only cares about the numeric prefix and whether an entry is a file or a
-directory.
+## Repository and virtualenv updates
 
-## Site-specific tiers (not included in this public repo)
+After all tiers load, Git state and the nearest `.venv` are initialized.
+`change_dir` repeats these checks after successful directory changes. Git context
+changes re-source every active `00-vars.sh`, using the same tier order and disabled
+entry rules as startup. No tool initialization files run during refresh. An optional
+`rc_update_repo_paths` hook updates derived paths after variable refresh.
 
-This repo intentionally ships only generic, site-agnostic content. Anything specific to your employer, team,
-or personal setup — proprietary server names, internal git remotes, company-specific directory shortcuts —
-should never be committed here. The recommended pattern is to add your own numbered tiers as **symlinks**
-into a separate, private location (a private repo, a different directory outside this one, wherever makes
-sense for you):
+The nearest `.venv/bin/activate` wins. An automatically activated environment is
+not repeatedly sourced within the same tree and is deactivated on leaving it.
+Manually activated/inherited environments are preserved. Set `RC_AUTO_VENV=0` to
+opt out. Keep PATH mutations and function definitions out of `00-vars.sh`.
 
-```text
-~/.rc/20-team   -> ~/some-private-repo/rc/20-team   (site- or team-shared config)
-~/.rc/30-user   -> ~/some-private-repo/rc/30-user   (fully personal config)
+## Profile and prompt links
+
+`10-profile` points at private `11-home` or `12-work`; `40-user` is shared.
+`30-team` is linked only for work. `prompt.d` points at `prompt.home` or
+`prompt.work`. The prompt loader reads that single directory and skips `xx-*` files.
+See `~/bin/.rc/README.md` for setup and cache details.
+
+Home defaults to `XDG_CACHE_HOME=$HOME/.cache`. The work profile selects a work-local
+cache. Cache directories never belong in executable PATH.
+
+Use a fresh shell after switching profiles; re-sourcing does not remove definitions
+from the previous profile. Both repositories need the corresponding migration.
+
+## Event callbacks
+
+Register a defined function from a tier's `20-env.sh`:
+
+```bash
+function my_directory_update() {
+    local previous_dir=$1 current_dir=$2
+    # Update the current shell here.
+}
+rc_on change_dir my_directory_update
+rc_off change_dir my_directory_update  # optional removal
 ```
 
-Because the loader only cares about the `NN-*` naming convention and whether an entry is a file or a
-directory — not where it physically lives — these symlinked tiers load exactly like `00-core`/`10-vendor` do,
-in the same numeric position, with no changes needed to `.bashrc` or this repo. See `templates/` for a
-starting point for what a site-specific tier's own files might contain.
+Define helpers in `10-func.sh`. `change_dir` emits `change_dir OLD NEW` after
+successful changes (including `cd .`), but not after failures or `cd --` listings.
+`rc_emit shell_ready "$PWD"` runs once at the end of each `.bashrc` load, after all
+tiers and prompt helpers exist. Git and virtualenv integrations register for both.
 
-## Other environment set up here
+Callbacks run in registration order in the current shell. Duplicate registrations
+are ignored, so re-sourcing is safe. Removal is idempotent; removing and registering
+again places a callback last. Each emission snapshots the registry, so registration
+changes inside callbacks affect the next emission. Arguments are forwarded without
+word splitting or eval. Event and callback names use letters, digits and underscores
+and cannot start with a digit. Functions must exist when registered.
 
-- `$RC_PATH` — exported by `00-core`, points at `~/.rc`. Anything that needs to reference this layout by name
-  (rather than hardcoding `~/.rc` again) should use this.
-- `$PROMPT_COMMAND_PATH` — also exported by `00-core`. This is a *separate* mechanism from the boot-time
-  loader above: it points at a directory of scripts sourced on *every* prompt (not just once at startup), for
-  things that need to stay current as the shell is used. See `.bashrc`'s `set_prompt()`.
-- `$__sourced_files` — an array recording every file this session has sourced (populated by `.bashrc`'s
-  `source()` wrapper), including anything sourced transitively from a file in one of these tiers. Available
-  for tooling that wants to answer "where did this come from" for something defined during shell startup —
-  e.g. a site-specific tier could build a smarter `which` on top of it.
-- `$SILENT_SOURCING` — set to `0` for a live, indented trace of every file as it's sourced (indentation
-  reflects sourcing depth, so a file sourced from a file sourced from a tier is visually nested under it).
-  Defaults to `1` (silent).
+`rc_emit` continues after missing/failing callbacks, reports them to stderr, and
+returns 1 if any failed (otherwise 0). A successful `cd` still returns 0. Emit custom
+events with `rc_emit event_name ...`; an event without listeners is a no-op.
+Avoid emitting the same event recursively from its own callback.
+
+`change_dir` is defined once in `00-core/11-change-dir.sh` along with it's alias.
+Git registers `update_git_environment` for `change_dir` and
+`shell_ready`. When Git context changes it emits `git_environment_changed OLD_ROOT
+NEW_ROOT` (an empty root means outside a repository). Core registers
+`__rc_refresh_vars` for this event; additional listeners can inspect the updated
+`GIT_*` variables. Moving within the same repository does not emit this Git event.

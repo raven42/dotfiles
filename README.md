@@ -74,15 +74,15 @@ that disables an entry without deleting it, and the layout this repo ships:
 | Path | Contents |
 | --- | --- |
 | `.rc/00-core/` | Generic bash environment: exports, path helpers, a `cd` replacement, generic aliases. |
-| `.rc/10-vendor/` | Vendored third-party scripts (git prompt/completion, a VS Code IPC helper). |
+| `.rc/20-vendor/` | Vendored third-party scripts (git prompt/completion, a VS Code IPC helper). |
 | `.rc/templates/` | Reference-only starter files for building your own site-specific tier. Never loaded. |
 
 This repo intentionally ships only generic, site-agnostic content — no proprietary server names, internal git
 remotes, or company-specific shortcuts. If you also have a private/team config repo of your own (this
 author's is `raven42/binfiles` — see its README for the install steps), you add it as one or more numbered
-tiers **symlinked** into `.rc/`, e.g. `.rc/20-team -> ~/some-private-repo/rc/20-team`. Because the loader only
+tiers **symlinked** into `.rc/`, e.g. `.rc/30-team -> ~/some-private-repo/rc/30-team`. Because the loader only
 cares about the `NN-*` naming convention and whether an entry is a file or directory — not where it physically
-lives — a symlinked tier loads exactly like `00-core`/`10-vendor` do, no changes needed here.
+lives — a symlinked tier loads exactly like `00-core`/`20-vendor` do, no changes needed here.
 
 ## Environment Variables
 The generic variables and toggles this repo defines live in [.rc/00-core/00-vars.sh](.rc/00-core/00-vars.sh)
@@ -99,9 +99,11 @@ The generic variables and toggles this repo defines live in [.rc/00-core/00-vars
 - `UNIFIED_HISTORY` — when set, `history` is backed by a file shared across every session into a host instead
   of each session's own in-memory history.
 
-Site- or team-specific variables (`WORKSPACES`, `DEFAULT_GIT_SERVER`, `DEFAULT_GIT_REPO`, `TAGDIR`/`TAG_PATH`
-derivation from `GIT_ROOT`, etc.) are intentionally **not** defined here — they belong in whatever private
-tier you symlink in, as described above. See [.rc/templates/](.rc/templates/) for a starting point.
+Core supplies safe workspace/repository defaults. The selected `10-profile` tier
+can override them before `20-vendor` and `30-team` load; `40-user` holds shared
+personal settings. Use `~/bin/.rc/setup-rc home` or `work` when binfiles is installed.
+See [.rc/README.md](.rc/README.md) for the numbered file convention, cache defaults,
+nearest `.venv` activation, and variable refresh behavior.
 
 ### GIT REPO Setup
 There is a script at `sbin/git-repo` which can be used to setup a new sub-shell environment to set repository specific environment variables and other such parameters. This script will set a few env variables and enter a new sub-shell with these variables defined and change directories to the root level of that repository. This script will use the `$WORKSPACES` environment variable to scan for valid git repositories matching the given name, or if no repository is specified, it will list all respositories.
@@ -159,7 +161,7 @@ dev-server ~$
 ```
 
 `Entering main repository ..` (and the matching `Leaving repository ..` on the way back out) come from
-[.rc/10-vendor/git-environment.sh](.rc/10-vendor/git-environment.sh), which also sets `$GIT_ROOT`/`$GIT_REPO`/
+[.rc/20-vendor/scripts/git-environment.sh](.rc/20-vendor/scripts/git-environment.sh), which also sets `$GIT_ROOT`/`$GIT_REPO`/
 `$GIT_PATH`/`$GIT_REMOTE` on every directory change, not just from `git-repo`. Set `$GIT_ENVIRONMENT_SILENT=1`
 to suppress these messages.
 

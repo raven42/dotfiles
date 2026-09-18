@@ -9,7 +9,6 @@
 # This will ensure we have the `code` program in our PATH. This allows opening remote files with `code <file>`
 # Keep the CLI supplied by an existing terminal/Remote SSH session.
 # Otherwise find the desktop macOS CLI or the newest installed remote CLI.
-VSCODE_INSTALL_PATH="${VSCODE_INSTALL_PATH:-$HOME/.vscode-server}"
 __vscode_setup_path() {
 	command -v code >/dev/null 2>&1 && return 0
 	local candidate latest=
@@ -35,9 +34,7 @@ __vscode_setup_path() {
 	fi
 	return 0
 }
-__vscode_setup_path
-unset -f __vscode_setup_path
-export NODE_OPTIONS="--max-old-space-size=16384"
+
 
 ################################################################################
 # refresh_vscode_ipc()
@@ -66,7 +63,7 @@ function refresh_vscode_ipc() {
 	[[ $quiet -eq 0 ]] && echo " failed: no live VS Code IPC socket found."
 	return 1
 }
-alias vscode-refresh=refresh_vscode_ipc
+
 
 ################################################################################
 # __vscode_ipc_is_live()

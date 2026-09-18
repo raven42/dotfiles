@@ -36,3 +36,18 @@ __pycache__/
 # /.rc/30-user
 # /.rc/prompt.d
 
+
+# Private profile directory symlinks owned by binfiles.
+# /.rc/30-work
+# /.rc/31-home
+
+# Machine-local shell selection links.
+# /.rc/20-team
+# /.rc/30-user
+# /.rc/prompt.d
+
+# Selected private tiers.
+# /.rc/10-profile
+# /.rc/30-team
+# /.rc/40-user
+!/.rc/**

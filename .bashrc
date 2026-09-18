@@ -13,43 +13,46 @@
 #
 # Consistent way to source resource files, overriding the built-in. Set SILENT_SOURCING=0 to log every file
 # sourced (interactive shells only). Also records every file into __sourced_files, which _which()
-# (20-team/10-env.sh) greps to show where an alias/function came from.
+# (40-user/50-aliases.sh) greps to show where an alias/function came from.
 export SILENT_SOURCING=1
 declare -a __sourced_files=()
 __source_depth=0
 function source() {
-	# echo "$FUNCNAME(argc:$# argv:$@)"
-	file=$1
-	local verbose; [[ -n $PS1 && $SILENT_SOURCING != 1 ]] && verbose=1
-	if [[ ! -z "$file" && -f $file ]]; then
-		__sourced_files+=("$file")
-		(( __source_depth += 2))
-		[[ $verbose ]] && printf '%*ssource .. %s\n' $__source_depth "" $file
-		. $file
-		(( __source_depth -= 2))
-	elif [[ ! -z "$file" ]]; then
-		[[ $verbose ]] && echo -e "File [$file] not found."
-	fi
+    local file=${1:-} verbose= status=0 previous
+    [[ -n $file && -f $file ]] || return 0
+    shift
+    [[ -n $PS1 && $SILENT_SOURCING != 1 ]] && verbose=1
+    # Track unique sources, rather than growing the array on every prompt/cd.
+    for previous in "${__sourced_files[@]}"; do
+        [[ $previous != "$file" ]] || break
+    done
+    [[ ${previous:-} == "$file" ]] || __sourced_files+=("$file")
+    __source_depth=$((__source_depth + 2))
+    [[ ! $verbose ]] || printf '%*ssource .. %s\n' "$__source_depth" '' "$file"
+    builtin source "$file" "$@" || status=$?
+    __source_depth=$((__source_depth - 2))
+    return "$status"
 }
 
 ################################################################################
 # Loads ~/.rc recursively: within any directory, numbered 00-89 entries load first (numeric order), then
-# unnumbered files, then numbered 90-99 entries last. A numbered entry that's a directory (00-core, 10-vendor,
-# 20-team, 30-user, 90-post, ...) recurses with the same rule, so a tier's own files are ordered the same way
+# unnumbered files, then numbered 90-99 entries last. A numbered entry that's a directory (00-core, 10-profile, 20-vendor,
+# 30-team, 40-user, 90-post, ...) recurses with the same rule, so a tier's own files are ordered the same way
 # the tiers themselves are. An unnumbered directory (e.g. templates/) is never recursed into or sourced --
 # only unnumbered files are. $HOME/.rc is hardcoded below rather than $RC_PATH since $RC_PATH is defined by
 # one of the files this loads.
 function __rc_load_entry() {
-	if [[ -d "$1" ]]; then
-		__rc_load "$1"
-	elif [[ -f "$1" ]]; then
-		# readlink -f resolves symlinks first: a symlink named without a .sh/.bash suffix of its own (but
-		# pointing at a real script) would otherwise be silently skipped, even though -f above already
-		# confirmed it resolves to a regular file. A no-op for non-symlinks.
-		case "$(readlink -f -- "$1")" in
-			*.sh | *.bash) source "$1" ;;
-		esac
-	fi
+    if [[ -d $1 ]]; then
+        __rc_load "$1"
+    elif [[ -f $1 ]]; then
+        if [[ ${__RC_VARS_ONLY:-0} == 1 ]]; then
+            [[ ${1##*/} != 00-vars.sh ]] || source "$1"
+        else
+            case "$1" in *.sh|*.bash) source "$1" ;;
+                *) case "$(readlink -f -- "$1")" in *.sh|*.bash) source "$1" ;; esac ;;
+            esac
+        fi
+    fi
 }
 
 function __rc_load() {
@@ -71,8 +74,18 @@ function __rc_load() {
 	done
 }
 
+function __rc_refresh_vars() {
+    local __RC_VARS_ONLY=1
+    __rc_load "$HOME/.rc"
+    if declare -F rc_update_repo_paths >/dev/null; then rc_update_repo_paths; fi
+}
+
+__RC_LOADING=1
 __rc_load "$HOME/.rc"
+__RC_LOADING=0
 __source_depth=0
+
+
 
 ################################################################################
 # Uncomment the following to call the corresponding function prior to executing any command from the shell
@@ -98,7 +111,10 @@ function format_prompt() {
 }
 
 function format_title() {
-	echo -ne "\033]0;${PWD}$(git_title_format)\007" | sed -e "s|/home/${USER}|~|" -e "s|/work/${USER}||" -e "s|${SRC_PATH_PREFIX}|..|"
+    local title_path=${PWD/#$HOME/\~}
+    title_path=${title_path/#\/work\/$USER/}
+    [[ -z $SRC_PATH_PREFIX ]] || title_path=${title_path/"$SRC_PATH_PREFIX"/..}
+    printf '\033]0;%s%s\007' "$title_path" "$(git_title_format)"
 }
 
 function set_prompt() {
@@ -110,14 +126,14 @@ function set_prompt() {
 		history -r	# read from history file into memory
 	fi
 
-	if [ -d $PROMPT_COMMAND_PATH ]; then
-		for i in ${PROMPT_COMMAND_PATH}/*.{sh,bash}; do
-			if [ -r "$i" ]; then
-				. $i
-			fi
+	local prompt_dir prompt_file
+	for prompt_dir in "$PROMPT_COMMAND_PATH"; do
+		[[ -n $prompt_dir && -d $prompt_dir ]] || continue
+		for prompt_file in "$prompt_dir"/*.{sh,bash}; do
+			case "${prompt_file##*/}" in xx-*) continue ;; esac
+			[[ -r $prompt_file ]] && source "$prompt_file"
 		done
-		unset i
-	fi
+	done
 
 	format_prompt
 	format_title
@@ -128,3 +144,6 @@ function set_prompt() {
 # needed, or adjusting the information displayed in the prompt. To add a resource script to the prompt
 # command path, just put the <file>.sh script in that directory.
 export PROMPT_COMMAND=set_prompt
+
+# All tiers and prompt helpers are now available to startup callbacks.
+rc_emit shell_ready "$PWD" || :

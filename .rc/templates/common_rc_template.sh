@@ -1,26 +1,7 @@
 #!/bin/bash
-
-# Default resource file
-#
-# .default/common_rc.sh -	Set user specific environment options. This should include any aliases, environment path
-#							variables, and any other user specific environment options.
-#
-# This file is sourced in the .bashrc script after defaults have been initialized but before any processing of the env
-# variables or execution of supporting scripts This allows the user to override some defaults, or setup other parameters
-# prior to executing further env setup scripts. This can be used in conjunction with the .default/post_rc.sh script to
-# control and override environment default set in the .bashrc script on a per user basis in the event .bashrc is a common
-# file.
-#
-# The general order of loading resource scripts is as follows:
-#	.bashrc
-#		// setup any bash environment and other variables
-#		// initialize any common ENV vars (PATH / LD_RUN_PATH / etc)
-#		// determine env specific resource script based on GIT_REPO
-#		. .default/common_rc.sh		# load common_rc.sh script to set any user specific env variables
-#		. ${GIT_REPO}/.rc/rc		# load env specific resource script
-#		// process any ENV variables needed
-#		// setup prompt / title routines
-#		. .default/post_rc.sh		# load post_rc.sh script to override anything that was done so far
+# Reference variable settings: copy the entries you need into a tier's 00-vars.sh.
+# Actual tier layout: 00-vars.sh, 10-func.sh, 20-env.sh, 50-aliases.sh, 90-post.sh.
+# templates/ is not auto-loaded. Keep side effects and PATH changes in 20-env.sh.
 
 # To disable unicode characters in VIM and bash prompts. There are unicode characters used for the terminal window title,
 # and in VIM, unicode characters are used in the status line, buffer line, and window title.
