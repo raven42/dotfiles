@@ -3,16 +3,10 @@
 shopt -s checkwinsize
 
 ################################################################################
-# colors for ls, etc.  Prefer ~/.dir_colors #64489
+# A login shell already gets /etc/profile.d/*.sh via /etc/profile; only re-source it here for a
+# non-login interactive shell, which skips /etc/profile entirely.
 if ! shopt -q login_shell ; then # We're not a login shell
 	for i in /etc/profile.d/*.sh; do
-		if [ -r "$i" ]; then
-			. $i
-		fi
-	done
-	unset i
-
-	for i in ${HOME}/bin/completions/*.bash; do
 		if [ -r "$i" ]; then
 			. $i
 		fi
