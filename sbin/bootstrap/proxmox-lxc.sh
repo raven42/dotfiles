@@ -235,7 +235,7 @@ log "Copying dotfiles bootstrap"
 pct push \
     "${VMID}" \
     "${DEBIAN_BOOTSTRAP}" \
-    /root/dotfiles-bootstrap.sh \
+    /root/dotfiles.sh \
     --perms 0755
 
 log "Running Debian bootstrap"
