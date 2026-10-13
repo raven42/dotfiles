@@ -166,6 +166,18 @@ if [[ -z "${TEMPLATE}" ]]; then
     TEMPLATE="$(find_debian_template)"
 fi
 
+read -rsp "Root password for new LXC: " ROOT_PASSWORD
+echo
+
+read -rsp "Confirm root password: " ROOT_PASSWORD_CONFIRM
+echo
+
+[[ "${ROOT_PASSWORD}" == "${ROOT_PASSWORD_CONFIRM}" ]] ||
+    die "Root passwords do not match."
+
+[[ -n "${ROOT_PASSWORD}" ]] ||
+    die "Root password cannot be empty."
+
 log "Configuration"
 printf '  VMID:      %s\n' "${VMID}"
 printf '  Hostname:  %s\n' "${HOSTNAME}"
@@ -213,7 +225,10 @@ pct push \
     --perms 0755
 
 log "Running Debian bootstrap"
-pct exec "${VMID}" -- /root/debian-bootstrap.sh
+pct exec "${VMID}" -- \
+    env ROOT_PASSWORD="${ROOT_PASSWORD}" \
+    /root/debian-bootstrap.sh
+unset ROOT_PASSWORD ROOT_PASSWORD_CONFIRM
 
 log "Removing temporary bootstrap"
 pct exec "${VMID}" -- rm -f \

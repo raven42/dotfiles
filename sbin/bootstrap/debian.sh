@@ -21,6 +21,7 @@ set -euo pipefail
 ADMIN_USER="${ADMIN_USER:-raven}"
 ADMIN_SHELL="${ADMIN_SHELL:-/bin/bash}"
 ADMIN_SSH_KEY_FILE="${ADMIN_SSH_KEY_FILE:-/root/raven_ed25519.pub}"
+ROOT_PASSWORD="${ROOT_PASSWORD:-}"
 
 TIMEZONE="${TIMEZONE:-America/Chicago}"
 LOCALE="${LOCALE:-en_US.UTF-8}"
@@ -150,6 +151,27 @@ configure_admin_user() {
     fi
 }
 
+configure_root_password() {
+    if [[ -z "${ROOT_PASSWORD}" ]]; then
+        log "No root password supplied; leaving root password unchanged"
+        return
+    fi
+
+    log "Setting root password"
+    printf 'root:%s\n' "${ROOT_PASSWORD}" | chpasswd
+}
+
+configure_sudo() {
+    log "Configuring sudo for ${ADMIN_USER}"
+
+    cat > "/etc/sudoers.d/${ADMIN_USER}" <<EOF
+${ADMIN_USER} ALL=(ALL) NOPASSWD:ALL
+EOF
+
+    chmod 0440 "/etc/sudoers.d/${ADMIN_USER}"
+    visudo -cf "/etc/sudoers.d/${ADMIN_USER}" >/dev/null
+}
+
 enable_services() {
     log "Enabling standard services"
 
@@ -184,7 +206,9 @@ main() {
     install_packages
     configure_locale
     configure_timezone
+    configure_root_password
     configure_admin_user
+    configure_sudo
     enable_services
     cleanup
     summary
