@@ -9,6 +9,8 @@ set -euo pipefail
 #   ./proxmox-lxc.sh --vmid 101 --hostname nginx-01.darkstar.net
 #
 # Optional:
+#   --user {user-name}
+#   --ssh-key {path-to-ssh-key}
 #   --cores 2
 #   --memory 1024
 #   --swap 512
@@ -34,6 +36,7 @@ BRIDGE="vmbr0"
 TEMPLATE=""
 BOOTSTRAP_ARGS=""
 
+ADMIN_USER="raven"
 SSH_PUBLIC_KEY="/opt/darkstar/keys/raven_ed25519.pub"
 
 log() {
@@ -55,6 +58,8 @@ Required:
   --hostname   LXC hostname/FQDN
 
 Options:
+  --user       Admin User      (default: ${ADMIN_USER})
+  --ssh-key    Public SSH key  (default: ${SSH_PUBLIC_KEY})
   --cores      CPU cores       (default: ${CORES})
   --memory     RAM in MB       (default: ${MEMORY})
   --swap       Swap in MB      (default: ${SWAP})
@@ -114,6 +119,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --hostname)
             HOSTNAME="$2"
+            shift 2
+            ;;
+        --user)
+            ADMIN_USER="$2"
+            shift 2
+            ;;
+        --ssh-key)
+            SSH_PUBLIC_KEY="$2"
             shift 2
             ;;
         --cores)
@@ -195,6 +208,8 @@ printf '  Swap:      %s MB\n' "${SWAP}"
 printf '  Disk:      %s GB\n' "${DISK}"
 printf '  Storage:   %s\n' "${STORAGE}"
 printf '  Network:   DHCP on %s\n' "${BRIDGE}"
+printf '  User:      %s\n' "${ADMIN_USER}"
+printf '  SSH Key:   %s\n' "${SSH_PUBLIC_KEY}"
 
 log "Creating LXC"
 
@@ -221,7 +236,7 @@ log "Copying SSH public key"
 pct push \
     "${VMID}" \
     "${SSH_PUBLIC_KEY}" \
-    /root/raven_ed25519.pub \
+    /root/ssh_key.pub \
     --perms 0600
 
 log "Copying Debian bootstrap"
@@ -241,6 +256,8 @@ pct push \
 log "Running Debian bootstrap"
 pct exec "${VMID}" -- \
     env ROOT_PASSWORD="${ROOT_PASSWORD}" \
+    env ADMIN_USER="${ADMIN_USER}" \
+    env ADMIN_SSH_KEY_FILE="${SSH_PUBLIC_KEY}" \
     /root/debian-bootstrap.sh ${BOOTSTRAP_ARGS}
 unset ROOT_PASSWORD ROOT_PASSWORD_CONFIRM
 
@@ -248,7 +265,7 @@ log "Removing temporary bootstrap"
 pct exec "${VMID}" -- rm -f \
     /root/debian-bootstrap.sh \
     /root/dotfiles.sh \
-    /root/raven_ed25519.pub
+    /root/ssh_key.pub
 
 log "Provisioning complete"
 

@@ -20,7 +20,7 @@ set -euo pipefail
 
 ADMIN_USER="${ADMIN_USER:-raven}"
 ADMIN_SHELL="${ADMIN_SHELL:-/bin/bash}"
-ADMIN_SSH_KEY_FILE="${ADMIN_SSH_KEY_FILE:-/root/raven_ed25519.pub}"
+ADMIN_SSH_KEY_FILE="${ADMIN_SSH_KEY_FILE:-/root/ssh_key.pub}"
 ROOT_PASSWORD="${ROOT_PASSWORD:-}"
 
 TIMEZONE="${TIMEZONE:-America/Chicago}"

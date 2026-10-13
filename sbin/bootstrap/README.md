@@ -63,6 +63,8 @@ proxmox-lxc.sh --vmid <id> --hostname <hostname> [options]
 
 | Option | Default | Description |
 | ------ | ------- | ----------- |
+| `--user` | `raven` | Specify default admin username |
+| `--ssh-key` | `/opt/darkstar/keys/raven_ed25519.pub` | Specify path to public SSH key for admin user |
 | `--cores` | `1` | Number of CPU cores |
 | `--memory` | `512` | Memory (MB) |
 | `--swap` | `512` | Swap (MB) |

@@ -114,7 +114,7 @@ function format_title() {
     local title_path=${PWD/#$HOME/\~}
     title_path=${title_path/#\/work\/$USER/}
     [[ -z $SRC_PATH_PREFIX ]] || title_path=${title_path/"$SRC_PATH_PREFIX"/..}
-    printf '\033]0;%s%s\007' "$title_path" "$(git_title_format)"
+    printf '\033]0;%s %s\007' "$title_path" "$(git_title_format)"
 }
 
 function set_prompt() {
