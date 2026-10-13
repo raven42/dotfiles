@@ -68,7 +68,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 log() {
-    printf '\n\033[1;34m==>\033[0m %s\n' "$*"
+    printf '\n\033[1;32m==>\033[0m %s\n' "$*"
 }
 
 die() {
