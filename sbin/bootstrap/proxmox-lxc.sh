@@ -32,6 +32,7 @@ DISK=8
 STORAGE="local-lvm"
 BRIDGE="vmbr0"
 TEMPLATE=""
+BOOTSTRAP_ARGS=""
 
 SSH_PUBLIC_KEY="/opt/darkstar/keys/raven_ed25519.pub"
 
@@ -61,6 +62,7 @@ Options:
   --storage    Storage ID      (default: ${STORAGE})
   --bridge     Network bridge  (default: ${BRIDGE})
   --template   CT template     (default: newest local Debian 13 template)
+  --dotfiles   Use dotfiles.   (default: no)
   -h, --help   Show this help
 EOF
 }
@@ -141,6 +143,10 @@ while [[ $# -gt 0 ]]; do
         --template)
             TEMPLATE="$2"
             shift 2
+            ;;
+        --dotfiles)
+            BOOTSTRAP_ARGS+=" --dotfiles"
+            shift
             ;;
         -h|--help)
             usage
@@ -235,7 +241,7 @@ pct push \
 log "Running Debian bootstrap"
 pct exec "${VMID}" -- \
     env ROOT_PASSWORD="${ROOT_PASSWORD}" \
-    /root/debian-bootstrap.sh
+    /root/debian-bootstrap.sh ${BOOTSTRAP_ARGS}
 unset ROOT_PASSWORD ROOT_PASSWORD_CONFIRM
 
 log "Removing temporary bootstrap"
