@@ -234,7 +234,7 @@ pct push \
 log "Copying dotfiles bootstrap"
 pct push \
     "${VMID}" \
-    "${DEBIAN_BOOTSTRAP}" \
+    "${DOTFILES_BOOTSTRAP}" \
     /root/dotfiles.sh \
     --perms 0755
 
@@ -247,7 +247,7 @@ unset ROOT_PASSWORD ROOT_PASSWORD_CONFIRM
 log "Removing temporary bootstrap"
 pct exec "${VMID}" -- rm -f \
     /root/debian-bootstrap.sh \
-    /root/dotfiles-bootstrap.sh \
+    /root/dotfiles.sh \
     /root/raven_ed25519.pub
 
 log "Provisioning complete"
