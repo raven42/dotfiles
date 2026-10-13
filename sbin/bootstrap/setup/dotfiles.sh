@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-ADMIN_USER=""
+ADMIN_USER="${ADMIN_USER:-}"
 DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/raven42/dotfiles.git}"
 
 log() {
