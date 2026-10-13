@@ -32,6 +32,8 @@ STORAGE="local-lvm"
 BRIDGE="vmbr0"
 TEMPLATE=""
 
+SSH_PUBLIC_KEY="/opt/darkstar/keys/raven_ed25519.pub"
+
 log() {
     printf '\n\033[1;34m==>\033[0m %s\n' "$*"
 }
@@ -192,6 +194,17 @@ pct start "${VMID}"
 
 wait_for_network
 
+log "Copying SSH public key"
+
+[[ -f "${SSH_PUBLIC_KEY}" ]] ||
+    die "SSH public key not found: ${SSH_PUBLIC_KEY}"
+
+pct push \
+    "${VMID}" \
+    "${SSH_PUBLIC_KEY}" \
+    /root/raven_ed25519.pub \
+    --perms 0600
+
 log "Copying Debian bootstrap"
 pct push \
     "${VMID}" \
@@ -203,7 +216,9 @@ log "Running Debian bootstrap"
 pct exec "${VMID}" -- /root/debian-bootstrap.sh
 
 log "Removing temporary bootstrap"
-pct exec "${VMID}" -- rm -f /root/debian-bootstrap.sh
+pct exec "${VMID}" -- rm -f \
+    /root/debian-bootstrap.sh \
+    /root/raven_ed25519.pub
 
 log "Provisioning complete"
 

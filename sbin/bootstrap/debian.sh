@@ -18,6 +18,10 @@ set -euo pipefail
 #   sudo TIMEZONE=America/Chicago ./sbin/bootstrap/debian.sh
 # -----------------------------------------------------------------------------
 
+ADMIN_USER="${ADMIN_USER:-raven}"
+ADMIN_SHELL="${ADMIN_SHELL:-/bin/bash}"
+ADMIN_SSH_KEY_FILE="${ADMIN_SSH_KEY_FILE:-/root/raven_ed25519.pub}"
+
 TIMEZONE="${TIMEZONE:-America/Chicago}"
 LOCALE="${LOCALE:-en_US.UTF-8}"
 
@@ -110,6 +114,42 @@ configure_timezone() {
     timedatectl set-timezone "${TIMEZONE}"
 }
 
+configure_admin_user() {
+    log "Configuring admin user: ${ADMIN_USER}"
+
+    if ! id "${ADMIN_USER}" &>/dev/null; then
+        useradd \
+            --create-home \
+            --shell "${ADMIN_SHELL}" \
+            "${ADMIN_USER}"
+    fi
+
+    usermod -s "${ADMIN_SHELL}" "${ADMIN_USER}"
+    usermod -aG sudo "${ADMIN_USER}"
+
+    local ssh_dir="/home/${ADMIN_USER}/.ssh"
+    local auth_keys="${ssh_dir}/authorized_keys"
+
+    install -d \
+        -m 700 \
+        -o "${ADMIN_USER}" \
+        -g "${ADMIN_USER}" \
+        "${ssh_dir}"
+
+    if [[ -f "${ADMIN_SSH_KEY_FILE}" ]]; then
+        install \
+            -m 600 \
+            -o "${ADMIN_USER}" \
+            -g "${ADMIN_USER}" \
+            "${ADMIN_SSH_KEY_FILE}" \
+            "${auth_keys}"
+
+        log "Installed SSH public key for ${ADMIN_USER}"
+    else
+        log "No SSH public key found at ${ADMIN_SSH_KEY_FILE}; skipping"
+    fi
+}
+
 enable_services() {
     log "Enabling standard services"
 
@@ -144,6 +184,7 @@ main() {
     install_packages
     configure_locale
     configure_timezone
+    configure_admin_user
     enable_services
     cleanup
     summary
