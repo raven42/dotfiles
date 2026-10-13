@@ -257,7 +257,6 @@ log "Running Debian bootstrap"
 pct exec "${VMID}" -- \
     env ROOT_PASSWORD="${ROOT_PASSWORD}" \
     env ADMIN_USER="${ADMIN_USER}" \
-    env ADMIN_SSH_KEY_FILE="${SSH_PUBLIC_KEY}" \
     /root/debian-bootstrap.sh ${BOOTSTRAP_ARGS}
 unset ROOT_PASSWORD ROOT_PASSWORD_CONFIRM
 

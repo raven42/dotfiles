@@ -6,7 +6,7 @@ ADMIN_USER=""
 DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/raven42/dotfiles.git}"
 
 log() {
-    printf '\n==> %s\n' "$*"
+    printf '\n\033[1;32m==>\033[0m %s\n' "$*"
 }
 
 die() {
