@@ -245,7 +245,7 @@ show_status() {
     container_running ||
         die "VMID ${VMID} must be running to display setup status."
 
-    printf 'Applied setup modules for VMID %s:\n\n' "${VMID}"
+    printf '\nApplied setup modules for VMID %s:\n\n' "${VMID}"
 
     pct exec "${VMID}" -- sh -c "
         if [ ! -d '${MARKER_DIR}' ]; then
@@ -269,6 +269,8 @@ show_status() {
             echo '  None'
         fi
     "
+
+    printf '\n'
 }
 
 prompt_root_password() {
