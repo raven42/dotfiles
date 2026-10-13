@@ -7,8 +7,7 @@
 .*.sw[a-z]
 vobs/projects/springboard/fos_linux/linux-yocto/SWBD*
 vobs/projects/springboard/dist/bsnfosbuild
-crave.conf
-crave_logs/
+certs/bsn_kernel_signing_key*
 cli_to_rest_mapping.tar.gz
 coverity/.coverity_validated
 _full_cov_output*
