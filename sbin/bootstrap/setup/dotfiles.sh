@@ -3,10 +3,11 @@
 set -euo pipefail
 
 ADMIN_USER="${ADMIN_USER:-}"
+
 DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/raven42/dotfiles.git}"
 
 log() {
-    printf '\n\033[1;35m==>\033[0m %s\n' "$*"
+    printf '\n==> %s\n' "$*"
 }
 
 die() {
@@ -20,10 +21,12 @@ while [[ $# -gt 0 ]]; do
             ADMIN_USER="$2"
             shift 2
             ;;
+
         -h|--help)
-            echo "Usage: $(basename "$0") --user <username>"
+            echo "Usage: $(basename "$0") [--user <username>]"
             exit 0
             ;;
+
         *)
             die "Unknown option: $1"
             ;;
@@ -34,7 +37,7 @@ done
     die "Run this script as root."
 
 [[ -n "${ADMIN_USER}" ]] ||
-    die "--user is required."
+    die "No user specified. Set ADMIN_USER or use --user."
 
 id "${ADMIN_USER}" &>/dev/null ||
     die "User does not exist: ${ADMIN_USER}"
@@ -62,11 +65,22 @@ install -d \
     "${USER_HOME}/tmp" \
     "${USER_HOME}/var/log"
 
-for file in .bashrc .bash_profile .profile .vimrc; do
-    if [[ -e "${USER_HOME}/${file}" && ! -L "${USER_HOME}/${file}" ]]; then
-        log "Backing up ${file}"
-        mv "${USER_HOME}/${file}" "${BACKUP_DIR}/${file#.}"
-        chown "${ADMIN_USER}:${ADMIN_USER}" "${BACKUP_DIR}/${file#.}"
+for file in \
+    .bashrc \
+    .bash_profile \
+    .profile \
+    .vimrc
+do
+    source="${USER_HOME}/${file}"
+
+    if [[ -e "${source}" && ! -L "${source}" ]]; then
+        backup="${BACKUP_DIR}/${file#.}"
+
+        if [[ ! -e "${backup}" ]]; then
+            log "Backing up ${file}"
+            mv "${source}" "${backup}"
+            chown "${ADMIN_USER}:${ADMIN_USER}" "${backup}"
+        fi
     fi
 done
 
@@ -75,7 +89,13 @@ if [[ ! -d "${DOTFILES_DIR}" ]]; then
 
     sudo -u "${ADMIN_USER}" \
         HOME="${USER_HOME}" \
-        git clone --bare "${DOTFILES_REPO}" "${DOTFILES_DIR}"
+        git clone --bare \
+        "${DOTFILES_REPO}" \
+        "${DOTFILES_DIR}"
+else
+    log "Updating dotfiles repository"
+
+    githome fetch origin
 fi
 
 touch "${GLOBAL_IGNORE}"
@@ -90,11 +110,13 @@ chown "${ADMIN_USER}:${ADMIN_USER}" "${GLOBAL_IGNORE}"
 
 sudo -u "${ADMIN_USER}" \
     HOME="${USER_HOME}" \
-    git config --global core.excludesfile "${GLOBAL_IGNORE}"
+    git config --global \
+    core.excludesfile "${GLOBAL_IGNORE}"
 
 githome config status.showUntrackedFiles no
 
 log "Checking out dotfiles"
+
 githome checkout
 
 log "Dotfiles installed"

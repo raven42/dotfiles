@@ -7,12 +7,19 @@ if [[ "${EUID}" -ne 0 ]]; then
     exit 1
 fi
 
+echo
+echo "==> Installing Ansible managed-host prerequisites"
+
 apt-get update
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    python3 \
-    python3-apt \
-    sudo \
-    openssh-server
+DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y \
+        openssh-server \
+        python3 \
+        python3-apt \
+        sudo
 
 systemctl enable --now ssh
+
+echo
+echo "==> Ansible managed-host prerequisites installed"
