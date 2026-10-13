@@ -20,6 +20,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DEBIAN_BOOTSTRAP="${SCRIPT_DIR}/debian.sh"
+DOTFILES_BOOTSTRAP="${SCRIPT_DIR}/dotfiles.sh"
 
 VMID=""
 HOSTNAME=""
@@ -224,6 +225,13 @@ pct push \
     /root/debian-bootstrap.sh \
     --perms 0755
 
+log "Copying dotfiles bootstrap"
+pct push \
+    "${VMID}" \
+    "${DEBIAN_BOOTSTRAP}" \
+    /root/dotfiles-bootstrap.sh \
+    --perms 0755
+
 log "Running Debian bootstrap"
 pct exec "${VMID}" -- \
     env ROOT_PASSWORD="${ROOT_PASSWORD}" \
@@ -233,6 +241,7 @@ unset ROOT_PASSWORD ROOT_PASSWORD_CONFIRM
 log "Removing temporary bootstrap"
 pct exec "${VMID}" -- rm -f \
     /root/debian-bootstrap.sh \
+    /root/dotfiles-bootstrap.sh \
     /root/raven_ed25519.pub
 
 log "Provisioning complete"

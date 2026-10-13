@@ -26,6 +26,8 @@ ROOT_PASSWORD="${ROOT_PASSWORD:-}"
 TIMEZONE="${TIMEZONE:-America/Chicago}"
 LOCALE="${LOCALE:-en_US.UTF-8}"
 
+INSTALL_DOTFILES=0
+
 BASE_PACKAGES=(
     bash-completion
     ca-certificates
@@ -48,6 +50,22 @@ BASE_PACKAGES=(
     wget
     zip
 )
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dotfiles)
+            INSTALL_DOTFILES=1
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            die "Unknown option: $1"
+            ;;
+    esac
+done
 
 log() {
     printf '\n\033[1;34m==>\033[0m %s\n' "$*"
@@ -172,6 +190,22 @@ EOF
     visudo -cf "/etc/sudoers.d/${ADMIN_USER}" >/dev/null
 }
 
+configure_dotfiles() {
+    local script_dir
+    local dotfiles_script
+
+    script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    dotfiles_script="${script_dir}/dotfiles.sh"
+
+    [[ -x "${dotfiles_script}" ]] ||
+        die "Dotfiles bootstrap not found or not executable: ${dotfiles_script}"
+
+    log "Installing dotfiles for ${ADMIN_USER}"
+
+    "${dotfiles_script}" \
+        --user "${ADMIN_USER}"
+}
+
 enable_services() {
     log "Enabling standard services"
 
@@ -209,6 +243,11 @@ main() {
     configure_root_password
     configure_admin_user
     configure_sudo
+
+    if [[ "${INSTALL_DOTFILES}" -eq 1 ]]; then
+        configure_dotfiles
+    fi
+
     enable_services
     cleanup
     summary
