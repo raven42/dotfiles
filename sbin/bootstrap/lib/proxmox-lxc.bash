@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 _proxmox_lxc_setup_modules() {
-    local bootstrap_dir setup_dir service_dir file
+    local bootstrap_dir setup_dir service_dir file completion_path
 
-    bootstrap_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+    completion_path="$(readlink -f "${BASH_SOURCE[0]}")"
+    bootstrap_dir="$(cd -- "$(dirname -- "${completion_path}")/.." && pwd)"
     setup_dir="${bootstrap_dir}/setup"
     service_dir="${setup_dir}/services"
 
