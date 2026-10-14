@@ -37,7 +37,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-printf 'Available setup modules:\n\n'
+printf '\nAvailable setup modules:\n\n'
 
 while IFS= read -r setup; do
     [[ -n "${setup}" ]] || continue
@@ -51,3 +51,5 @@ while IFS= read -r setup; do
     fi
 
 done < <(list_setup_names | sort -u)
+
+printf '\n'

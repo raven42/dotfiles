@@ -69,7 +69,7 @@ else
     warn "Unable to fetch current origin commit; source status may be unknown."
 fi
 
-printf 'VMID %s  %s\n\n' "${VMID}" "${HOSTNAME}"
+printf '\nVMID %s  %s\n\n' "${VMID}" "${HOSTNAME}"
 
 if ! pct exec "${VMID}" -- test -d "${MARKER_DIR}"; then
     printf 'No setup modules have been recorded.\n'
@@ -158,3 +158,5 @@ for module in "${MARKERS[@]}"; do
     printf '  origin_commit=%s\n' "${ORIGIN_COMMIT}"
     printf '  status=%s\n\n' "${relationship}"
 done
+
+printf '\n'
