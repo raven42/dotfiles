@@ -117,6 +117,8 @@ if [[ "${VERBOSE}" -eq 0 ]]; then
             "${relationship}"
     done
 
+    printf '\n'
+
     exit 0
 fi
 
