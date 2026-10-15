@@ -1,0 +1,24 @@
+{
+  "merge_directories": [
+    ".rc",
+    ".config",
+    ".ctags.d"
+  ],
+  "exclude": [
+    ".git",
+    ".github",
+    ".gitmodules",
+    ".deploy.json",
+    "setup.sh",
+    "scripts",
+    "tests",
+    "doc",
+    "img",
+    "README*",
+    "LICENSE*",
+    "AGENTS.md",
+    ".DS_Store",
+    "__pycache__",
+    "sbin"
+  ]
+}

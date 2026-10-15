@@ -49,6 +49,9 @@ export SHOW_TARGET_IN_PROMPT="${SHOW_TARGET_IN_PROMPT-1}"
 # command across all sessions, not just the current session as is the default
 export UNIFIED_HISTORY="${UNIFIED_HISTORY-0}"
 
+# Resolve the standard checkout through the deployed core-tier symlink.
+export DOTFILES_ROOT="$(builtin cd -P "${BASH_SOURCE[0]%/*}/../.." && pwd -P)"
+
 export RC_PATH=$HOME/.rc
 export PROMPT_COMMAND_PATH=$RC_PATH/prompt.d
 

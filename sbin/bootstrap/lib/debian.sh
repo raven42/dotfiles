@@ -24,6 +24,7 @@ BASE_PACKAGES=(
     nano
     net-tools
     openssh-server
+    python3
     ripgrep
     rsync
     sudo

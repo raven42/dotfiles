@@ -383,15 +383,70 @@ Setup scripts should be written so they can safely be run more than once where p
 
 ### `dotfiles`
 
-Installs the standard user shell environment using the bare Git repository model.
+Installs the standard user shell environment using a normal Git checkout and
+the symlink installer described in the repository's [README](../../README.md).
 
 The setup:
 
-- clones the dotfiles repository into `~/.cfg`
-- configures the home directory as the Git work tree
-- backs up conflicting shell files
-- configures the global excludes file
-- checks out the managed dotfiles
+- clones the public repository over HTTPS into `~/Projects/dotfiles`, including
+  its submodules, as the administrative user
+- runs that checkout's `setup.sh --backup` as the same user with their HOME
+- keeps shared directories such as `~/.rc` and `~/.config` real,
+  linking their discovered child entries according to `.deploy.json`
+- keeps tools in the checkout and adds `$DOTFILES_ROOT/sbin` to the user shell PATH;
+  no `~/sbin` deployment is required
+- moves conflicts into unique `~/.dotfiles-backups/<timestamp>/` directories
+- leaves the old `~/.cfg`, unrelated home entries, and global Git settings intact
+
+The mandatory Debian baseline installs Python 3, Git, certificates, and sudo
+before any optional setup modules. `--setup ansible-managed` is not required
+for dotfiles and may follow it in the module list.
+
+The Proxmox copy of the module is pushed into the LXC as a standalone script.
+The dotfiles checkout itself is cloned **inside the LXC**; the Proxmox working
+tree and its unstaged changes are not copied. Publish the new installer
+(`setup.sh`, `scripts/setup.py`, and `.deploy.json`) and bootstrap changes before
+using this flow on a fresh LXC. Containers need outbound HTTPS/DNS access to
+GitHub and the submodule remotes. No private workstation SSH key is needed.
+
+Reapplying the module reuses the existing checkout without fetching, pulling,
+resetting files, or changing initialized submodule commits. It verifies this is
+a checkout rooted at `~/Projects/dotfiles`, that the new installer exists, and
+that submodules are initialized. Update an existing checkout explicitly as its
+owner before reapplying:
+
+```bash
+cd ~/Projects/dotfiles
+git status
+git pull --ff-only
+git submodule update --init --recursive
+./setup.sh --backup --dry-run
+./setup.sh --backup
+```
+
+Review and preserve local changes before updating. A checkout from before the
+symlink installer was introduced fails with an update instruction rather than
+falling back to the bare-repository model. A legacy `~/.cfg` may coexist with
+the new checkout for recovery; do not run its old checkout command after migration.
+Existing global ignore settings also remain in effect and can hide files until
+you review them manually. The installer does not select a private binfiles
+profile; that remains a separate, optional user step.
+
+Setup markers record the bootstrap source commit on Proxmox, not the version
+of the separately cloned dotfiles checkout. A `current` marker does not imply
+that the user's dotfiles checkout has been updated.
+
+Validate the installer and module locally without touching a real user home
+or Proxmox container:
+
+```bash
+python3 tests/test_setup.py
+python3 tests/test_bootstrap_dotfiles.py
+```
+
+The bootstrap tests use fake identity/privilege commands and replace the root
+guard in a temporary copy. Git operations, submodule initialization, symlink
+deployment, and backups run against real temporary local repositories.
 
 ### `ansible-managed`
 

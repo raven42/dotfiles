@@ -1013,24 +1013,6 @@ if v:version >= 800
 		let g:quickfix_window = 1
 	endfunction
 
-    " ---- CheckForDotFiles() {{{2
-	function! CheckForDotFiles() abort
-		let file = expand('%:t')
-		let path = expand('%:p:h')
-		let githome_repo = [
-					\ $HOME,
-					\ $HOME . '/sbin',
-					\ $HOME . '/doc',
-				\ ]
-		if index(githome_repo, path) !=# -1
-			" let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/'
-			let g:gitgutter_git_args = '--git-dir=' . $HOME . '/.cfg/ --work-tree=' . $HOME
-			let g:gitgutter_diff_args = '--no-index'
-		else
-			let g:gitgutter_git_args = ''
-			let g:gitgutter_diff_args = ''
-		endif
-	endfunction
 
 	" ---- Key Mappings for all plugins {{{2
 	nmap <Leader>cc <plug>NERDCommenterToggle
@@ -1116,7 +1098,6 @@ if v:version >= 800
 
 		autocmd BufEnter * call UpdateTitle()
 		autocmd BufWritePost *.py call Flake8Update()
-		autocmd BufEnter * call CheckForDotFiles()
 	augroup END
 
 	augroup quickfixclose

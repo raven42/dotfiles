@@ -18,6 +18,8 @@ die() {
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --user)
+            [[ $# -ge 2 && -n "$2" && "$2" != -* ]] ||
+                die "--user requires a username."
             ADMIN_USER="$2"
             shift 2
             ;;
@@ -42,81 +44,45 @@ done
 id "${ADMIN_USER}" &>/dev/null ||
     die "User does not exist: ${ADMIN_USER}"
 
-USER_HOME="$(getent passwd "${ADMIN_USER}" | cut -d: -f6)"
-DOTFILES_DIR="${USER_HOME}/.cfg"
-BACKUP_DIR="${USER_HOME}/.bak"
-GLOBAL_IGNORE="${USER_HOME}/.gitignore_global"
-
-githome() {
-    sudo -u "${ADMIN_USER}" \
-        HOME="${USER_HOME}" \
-        git \
-            --git-dir="${DOTFILES_DIR}" \
-            --work-tree="${USER_HOME}" \
-            "$@"
-}
-
-log "Preparing dotfiles environment for ${ADMIN_USER}"
-
-install -d \
-    -o "${ADMIN_USER}" \
-    -g "${ADMIN_USER}" \
-    "${BACKUP_DIR}" \
-    "${USER_HOME}/tmp" \
-    "${USER_HOME}/var/log"
-
-for file in \
-    .bashrc \
-    .bash_profile \
-    .profile \
-    .vimrc
-do
-    source="${USER_HOME}/${file}"
-
-    if [[ -e "${source}" && ! -L "${source}" ]]; then
-        backup="${BACKUP_DIR}/${file#.}"
-
-        if [[ ! -e "${backup}" ]]; then
-            log "Backing up ${file}"
-            mv "${source}" "${backup}"
-            chown "${ADMIN_USER}:${ADMIN_USER}" "${backup}"
-        fi
-    fi
+for command in git python3 sudo; do
+    command -v "${command}" >/dev/null ||
+        die "Missing prerequisite: ${command}. Run the current Debian baseline first."
 done
 
-if [[ ! -d "${DOTFILES_DIR}" ]]; then
-    log "Cloning dotfiles repository"
+USER_HOME="$(getent passwd "${ADMIN_USER}" | cut -d: -f6)"
+[[ "${USER_HOME}" == /* && "${USER_HOME}" != / ]] ||
+    die "Invalid home directory for ${ADMIN_USER}: ${USER_HOME}"
+DOTFILES_DIR="${USER_HOME}/Projects/dotfiles"
 
-    sudo -u "${ADMIN_USER}" \
-        HOME="${USER_HOME}" \
-        git clone --bare \
-        "${DOTFILES_REPO}" \
-        "${DOTFILES_DIR}"
+as_user() {
+    sudo -u "${ADMIN_USER}" HOME="${USER_HOME}" "$@"
+}
+
+log "Preparing standard dotfiles checkout for ${ADMIN_USER}"
+install -d -o "${ADMIN_USER}" -g "$(id -gn "${ADMIN_USER}")" \
+    "${USER_HOME}/Projects" "${USER_HOME}/tmp" "${USER_HOME}/var/log"
+if [[ ! -e "${DOTFILES_DIR}" && ! -L "${DOTFILES_DIR}" ]]; then
+    as_user git clone --recurse-submodules "${DOTFILES_REPO}" "${DOTFILES_DIR}"
 else
-    log "Updating dotfiles repository"
-
-    githome fetch origin
+    log "Using existing checkout without pulling or discarding local changes"
 fi
 
-touch "${GLOBAL_IGNORE}"
+[[ -d "${DOTFILES_DIR}" ]] || die "Not a checkout directory: ${DOTFILES_DIR}"
+CHECKOUT_ROOT="$(as_user git -C "${DOTFILES_DIR}" rev-parse --show-toplevel)" ||
+    die "Not a standard Git checkout: ${DOTFILES_DIR}"
+[[ "$(cd -- "${CHECKOUT_ROOT}" && pwd -P)" == "$(cd -- "${DOTFILES_DIR}" && pwd -P)" ]] ||
+    die "Expected a checkout rooted at ${DOTFILES_DIR}, not a directory inside another repository."
+for file in setup.sh scripts/setup.py .deploy.json; do
+    [[ -f "${DOTFILES_DIR}/${file}" ]] ||
+        die "Checkout is missing ${file}. Update it to the clone-and-symlink version before applying dotfiles."
+done
 
-grep -qxF ".cfg" "${GLOBAL_IGNORE}" ||
-    echo ".cfg" >> "${GLOBAL_IGNORE}"
+# Do not switch initialized submodules away from the user's selected commits.
+# A recursive clone handles new installs; existing checkouts must be ready first.
+SUBMODULE_STATUS="$(as_user git -C "${DOTFILES_DIR}" submodule status --recursive)"
+if printf '%s\n' "${SUBMODULE_STATUS}" | grep -q '^-'; then
+    die "Uninitialized submodules. As ${ADMIN_USER}, run: git -C \"${DOTFILES_DIR}\" submodule update --init --recursive"
+fi
 
-grep -qxF "*.sw?" "${GLOBAL_IGNORE}" ||
-    echo "*.sw?" >> "${GLOBAL_IGNORE}"
-
-chown "${ADMIN_USER}:${ADMIN_USER}" "${GLOBAL_IGNORE}"
-
-sudo -u "${ADMIN_USER}" \
-    HOME="${USER_HOME}" \
-    git config --global \
-    core.excludesfile "${GLOBAL_IGNORE}"
-
-githome config status.showUntrackedFiles no
-
-log "Checking out dotfiles"
-
-githome checkout
-
-log "Dotfiles installed"
+as_user bash "${DOTFILES_DIR}/setup.sh" --backup
+log "Dotfiles installed; legacy ~/.cfg was left untouched"

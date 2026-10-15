@@ -86,7 +86,6 @@ __RC_LOADING=0
 __source_depth=0
 
 
-
 ################################################################################
 # Uncomment the following to call the corresponding function prior to executing any command from the shell
 # function pre_command() {

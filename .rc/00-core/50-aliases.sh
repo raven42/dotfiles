@@ -20,7 +20,15 @@ function _dita_to_html() {
 
 # Core aliases
 alias dirs='dirs -v'
-alias githome='git --git-dir $HOME/.cfg --work-tree $HOME'
+# Keep the familiar command while Git operates on the standard checkout.
+unalias githome 2>/dev/null || :
+function githome() {
+    if [[ -z $DOTFILES_ROOT ]]; then
+        printf 'DOTFILES_ROOT is unset; reload the deployed shell configuration.\n' >&2
+        return 1
+    fi
+    git -C "$DOTFILES_ROOT" "$@"
+}
 if [[ $OSTYPE == darwin* ]]; then
 	alias ls='ls -FG'             # BSD ls: class indicators and native colors
 else

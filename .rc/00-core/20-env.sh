@@ -35,7 +35,8 @@ unset _dircolors_command
 # Display info
 export DISPLAY
 
-path_prepend PATH "${HOME}/sbin"
+# Run public tools from the checkout, after native commands.
+path_append PATH "$DOTFILES_ROOT/sbin"
 path_prepend PATH "${HOME}/bin"
 path_prepend PATH "${HOME}/bin/cron"
 path_prepend PATH "${HOME}/.local/bin"
