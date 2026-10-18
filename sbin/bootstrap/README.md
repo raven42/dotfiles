@@ -134,6 +134,9 @@ Provisioning options:
 | `--user <user>` | `raven` | Administrative Linux user |
 | `--ssh-key <path>` | `/opt/darkstar/keys/raven_ed25519.pub` | Public SSH key installed for the admin user |
 | `--setup <name>` | none | Apply a setup module; may be specified multiple times |
+| `--git-user <username>` | `raven42` | Git username for `--setup git-setup` |
+| `--git-name <name>` | `David Hegland` | Git commit author name for `--setup git-setup` |
+| `--git-email <email>` | `darth.gerbil@gmail.com` | Git commit author email for `--setup git-setup` |
 
 During creation, the script prompts for a root password. This password is used for console/recovery access inside the LXC and is not stored in the repository.
 
@@ -171,6 +174,9 @@ Options:
 | `--user <user>` | `raven` | Administrative Linux user |
 | `--ssh-key <path>` | `/opt/darkstar/keys/raven_ed25519.pub` | Public SSH key |
 | `--setup <name>` | none | Setup module to apply; repeatable |
+| `--git-user <username>` | `raven42` | Git username for `--setup git-setup` |
+| `--git-name <name>` | `David Hegland` | Git commit author name for `--setup git-setup` |
+| `--git-email <email>` | `darth.gerbil@gmail.com` | Git commit author email for `--setup git-setup` |
 
 Example:
 
@@ -339,6 +345,7 @@ Current layout:
 setup/
 ├── ansible-managed.sh
 ├── dotfiles.sh
+├── git-setup.sh
 └── services/
     └── nut.sh
 ```
@@ -447,6 +454,58 @@ python3 tests/test_bootstrap_dotfiles.py
 The bootstrap tests use fake identity/privilege commands and replace the root
 guard in a temporary copy. Git operations, submodule initialization, symlink
 deployment, and backups run against real temporary local repositories.
+
+### `git-setup`
+
+Configures the administrative Linux account's global Git settings. Apply it
+explicitly; it is not run by the Debian baseline or the dotfiles symlink installer:
+
+```bash
+proxmox-lxc apply --vmid 100 --setup git-setup
+```
+
+Defaults are Git username `raven42`, real name `David Hegland`, and email
+`darth.gerbil@gmail.com`. Customize them for either `create` or `apply`:
+
+```bash
+proxmox-lxc apply --vmid 100 --user raven --setup git-setup \
+    --git-user raven42 --git-name "David Hegland" --git-email darth.gerbil@gmail.com
+```
+
+The main command's `--user` still selects the **Linux account**, while
+`--git-user` selects the Git username. Only the `git-setup` module consumes the
+Git identity options. Its successful application is recorded in the normal
+setup markers and it is discovered automatically by `list` and completion.
+
+Standalone usage (no root required when configuring your own account):
+
+```bash
+bash sbin/bootstrap/setup/git-setup.sh \
+    --user raven42 --name "David Hegland" --email darth.gerbil@gmail.com
+```
+
+Standalone `--user` sets the Git username, not the Linux account. The target
+account is `ADMIN_USER` when supplied by Proxmox; otherwise it is the invoking
+account (or the original sudo account). To configure a different account:
+
+```bash
+sudo ADMIN_USER=raven bash sbin/bootstrap/setup/git-setup.sh
+```
+
+The script sets `user.username`, `user.name`, `user.email`, and `alias.glog`.
+`user.username` is informational custom configuration; Git uses `user.name` and
+`user.email` for commits. This does not set authentication credentials or change
+SSH configuration. The alias is:
+
+```bash
+git config --global alias.glog "log --graph --all --pretty=format:'%C(yellow)%h%Creset %C(red)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
+```
+
+Reapplying replaces those four values and preserves unrelated Git settings.
+The module does not pull dotfiles or deploy symlinks; its changes live in the
+target account's global Git configuration. Test with
+`python3 tests/test_bootstrap_git_setup.py` (temporary homes and mocked Proxmox
+calls; no real host/container configuration is changed).
 
 ### `ansible-managed`
 
@@ -571,6 +630,7 @@ sbin/
     └── setup/
         ├── ansible-managed.sh
         ├── dotfiles.sh
+        ├── git-setup.sh
         │
         └── services/
             └── nut.sh

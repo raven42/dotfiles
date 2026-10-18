@@ -45,6 +45,9 @@ Provisioning:
   --user <user>        Admin user      (default: ${ADMIN_USER})
   --ssh-key <path>     Public SSH key  (default: ${SSH_PUBLIC_KEY})
   --setup <name>       Apply setup module; repeatable
+  --git-user <name>    Git username    (default: ${GIT_SETUP_USER})
+  --git-name <name>    Git real name   (default: ${GIT_SETUP_NAME})
+  --git-email <email>  Git email       (default: ${GIT_SETUP_EMAIL})
 
 Example:
   proxmox-lxc create \
@@ -110,6 +113,17 @@ while [[ $# -gt 0 ]]; do
 
         --ssh-key)
             SSH_PUBLIC_KEY="$2"
+            shift 2
+            ;;
+
+        --git-user|--git-name|--git-email)
+            [[ $# -ge 2 && -n "$2" && "$2" != -* ]] ||
+                die "$1 requires a value."
+            case "$1" in
+                --git-user) GIT_SETUP_USER="$2" ;;
+                --git-name) GIT_SETUP_NAME="$2" ;;
+                --git-email) GIT_SETUP_EMAIL="$2" ;;
+            esac
             shift 2
             ;;
 

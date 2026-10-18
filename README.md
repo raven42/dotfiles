@@ -77,6 +77,12 @@ migrate local Vim additions from the backup. Review `--dry-run` when adding new
 checkout content, since untracked files are eligible too. Remove or extend exclusion
 patterns in `.deploy.json` if you want normally omitted repository content deployed.
 
+### Migrating an existing bare HOME repository
+
+Use [`scripts/migrate.py`](scripts/migrate.py) for a backed-up v3.0 to v4.0
+migration with a private override tier. Read the [migration guide](doc/migration-v4.md)
+for preparation, required shell-customization review, apply, and recovery.
+
 ### Tools stay in the checkout
 
 `sbin/`, `doc/`, and `img/` are repository-only content. Core shell setup appends

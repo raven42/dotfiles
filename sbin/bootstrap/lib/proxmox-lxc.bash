@@ -82,6 +82,10 @@ _proxmox_lxc() {
             )
             return
             ;;
+
+        --git-user|--git-name|--git-email)
+            return
+            ;;
     esac
 
     case "${command}" in
@@ -100,6 +104,9 @@ _proxmox_lxc() {
                     --user
                     --ssh-key
                     --setup
+                    --git-user
+                    --git-name
+                    --git-email
                     --help
                 " -- "${cur}")
             )
@@ -112,6 +119,9 @@ _proxmox_lxc() {
                     --user
                     --ssh-key
                     --setup
+                    --git-user
+                    --git-name
+                    --git-email
                     --help
                 " -- "${cur}")
             )

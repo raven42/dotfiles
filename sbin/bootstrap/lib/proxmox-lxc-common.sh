@@ -15,6 +15,9 @@ MANIFEST_FILE="${STATE_DIR}/manifest"
 
 DEFAULT_ADMIN_USER="raven"
 DEFAULT_SSH_PUBLIC_KEY="/opt/darkstar/keys/raven_ed25519.pub"
+GIT_SETUP_USER="${GIT_SETUP_USER:-raven42}"
+GIT_SETUP_NAME="${GIT_SETUP_NAME:-David Hegland}"
+GIT_SETUP_EMAIL="${GIT_SETUP_EMAIL:-darth.gerbil@gmail.com}"
 
 log() {
     printf '\n\033[1;34m==>\033[0m %s\n' "$*"
@@ -325,9 +328,14 @@ run_setup_module() {
     local setup_script
     local remote_script
     local commit
+    local setup_args
 
     setup_script="$(resolve_setup_script "${setup}")"
     remote_script="/root/setup-${setup}.sh"
+    setup_args=("${remote_script}")
+    if [[ "${setup}" == "git-setup" ]]; then
+        setup_args+=(--user "${GIT_SETUP_USER}" --name "${GIT_SETUP_NAME}" --email "${GIT_SETUP_EMAIL}")
+    fi
     commit="$(source_commit)"
 
     log "Copying setup module: ${setup}"
@@ -342,7 +350,7 @@ run_setup_module() {
 
     pct exec "${vmid}" -- \
         env ADMIN_USER="${admin_user}" \
-        "${remote_script}"
+        "${setup_args[@]}"
 
     record_setup_marker \
         "${vmid}" \
