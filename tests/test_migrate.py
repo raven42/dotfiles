@@ -137,6 +137,17 @@ class MigrationTests(unittest.TestCase):
         self.run_migration('--home', self.home, '--target', self.target, ok=False)
         self.assertFalse((self.home / '.dotfiles-migration').exists())
 
+    def test_baseline_autodetected_from_nearest_tag(self):
+        self.git(*self.legacy, 'tag', 'v3.1')
+        result = self.run_migration('--home', self.home, '--target', self.target)
+        self.assertIn('Using baseline v3.1', result.stdout)
+
+    def test_missing_baseline_tags_require_explicit_baseline(self):
+        self.git(*self.legacy, 'tag', '-d', 'v3.0')
+        result = self.run_migration('--home', self.home, '--target', self.target, ok=False)
+        self.assertIn('--baseline', result.stderr)
+        self.assertFalse((self.home / '.dotfiles-migration').exists())
+
     def test_wrong_target_ref_rejected(self):
         self.git('-C', str(self.target), 'tag', '-d', 'v4.0')
         self.run_migration('--home', self.home, '--target', self.target, ok=False)

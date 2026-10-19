@@ -1,8 +1,9 @@
 # Migrating a bare HOME repository to v4.0
 
 Run `scripts/migrate.py` using Python 3. It compares the old HOME working tree
-against the bare repository's `v3.0` tag, rather than assuming HEAD is the upstream
-version. This includes committed user customizations, staged edits, unstaged edits,
+against the stock version the bare repository was based on, rather than assuming HEAD
+is the upstream version. That baseline is the nearest release tag reachable from the
+bare repository's HEAD (any of v1.0 to v4.0); override it with `--baseline`. This includes committed user customizations, staged edits, unstaged edits,
 and untracked contents in the managed directories. It never runs legacy shell
 code while inspecting it, pulls Git updates, or changes the old bare repository.
 
@@ -21,7 +22,7 @@ python3 /path/to/migrate.py --target "$HOME/Projects/dotfiles-v4"
 The migration script can run from a newer checkout or a standalone copy. It does
 not need to exist in the tagged destination. `--home`, `--bare`, `--baseline`, and
 `--target-ref` support alternative paths/versions; defaults are HOME, HOME/.cfg,
-v3.0 and v4.0. The destination must be clean and at the requested commit, with
+the nearest tag below HEAD and v4.0. The destination must be clean and at the requested commit, with
 initialized submodules. Repositories borrowing external objects through Git
 alternates must first be made self-contained.
 

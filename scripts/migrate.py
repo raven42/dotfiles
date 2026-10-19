@@ -96,6 +96,14 @@ def target_check(target, ref):
     return head.decode()
 
 
+def detect_baseline(repo):
+    """Nearest release tag reachable from the legacy HEAD, i.e. the stock version the user started from."""
+    try:
+        return git(repo, 'describe', '--tags', '--abbrev=0', 'HEAD').decode().strip()
+    except subprocess.CalledProcessError:
+        raise ValueError('Cannot detect the stock version of the legacy repo; pass --baseline <tag-or-commit>')
+
+
 def safe_name(name):
     path = Path(name)
     if path.is_absolute() or '..' in path.parts or not path.parts or name == '.':
@@ -112,6 +120,8 @@ def prepare(args):
     git(bare, 'rev-parse', '--git-dir')
     if (bare / 'objects/info/alternates').exists():
         raise ValueError('Legacy repo uses external Git objects; make it self-contained before migration')
+    args.baseline = args.baseline or detect_baseline(bare)
+    print('Using baseline ' + args.baseline)
     baseline = tree(bare, args.baseline)
     tracked = tree(bare, 'HEAD')
     names = set(baseline) | set(tracked)
@@ -264,7 +274,7 @@ def prepare(args):
     if deleted:
         review.append('Review intentionally deleted v3 files listed in manifest; v4 may reintroduce them')
     manifest = dict(home=str(home), bare=str(bare), target=str(target), commit=commit,
-                    target_ref=args.target_ref, roots=sorted(roots), fingerprints=before,
+                    target_ref=args.target_ref, baseline=args.baseline, roots=sorted(roots), fingerprints=before,
                     bare_fingerprint=bare_before, overrides=sorted(set(overrides)),
                     deleted=deleted, stock_scripts=stock_scripts, review=review, applied=False)
     (session / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -349,7 +359,7 @@ def main():
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--bare', type=Path, help='legacy Git directory (default HOME/.cfg)')
     parser.add_argument('--target', type=Path, help='clean standard checkout at or after the target ref')
-    parser.add_argument('--baseline', default='v3.0')
+    parser.add_argument('--baseline', help='stock commit/tag the legacy repo derives from (default: nearest tag below HEAD)')
     parser.add_argument('--target-ref', default='v4.0')
     parser.add_argument('--include', action='append', default=[], help='additional HOME-relative backup path')
     parser.add_argument('--apply', type=Path, help='apply a prepared migration directory')
