@@ -141,6 +141,8 @@ class MigrationTests(unittest.TestCase):
         self.git(*self.legacy, 'tag', 'v3.1')
         result = self.run_migration('--home', self.home, '--target', self.target)
         self.assertIn('Using baseline v3.1', result.stdout)
+        self.assertRegex(next((self.home / '.dotfiles-migration').iterdir()).name,
+                         r'^v3\.1-[0-9a-f]{10}-to-v4\.0-[0-9a-f]{10}-.+')
 
     def test_missing_baseline_tags_require_explicit_baseline(self):
         self.git(*self.legacy, 'tag', '-d', 'v3.0')

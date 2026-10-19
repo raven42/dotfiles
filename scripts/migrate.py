@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shlex
 import shutil
 import subprocess
@@ -104,6 +105,14 @@ def detect_baseline(repo):
         raise ValueError('Cannot detect the stock version of the legacy repo; pass --baseline <tag-or-commit>')
 
 
+def session_prefix(bare, baseline, target_ref, target_commit):
+    """<baseline>-<hash>-to-<target-ref>-<hash>- ; mkdtemp appends the random label."""
+    def label(name):
+        return re.sub(r'[^A-Za-z0-9._]+', '_', name)
+    old_hash = git(bare, 'rev-parse', '--short=10', baseline + '^{commit}').decode().strip()
+    return '{}-{}-to-{}-{}-'.format(label(baseline), old_hash, label(target_ref), target_commit[:10])
+
+
 def safe_name(name):
     path = Path(name)
     if path.is_absolute() or '..' in path.parts or not path.parts or name == '.':
@@ -162,7 +171,7 @@ def prepare(args):
     before = {n: fingerprint(home / n) for n in sorted(roots)}
     bare_before = fingerprint(bare)
     base.mkdir(mode=0o700, exist_ok=True)
-    session = Path(tempfile.mkdtemp(prefix='v3-to-v4-', dir=base))
+    session = Path(tempfile.mkdtemp(prefix=session_prefix(bare, args.baseline, args.target_ref, commit), dir=base))
     os.chmod(session, 0o700)
     backup = session / 'backup'
     backup.mkdir()

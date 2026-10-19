@@ -26,7 +26,8 @@ the nearest tag below HEAD and v4.0. The destination must be clean and at the re
 initialized submodules. Repositories borrowing external objects through Git
 alternates must first be made self-contained.
 
-Preparation creates a private `~/.dotfiles-migration/v3-to-v4-*/` directory:
+Preparation creates a private `~/.dotfiles-migration/<baseline>-<hash>-to-<target>-<hash>-<label>/` directory
+(for example `v3.0-1a2b3c4d5e-to-v4.0-3a4feae123-x7k2p9qz`):
 
 - `backup/home/`: complete managed top-level directories and files, including
   untracked contents. Scope combines legacy tracked/indexed paths, new deployment
@@ -67,7 +68,7 @@ Read `REVIEW.md` and edit `local/99-local/` before applying:
 
 ```bash
 python3 /path/to/migrate.py \
-  --apply "$HOME/.dotfiles-migration/v3-to-v4-EXAMPLE" --accept-review
+  --apply "$HOME/.dotfiles-migration/v3.0-1a2b3c4d5e-to-v4.0-3a4feae123-EXAMPLE" --accept-review
 ```
 
 `--accept-review` means you have resolved the checklist; it does not automatically
