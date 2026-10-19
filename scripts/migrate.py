@@ -113,6 +113,38 @@ def session_prefix(bare, baseline, target_ref, target_commit):
     return '{}-{}-to-{}-{}-'.format(label(baseline), old_hash, label(target_ref), target_commit[:10])
 
 
+DATA_DIR = '$HOME/.rc/99-local/data'
+LEGACY_DIRS = {'.default': 'default', '.private': 'private'}
+# Legacy entry points sourced by the v3 .bashrc, in v3 order: (path, tier file name).
+LEGACY_ENTRY = [('.default/common_rc.sh', '15-default-common_rc.sh'),
+                ('.default/vscode_env.bash', '16-default-vscode_env.sh'),
+                ('.private/private_rc.sh', '17-private-private_rc.sh'),
+                ('.private/post_rc.sh', '95-private-post_rc.sh')]
+LEGACY_VARS = ('GIT_PRIVATE_RC', 'NERDTREE_DEF_BOOKMARKS')
+
+
+def rewrite_legacy_paths(text, home):
+    """Point v3 DEFAULT_RC_PATH/PRIVATE_RC_PATH and ~/.default, ~/.private references at the 99-local data dir."""
+    count = 0
+
+    def sub(pattern, replacement, value, flags=0):
+        nonlocal count
+        value, n = re.subn(pattern, replacement, value, flags=flags)
+        count += n
+        return value
+    text = sub(r'^([ \t]*)(?:export[ \t]+)?(DEFAULT|PRIVATE)_RC_PATH=.*$',
+               r'\1# removed by migration (v4 has no \2_RC_PATH): \g<0>', text, re.M)
+    for var, name in (('DEFAULT', 'default'), ('PRIVATE', 'private')):
+        text = sub(r'\$\{' + var + r'_RC_PATH[^}]*\}|\$' + var + r'_RC_PATH\b', DATA_DIR + '/' + name, text)
+    prefix = r'(?:\$\{HOME\}|\$HOME|~|' + re.escape(str(home)) + ')'
+    text = sub(prefix + r'/\.(default|private)\b', lambda m: DATA_DIR + '/' + LEGACY_DIRS['.' + m.group(1)], text)
+    return text, count
+
+
+def legacy_variable_refs(text):
+    return [v for v in LEGACY_VARS if re.search(r'\$\{?' + v + r'\b', text)]
+
+
 def split_appended(text, first_line):
     """Split appended shell code into runs of (kind, first_line, last_line, text).
 
@@ -129,8 +161,14 @@ def split_appended(text, first_line):
         first = words[0] if words else ''
         kind = 'other'
         if not continued and not heredoc and depth == 0 and not line[:1].isspace():
-            if re.match(r'(export\s+[A-Za-z_][A-Za-z0-9_]*=|alias\s+[^\s=]+=)', line) and simple_line(line):
+            match = re.match(r'(?:export\s+([A-Za-z_][A-Za-z0-9_]*)=|alias\s+[^\s=]+=)', line)
+            if match and simple_line(line):
                 kind = 'vars' if first == 'export' else 'aliases'
+                # 00-vars.sh is re-sourced on repository changes: keep PATH-style and self-referencing
+                # exports (which would accumulate) in the one-time startup file.
+                name = match.group(1)
+                if name and (name.endswith('PATH') or re.search(r'\$\{?' + name + r'\b', line)):
+                    kind = 'other'
         if '<<' in line:
             heredoc = True
         if first in ('if', 'for', 'while', 'until', 'case', 'select') or line.rstrip().endswith('{'):
@@ -159,6 +197,72 @@ def simple_line(line):
     except ValueError:
         return False
     return not any(t and all(c in lexer.punctuation_chars for c in t) for t in tokens)
+
+
+def migrate_legacy_dirs(home, stock, override, sections, headers, review):
+    """Move v3 ~/.default and ~/.private contents into the 99-local tier, dropping the old layout.
+
+    Entry points the v3 .bashrc sourced become numbered tier files; every other file is copied under
+    99-local/data/{default,private}. References to the old locations and variables are rewritten.
+    Files identical to the baseline (stock templates) are skipped.
+    """
+    entries = dict(LEGACY_ENTRY)
+    migrated = []
+    pending = []
+    for legacy, label in LEGACY_DIRS.items():
+        root = home / legacy
+        if not root.is_dir():
+            continue
+        if root.is_symlink():
+            review.append('~/{} is a symlink to {}; its files were copied and the link is unchanged'.format(
+                legacy, os.readlink(root)))
+        for current, dirs, files in os.walk(root, followlinks=True):
+            dirs.sort()
+            for filename in sorted(files):
+                path = Path(current) / filename
+                rel = path.relative_to(home).as_posix()
+                content = path.read_bytes()
+                if not path.is_file() or stock(rel, content):
+                    continue
+                shell = path.suffix in ('.sh', '.bash') or content.startswith(b'#!')
+                try:
+                    text = content.decode()
+                except UnicodeDecodeError:
+                    shell = False
+                count = 0
+                if shell:
+                    text, count = rewrite_legacy_paths(text, home)
+                    for variable in legacy_variable_refs(text):
+                        review.append('~/{} uses ${}, which v4 no longer defines'.format(rel, variable))
+                if rel in entries:
+                    tier = entries[rel]
+                    note = 'migrated into the tier' + ('; {} path references rewritten'.format(count) if count else '')
+                    sections[tier] = ['\n# ---- Source: ~/{} ({}) ----\n'.format(rel, note)
+                                      + (text if text.endswith('\n') else text + '\n')]
+                    headers[tier] = '# Migrated from the v3 .default/.private layout.\n'
+                    migrated.append(rel)
+                else:
+                    dest = override / 'data' / label / path.relative_to(root)
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(path, dest)
+                    if shell:
+                        dest.write_text(text)
+                    migrated.append(rel)
+                    pending.append(rel)
+                if count:
+                    review.append('Review {} legacy path references rewritten in migrated ~/{}'.format(count, rel))
+                if shell:
+                    pending_text = text
+                    for entry in entries:
+                        base = DATA_DIR + '/' + LEGACY_DIRS['.' + entry.split('/')[0].lstrip('.')] + '/'
+                        if base + entry.split('/', 1)[1] in pending_text:
+                            review.append('~/{} refers to entry file ~/{}, which now lives in the tier, not under '
+                                          'data/'.format(rel, entry))
+    if pending:
+        review.append('Review {} migrated legacy data file(s) under local/99-local/data (path '
+                      '$HOME/.rc/99-local/data/...); ~/.default and ~/.private are no longer used'.format(len(pending)))
+    elif migrated:
+        review.append('~/.default and ~/.private are no longer used by v4; their old files remain in HOME and backup')
 
 
 def safe_name(name):
@@ -310,14 +414,12 @@ def prepare(args):
     def add(filename, source, body):
         sections[filename].append('\n# ---- Source: ' + source + ' ----\n' + body)
 
-    add('00-vars.sh', generated,
-        'export DEFAULT_RC_PATH="$HOME/.default"\n'
-        'export PRIVATE_RC_PATH="$HOME/.private"\n'
-        'export GIT_PRIVATE_RC="$HOME/.private/repo_rc.sh"\n'
-        'export NERDTREE_DEF_BOOKMARKS="$HOME/.private/NERDTreeDefaultBookmarks"\n')
     add('20-env.sh', generated, 'path_prepend PATH "$HOME/sbin"\npath_prepend PATH "$HOME/bin"\n')
-    for name in ['.default/common_rc.sh', '.default/vscode_env.bash',
-                 '.private/private_rc.sh', '.bash_aliases', '.aliases', '.private/post_rc.sh']:
+    def stock(name, content):
+        old = baseline.get(name)
+        return bool(old) and old[1] == 'blob' and git(bare, 'cat-file', 'blob', old[2]) == content
+    migrate_legacy_dirs(home, stock, override, sections, headers, review)
+    for name in ['.bash_aliases', '.aliases']:
         if (home / name).is_file():
             add('90-post.sh', 'legacy hook ~/' + name + ' (sourced, not copied)', 'source "$HOME/' + name + '"\n')
             review.append('Review generated source of ' + name + ' in 90-post.sh; original remains in HOME and backup')
@@ -329,6 +431,10 @@ def prepare(args):
         review.append('Review retained bin/completions shell files')
     destination = {'vars': '00-vars.sh', 'aliases': '50-aliases.sh', 'other': '90-post.sh'}
     for source, first_line, appended in appended_shell:
+        appended, count = rewrite_legacy_paths(appended, home)
+        if count:
+            review.append('Review {} references to v3 DEFAULT/PRIVATE paths rewritten in appended ~/{} code'.format(
+                count, source))
         for kind, first, last, body in split_appended(appended, first_line):
             if body.strip():
                 span = 'line {}'.format(first) if first == last else 'lines {}-{}'.format(first, last)
@@ -338,7 +444,7 @@ def prepare(args):
         add('00-vars.sh', 'retained ~/bin/prompt_command directory', 'export PROMPT_COMMAND_PATH="$HOME/bin/prompt_command"\n')
         review.append('Review retained bin/prompt_command hooks and PROMPT_COMMAND_PATH')
     for filename, parts in sections.items():
-        (override / filename).write_text(headers[filename] + ''.join(parts))
+        (override / filename).write_text(headers.get(filename, '') + ''.join(parts))
     if (home / '.rc').exists():
         review.append('Review existing .rc entries for old loaders or conflicting tier names')
     if deleted:
@@ -387,6 +493,8 @@ def apply(args):
     staged_tier.mkdir()
     variables = shlex.quote(str(session / 'local/99-local/00-vars.sh'))
     custom = shlex.quote(str(session / 'local/99-local'))
+    if (session / 'local/99-local/data').is_dir():
+        (staged_tier / 'data').symlink_to(session / 'local/99-local/data')
     (staged_tier / '00-vars.sh').write_text('source ' + variables + '\n')
     (staged_tier / '90-post.sh').write_text(
         '__migration_load_local() { __rc_load ' + custom + '; }\n'
