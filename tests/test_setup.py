@@ -112,8 +112,8 @@ with tempfile.TemporaryDirectory(prefix='dotfiles-setup-') as tmp:
     run('--migrate-sbin', '--backup')
     assert not live.is_symlink() and not dead.is_symlink()
     for path in [live, dead]:
-        copies = (home / '.dotfiles-backups').glob(
-            '*/' + path.relative_to(home).as_posix())
+        # Path.glob() skips dangling symlinks before Python 3.12, so test each backup directory directly.
+        copies = [session / path.relative_to(home) for session in (home / '.dotfiles-backups').iterdir()]
         assert any(copy.is_symlink() for copy in copies)
     assert unrelated.is_symlink() and local.read_text() == 'keep'
     assert (external / 'keep').is_symlink()
@@ -207,8 +207,7 @@ with tempfile.TemporaryDirectory(prefix='dotfiles-setup-') as tmp:
     run('--backup', '--clean-stale')
     for p in [stale, relative, deleted_dir]:
         assert not p.is_symlink()
-        copies = list((home / '.dotfiles-backups').glob(
-            '*/' + p.relative_to(home).as_posix()))
+        copies = [session / p.relative_to(home) for session in (home / '.dotfiles-backups').iterdir()]
         assert any(copy.is_symlink() for copy in copies)
     assert all(p.is_symlink() for p in protected)
     assert regular.read_text() == 'untouched'

@@ -20,13 +20,14 @@ python3 /path/to/migrate.py --target "$HOME/Projects/dotfiles-v4"
 ```
 
 The migration script can run from a newer checkout or a standalone copy. It does
-not need to exist in the tagged destination. `--home`, `--bare`, `--baseline`, and
-`--target-ref` support alternative paths/versions; defaults are HOME, HOME/.cfg,
+not need to exist in the tagged destination. `--home`, `--bare`, `--output`, `--baseline`, and
+`--target-ref` support alternative paths/versions; defaults are HOME, HOME/.cfg, ~/.dotfiles-migration,
 the nearest tag below HEAD and v4.0. The destination must be clean and at the requested commit, with
 initialized submodules. Repositories borrowing external objects through Git
 alternates must first be made self-contained.
 
-Preparation creates a private `~/.dotfiles-migration/<baseline>-<hash>-to-<target>-<hash>-<label>/` directory
+Preparation creates a private `<output>/<baseline>-<hash>-to-<target>-<hash>-<label>/` directory, where `<output>`
+is `--output` (default `~/.dotfiles-migration` in the invoking user's home)
 (for example `v3.0-1a2b3c4d5e-to-v4.0-3a4feae123-x7k2p9qz`):
 
 - `backup/home/`: complete managed top-level directories and files, including
@@ -69,8 +70,11 @@ Read `REVIEW.md` and edit `local/99-local/` before applying:
   `NERDTREE_DEF_BOOKMARKS` are no longer defined; references are flagged. The old directories stay
   in HOME (and the backup) untouched, but nothing sources them.
 - `~/.bash_aliases` and `~/.aliases` get explicit source lines in `90-post.sh`; review them for
-  obsolete loader or bare-Git assumptions. The original files remain in HOME. Completion and
-  prompt hook locations are retained.
+  obsolete loader or bare-Git assumptions. The original files remain in HOME.
+- `~/bin/prompt_command` hooks (`*.sh`, `*.bash`) are copied to `99-local/prompt.d/`, exposed after apply as
+  `~/.rc/99-local/prompt.d`. v4 keeps `PROMPT_COMMAND_PATH` at `~/.rc/prompt.d` (the migration no longer
+  overrides it) and its prompt loader also reads `~/.rc/99-local/prompt.d`. Preparation warns if the target
+  checkout's `.bashrc` predates that loader. `~/bin/completions/*.bash` is sourced in place from `90-post.sh`.
 - Modified and new user scripts remain in `~/sbin` and `~/bin`, ahead of public
   tools. Unchanged v3 scripts in `~/sbin` are removed after backup so they cannot
   shadow new commands or reintroduce old shell libraries.
@@ -100,7 +104,7 @@ The migration directory contains active override files, not just backups: **keep
 it in place**. Later installer runs with `--backup` can replace local config links
 with public ones; review their plans and reapply your private config links if
 necessary. The local tier is independent of public tiers and remains in place.
-Private binfiles profile selection is a separate installer step; `~/bin` is kept.
+Optional profile selection (see the README) is a separate installer step; `~/bin` is kept.
 
 ## Recovery
 
@@ -114,3 +118,11 @@ absent in the backup were originally absent. Restore directories as whole trees,
 not an overlay, to remove new tier links. The original `.cfg` is left untouched;
 `backup/bare-repo/` is an additional recovery copy. Do not delete the destination
 checkout or migration directory while any active links still reference them.
+
+## Dry-running against another home
+
+Preparation only reads `--home`; every generated file, including the backup, goes under `--output`. To rehearse
+a migration for another user's checkout (for example a copy of their home mounted read-only), point `--home`
+and `--bare` at it and `--output` somewhere you own. The output directory must not overlap the home's managed
+paths, the legacy repository or the target checkout. `--apply` always modifies the home recorded in the
+manifest, so do not run it against a rehearsal copy you want to keep pristine.

@@ -126,7 +126,7 @@ function set_prompt() {
 	fi
 
 	local prompt_dir prompt_file
-	for prompt_dir in "$PROMPT_COMMAND_PATH"; do
+	for prompt_dir in "$PROMPT_COMMAND_PATH" "$RC_PATH/99-local/prompt.d"; do
 		[[ -n $prompt_dir && -d $prompt_dir ]] || continue
 		for prompt_file in "$prompt_dir"/*.{sh,bash}; do
 			case "${prompt_file##*/}" in xx-*) continue ;; esac
@@ -141,7 +141,8 @@ function set_prompt() {
 # PROMPT_COMMAND_PATH (exported by ~/.rc/00-core/00-vars.sh, points at ~/.rc/prompt.d) holds files that should
 # be sourced during the execution of PROMPT_COMMAND. This allows for updating env variables on each command if
 # needed, or adjusting the information displayed in the prompt. To add a resource script to the prompt
-# command path, just put the <file>.sh script in that directory.
+# command path, just put the <file>.sh script in that directory. Hooks local to a machine can also be placed in
+# $RC_PATH/99-local/prompt.d, which is read after PROMPT_COMMAND_PATH.
 export PROMPT_COMMAND=set_prompt
 
 # All tiers and prompt helpers are now available to startup callbacks.

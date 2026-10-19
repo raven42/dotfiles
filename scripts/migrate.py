@@ -114,6 +114,7 @@ def session_prefix(bare, baseline, target_ref, target_commit):
 
 
 DATA_DIR = '$HOME/.rc/99-local/data'
+PROMPT_DIR = '99-local/prompt.d'
 LEGACY_DIRS = {'.default': 'default', '.private': 'private'}
 # Legacy entry points sourced by the v3 .bashrc, in v3 order: (path, tier file name).
 LEGACY_ENTRY = [('.default/common_rc.sh', '15-default-common_rc.sh'),
@@ -317,12 +318,21 @@ def prepare(args):
     tier = home / '.rc/99-local'
     if present(tier):
         raise ValueError('Existing .rc/99-local must be migrated manually; refusing to replace it')
-    base = home / '.dotfiles-migration'
-    if base.is_symlink():
+    # HOME is only read during preparation; everything generated goes under the output directory.
+    requested = (args.output or Path.home() / '.dotfiles-migration').expanduser()
+    if requested.is_symlink():
         raise ValueError('Migration directory must not be a symlink')
+    base = requested.resolve()
+    for name in roots:
+        path = home / name
+        if base == path or base in path.parents or path in base.parents:
+            raise ValueError('Output directory overlaps managed path ' + str(path) + '; choose another --output')
+    for path in (target, bare):
+        if base == path or base in path.parents or path in base.parents:
+            raise ValueError('Output directory overlaps ' + str(path) + '; choose another --output')
     before = {n: fingerprint(home / n) for n in sorted(roots)}
     bare_before = fingerprint(bare)
-    base.mkdir(mode=0o700, exist_ok=True)
+    base.mkdir(mode=0o700, parents=True, exist_ok=True)
     session = Path(tempfile.mkdtemp(prefix=session_prefix(bare, args.baseline, args.target_ref, commit), dir=base))
     os.chmod(session, 0o700)
     backup = session / 'backup'
@@ -424,11 +434,11 @@ def prepare(args):
             add('90-post.sh', 'legacy hook ~/' + name + ' (sourced, not copied)', 'source "$HOME/' + name + '"\n')
             review.append('Review generated source of ' + name + ' in 90-post.sh; original remains in HOME and backup')
     if (home / 'bin/completions').is_dir():
-        add('90-post.sh', 'retained ~/bin/completions/*.bash (sourced, not copied)',
+        add('90-post.sh', 'retained ~/bin/completions/*.bash (sourced in place, not copied)',
             'for __migration_completion in "$HOME"/bin/completions/*.bash; do\n'
             '    [[ ! -f $__migration_completion ]] || source "$__migration_completion"\n'
             'done\nunset __migration_completion\n')
-        review.append('Review retained bin/completions shell files')
+        review.append('Review retained ~/bin/completions shell files')
     destination = {'vars': '00-vars.sh', 'aliases': '50-aliases.sh', 'other': '90-post.sh'}
     for source, first_line, appended in appended_shell:
         appended, count = rewrite_legacy_paths(appended, home)
@@ -440,9 +450,19 @@ def prepare(args):
                 span = 'line {}'.format(first) if first == last else 'lines {}-{}'.format(first, last)
                 add(destination[kind], '~/{} {}, appended after {} (diff vs. baseline)'.format(
                     source, span, args.baseline), body if body.endswith('\n') else body + '\n')
-    if (home / 'bin/prompt_command').is_dir():
-        add('00-vars.sh', 'retained ~/bin/prompt_command directory', 'export PROMPT_COMMAND_PATH="$HOME/bin/prompt_command"\n')
-        review.append('Review retained bin/prompt_command hooks and PROMPT_COMMAND_PATH')
+    legacy_prompt = home / 'bin/prompt_command'
+    if legacy_prompt.is_dir():
+        hooks = sorted(p for p in legacy_prompt.iterdir() if p.is_file() and p.suffix in ('.sh', '.bash'))
+        for hook in hooks:
+            (override / 'prompt.d').mkdir(exist_ok=True)
+            shutil.copy2(hook, override / 'prompt.d' / hook.name)
+        if hooks:
+            review.append('Review {} prompt hook(s) copied from ~/bin/prompt_command to local/99-local/prompt.d; '
+                          'v4 keeps PROMPT_COMMAND_PATH=~/.rc/prompt.d and also reads ~/.rc/99-local/prompt.d'.format(
+                              len(hooks)))
+            if PROMPT_DIR not in (target / '.bashrc').read_text():
+                review.append('The target .bashrc does not read ~/.rc/99-local/prompt.d; update the dotfiles '
+                              'checkout (target-ref or later) or the copied prompt hooks will not run')
     for filename, parts in sections.items():
         (override / filename).write_text(headers.get(filename, '') + ''.join(parts))
     if (home / '.rc').exists():
@@ -493,8 +513,9 @@ def apply(args):
     staged_tier.mkdir()
     variables = shlex.quote(str(session / 'local/99-local/00-vars.sh'))
     custom = shlex.quote(str(session / 'local/99-local'))
-    if (session / 'local/99-local/data').is_dir():
-        (staged_tier / 'data').symlink_to(session / 'local/99-local/data')
+    for linked in ('data', 'prompt.d'):
+        if (session / 'local/99-local' / linked).is_dir():
+            (staged_tier / linked).symlink_to(session / 'local/99-local' / linked)
     (staged_tier / '00-vars.sh').write_text('source ' + variables + '\n')
     (staged_tier / '90-post.sh').write_text(
         '__migration_load_local() { __rc_load ' + custom + '; }\n'
@@ -537,6 +558,9 @@ def main():
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--bare', type=Path, help='legacy Git directory (default HOME/.cfg)')
     parser.add_argument('--target', type=Path, help='clean standard checkout at or after the target ref')
+    parser.add_argument('--output', type=Path,
+                        help='directory for the generated migration directory (default: ~/.dotfiles-migration); '
+                             '--home is only read')
     parser.add_argument('--baseline', help='stock commit/tag the legacy repo derives from (default: nearest tag below HEAD)')
     parser.add_argument('--target-ref', default='v4.0')
     parser.add_argument('--include', action='append', default=[], help='additional HOME-relative backup path')

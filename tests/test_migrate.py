@@ -34,6 +34,7 @@ class MigrationTests(unittest.TestCase):
         (self.home / '.bashrc').write_text('# old startup\nalias mine="echo mine"\n')
         (self.home / '.tmux.conf').write_text('local settings\n')
         (self.home / 'sbin/untracked').write_text('personal tool\n')
+        self.output = self.base / 'migration output'
         self.target = self.base / 'target clone'
         self.target.mkdir()
         shutil.copytree(ROOT / 'scripts', self.target / 'scripts',
@@ -66,8 +67,8 @@ class MigrationTests(unittest.TestCase):
         return result
 
     def prepare(self):
-        self.run_migration('--home', self.home, '--target', self.target)
-        return next((self.home / '.dotfiles-migration').iterdir())
+        self.run_migration('--home', self.home, '--output', self.output, '--target', self.target)
+        return next(self.output.iterdir())
 
     def test_preservation_and_apply(self):
         session = self.prepare()
@@ -134,8 +135,8 @@ class MigrationTests(unittest.TestCase):
         self.git('-C', str(self.target), 'commit', '-m', 'later')
         self.git('-C', str(self.target), 'tag', '-f', 'v4.0')
         self.git('-C', str(self.target), 'checkout', '-q', 'HEAD~1')
-        self.run_migration('--home', self.home, '--target', self.target, ok=False)
-        self.assertFalse((self.home / '.dotfiles-migration').exists())
+        self.run_migration('--home', self.home, '--output', self.output, '--target', self.target, ok=False)
+        self.assertFalse(self.output.exists())
 
     def test_appended_bashrc_routed_with_provenance(self):
         with (self.home / '.bashrc').open('a') as stream:
@@ -186,26 +187,70 @@ class MigrationTests(unittest.TestCase):
         result = subprocess.run(['bash', '--noprofile', '--norc', '-c', script],
                                 env={**os.environ, 'HOME': str(self.home)}, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip().split('|'), ['1', '1', str(self.home) + '/.rc/99-local/data/default/data.txt',
-                                                 str(self.home) + '/.rc/99-local/data/private/post'])
+        self.assertEqual(
+            result.stdout.strip().split('|'), [
+                '1', '1', str(self.home) + '/.rc/99-local/data/default/data.txt',
+                str(self.home) + '/.rc/99-local/data/private/post'
+            ]
+        )
+
+    def test_legacy_prompt_hooks_and_completions_migrated(self):
+        for directory in ('bin/prompt_command', 'bin/completions'):
+            (self.home / directory).mkdir(parents=True)
+        (self.home / 'bin/prompt_command/10-x.sh').write_text('export HOOK_RAN=1\n')
+        (self.home / 'bin/prompt_command/notes.txt').write_text('not a hook\n')
+        (self.home / 'bin/completions/x.bash').write_text('export COMPLETION_LOADED=1\n')
+        session = self.prepare()
+        tier = session / 'local/99-local'
+        self.assertEqual((tier / 'prompt.d/10-x.sh').read_text(), 'export HOOK_RAN=1\n')
+        self.assertFalse((tier / 'prompt.d/notes.txt').exists())
+        everything = ''.join(p.read_text() for p in tier.glob('*.sh'))
+        self.assertNotIn('PROMPT_COMMAND_PATH', everything)
+        self.assertIn('bin/completions', (tier / '90-post.sh').read_text())
+        self.assertIn('does not read ~/.rc/99-local/prompt.d', (session / 'REVIEW.md').read_text())
+        self.run_migration('--apply', session, '--accept-review')
+        self.assertEqual((self.home / '.rc/99-local/prompt.d/10-x.sh').read_text(), 'export HOOK_RAN=1\n')
+
+    def test_home_is_read_only_during_prepare(self):
+        def snapshot():
+            return sorted((str(p.relative_to(self.home)), p.lstat().st_mtime_ns, p.lstat().st_size)
+                          for p in self.home.rglob('*'))
+        before = snapshot()
+        self.prepare()
+        self.assertEqual(snapshot(), before)
+        self.assertFalse((self.home / '.dotfiles-migration').exists())
+
+    def test_default_output_is_dot_dotfiles_migration_in_invoking_home(self):
+        invoking = self.base / 'invoking home'
+        invoking.mkdir()
+        subprocess.run(['python3', str(ROOT / 'scripts/migrate.py'), '--home', str(self.home),
+                        '--target', str(self.target)], check=True, capture_output=True,
+                       env={**os.environ, 'HOME': str(invoking), 'PYTHONDONTWRITEBYTECODE': '1'})
+        self.assertEqual(len(list((invoking / '.dotfiles-migration').iterdir())), 1)
+        self.assertFalse((self.home / '.dotfiles-migration').exists())
+
+    def test_output_overlapping_managed_path_rejected(self):
+        for output in (self.home / 'sbin/out', self.home / '.cfg/out', self.target / 'out'):
+            result = self.run_migration('--home', self.home, '--output', output, '--target', self.target, ok=False)
+            self.assertIn('overlaps', result.stderr)
 
     def test_baseline_autodetected_from_nearest_tag(self):
         self.git(*self.legacy, 'tag', 'v3.1')
-        result = self.run_migration('--home', self.home, '--target', self.target)
+        result = self.run_migration('--home', self.home, '--output', self.output, '--target', self.target)
         self.assertIn('Using baseline v3.1', result.stdout)
-        self.assertRegex(next((self.home / '.dotfiles-migration').iterdir()).name,
+        self.assertRegex(next(self.output.iterdir()).name,
                          r'^v3\.1-[0-9a-f]{10}-to-v4\.0-[0-9a-f]{10}-.+')
 
     def test_missing_baseline_tags_require_explicit_baseline(self):
         self.git(*self.legacy, 'tag', '-d', 'v3.0')
-        result = self.run_migration('--home', self.home, '--target', self.target, ok=False)
+        result = self.run_migration('--home', self.home, '--output', self.output, '--target', self.target, ok=False)
         self.assertIn('--baseline', result.stderr)
-        self.assertFalse((self.home / '.dotfiles-migration').exists())
+        self.assertFalse(self.output.exists())
 
     def test_wrong_target_ref_rejected(self):
         self.git('-C', str(self.target), 'tag', '-d', 'v4.0')
-        self.run_migration('--home', self.home, '--target', self.target, ok=False)
-        self.assertFalse((self.home / '.dotfiles-migration').exists())
+        self.run_migration('--home', self.home, '--output', self.output, '--target', self.target, ok=False)
+        self.assertFalse(self.output.exists())
 
 
 if __name__ == '__main__':
