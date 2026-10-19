@@ -19,18 +19,61 @@ def git(repo, *args):
     return subprocess.check_output(['git', '--no-optional-locks', '--git-dir', str(repo), *args])
 
 
+UNREADABLE = {}  # path -> reason; paths that could not be read are reported, never fatal
+
+
+def note_unreadable(path, error):
+    UNREADABLE[str(path)] = error.strerror or str(error)
+
+
 def present(path):
-    return path.exists() or path.is_symlink()
+    """True if the path exists, including dangling symlinks; unreadable paths are noted and reported absent."""
+    try:
+        path.lstat()
+        return True
+    except (FileNotFoundError, NotADirectoryError):
+        return False
+    except PermissionError as error:
+        note_unreadable(path, error)
+        return False
+
+
+def isdir(path):
+    try:
+        return path.is_dir()
+    except PermissionError as error:
+        note_unreadable(path, error)
+        return False
+
+
+def isfile(path):
+    try:
+        return path.is_file()
+    except PermissionError as error:
+        note_unreadable(path, error)
+        return False
+
+
+def walk(path, **kwargs):
+    return os.walk(path, onerror=lambda error: note_unreadable(error.filename, error)
+                   if isinstance(error, PermissionError) else None, **kwargs)
 
 
 def copy(source, dest):
+    """Copy a file, symlink or tree, skipping (and noting) anything unreadable."""
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if source.is_symlink():
-        dest.symlink_to(os.readlink(source))
-    elif source.is_dir():
-        shutil.copytree(source, dest, symlinks=True)
-    else:
-        shutil.copy2(source, dest)
+    try:
+        if source.is_symlink():
+            dest.symlink_to(os.readlink(source))
+        elif source.is_dir():
+            dest.mkdir(exist_ok=True)
+            for child in sorted(os.listdir(source)):
+                copy(source / child, dest / child)
+            shutil.copystat(source, dest)
+        else:
+            shutil.copy2(source, dest)
+    except PermissionError as error:
+        note_unreadable(error.filename or source, error)
 
 
 def remove(path):
@@ -46,21 +89,25 @@ def fingerprint(path):
 
     def visit(p):
         digest.update(str(p.relative_to(path)).encode())
-        if not present(p):
-            digest.update(b'missing')
-        elif p.is_symlink():
-            digest.update(b'link' + os.fsencode(os.readlink(p)))
-        elif p.is_dir():
-            digest.update(b'dir' + str(p.stat().st_mode).encode())
-            for child in sorted(p.iterdir()):
-                visit(child)
-        elif p.is_file():
-            digest.update(b'file' + str(p.stat().st_mode).encode())
-            with p.open('rb') as stream:
-                for chunk in iter(lambda: stream.read(1024 * 1024), b''):
-                    digest.update(chunk)
-        else:
-            raise ValueError('Unsupported special file: ' + str(p))
+        try:
+            if not present(p):
+                digest.update(b'missing')
+            elif p.is_symlink():
+                digest.update(b'link' + os.fsencode(os.readlink(p)))
+            elif p.is_dir():
+                digest.update(b'dir' + str(p.stat().st_mode).encode())
+                for child in sorted(p.iterdir()):
+                    visit(child)
+            elif p.is_file():
+                digest.update(b'file' + str(p.stat().st_mode).encode())
+                with p.open('rb') as stream:
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                        digest.update(chunk)
+            else:
+                raise ValueError('Unsupported special file: ' + str(p))
+        except PermissionError as error:
+            note_unreadable(p, error)
+            digest.update(b'unreadable')
     visit(path)
     return digest.hexdigest()
 
@@ -212,17 +259,21 @@ def migrate_legacy_dirs(home, stock, override, sections, headers, review):
     pending = []
     for legacy, label in LEGACY_DIRS.items():
         root = home / legacy
-        if not root.is_dir():
+        if not isdir(root):
             continue
         if root.is_symlink():
             review.append('~/{} is a symlink to {}; its files were copied and the link is unchanged'.format(
                 legacy, os.readlink(root)))
-        for current, dirs, files in os.walk(root, followlinks=True):
+        for current, dirs, files in walk(root, followlinks=True):
             dirs.sort()
             for filename in sorted(files):
                 path = Path(current) / filename
                 rel = path.relative_to(home).as_posix()
-                content = path.read_bytes()
+                try:
+                    content = path.read_bytes()
+                except PermissionError as error:
+                    note_unreadable(path, error)
+                    continue
                 if not path.is_file() or stock(rel, content):
                     continue
                 shell = path.suffix in ('.sh', '.bash') or content.startswith(b'#!')
@@ -274,6 +325,7 @@ def safe_name(name):
 
 
 def prepare(args):
+    UNREADABLE.clear()
     home = args.home.expanduser().resolve()
     bare = args.bare.expanduser().resolve() if args.bare else home / '.cfg'
     target = args.target.expanduser().resolve()
@@ -298,11 +350,11 @@ def prepare(args):
     # Include untracked configuration files inside managed merge containers.
     for folder in policy['merge_directories']:
         directory = home / folder
-        if directory.is_dir() and not directory.is_symlink() and folder != '.rc':
-            for current, dirs, files in os.walk(directory, followlinks=False):
+        if isdir(directory) and not directory.is_symlink() and folder != '.rc':
+            for current, dirs, files in walk(directory, followlinks=False):
                 for name in dirs + files:
                     path = Path(current) / name
-                    if not path.is_dir() or path.is_symlink():
+                    if not isdir(path) or path.is_symlink():
                         names.add(path.relative_to(home).as_posix())
     roots.update(['.bashrc', '.bash_profile', '.bash_aliases', '.aliases', '.rc',
                   '.private', '.default', 'sbin', 'bin'])
@@ -347,7 +399,12 @@ def prepare(args):
     # below also includes customizations committed on a user's branch.
     for label, options in [('unstaged', []), ('staged', ['--cached']), ('baseline', [args.baseline])]:
         result = subprocess.run(['git', '--no-optional-locks', '--git-dir', str(bare), '--work-tree', str(home),
-                                 'diff', '--binary', *options], capture_output=True, check=True)
+                                 'diff', '--binary', *options], capture_output=True)
+        if result.returncode not in (0, 1):
+            # Unreadable work-tree files make git warn or fail; keep what it produced and report the rest.
+            if b'ermission denied' not in result.stderr:
+                raise subprocess.CalledProcessError(result.returncode, result.args, result.stdout, result.stderr)
+            UNREADABLE['git diff (' + label + ')'] = 'incomplete: ' + result.stderr.decode(errors='replace').strip()
         (session / (label + '.patch')).write_bytes(result.stdout)
     local = session / 'local'
     override = local / '99-local'
@@ -364,14 +421,18 @@ def prepare(args):
         if old and old[1] == 'commit':
             continue  # Complete submodule working trees are in the backup.
         if not present(path):
-            if old:
+            if old and str(path) not in UNREADABLE:
                 deleted.append(name)
             continue
-        if path.is_dir():
+        try:
+            if path.is_dir():
+                continue
+            previous = git(bare, 'cat-file', 'blob', old[2]) if old else b''
+            current = os.fsencode(os.readlink(path)) if path.is_symlink() else path.read_bytes()
+            mode = '120000' if path.is_symlink() else ('100755' if path.stat().st_mode & 0o111 else '100644')
+        except PermissionError as error:
+            note_unreadable(path, error)
             continue
-        previous = git(bare, 'cat-file', 'blob', old[2]) if old else b''
-        current = os.fsencode(os.readlink(path)) if path.is_symlink() else path.read_bytes()
-        mode = '120000' if path.is_symlink() else ('100755' if path.stat().st_mode & 0o111 else '100644')
         if old and previous == current and old[0] == mode:
             if name.startswith('sbin/'):
                 if any(parent.is_symlink() for parent in path.parents if home in parent.parents):
@@ -402,7 +463,7 @@ def prepare(args):
     target_entries = tree(target / '.git', 'HEAD')
     containers = {n.split('/')[0] for n in target_entries if '/' in n
                   and n.split('/')[0] not in merged
-                  and (home / n.split('/')[0]).is_dir()
+                  and isdir(home / n.split('/')[0])
                   and n.startswith('.') and n.split('/')[0] != '.github'}
     for name in sorted(containers):
         overrides = [n for n in overrides if not n.startswith(name + '/')]
@@ -430,10 +491,10 @@ def prepare(args):
         return bool(old) and old[1] == 'blob' and git(bare, 'cat-file', 'blob', old[2]) == content
     migrate_legacy_dirs(home, stock, override, sections, headers, review)
     for name in ['.bash_aliases', '.aliases']:
-        if (home / name).is_file():
+        if isfile(home / name):
             add('90-post.sh', 'legacy hook ~/' + name + ' (sourced, not copied)', 'source "$HOME/' + name + '"\n')
             review.append('Review generated source of ' + name + ' in 90-post.sh; original remains in HOME and backup')
-    if (home / 'bin/completions').is_dir():
+    if isdir(home / 'bin/completions'):
         add('90-post.sh', 'retained ~/bin/completions/*.bash (sourced in place, not copied)',
             'for __migration_completion in "$HOME"/bin/completions/*.bash; do\n'
             '    [[ ! -f $__migration_completion ]] || source "$__migration_completion"\n'
@@ -451,8 +512,8 @@ def prepare(args):
                 add(destination[kind], '~/{} {}, appended after {} (diff vs. baseline)'.format(
                     source, span, args.baseline), body if body.endswith('\n') else body + '\n')
     legacy_prompt = home / 'bin/prompt_command'
-    if legacy_prompt.is_dir():
-        hooks = sorted(p for p in legacy_prompt.iterdir() if p.is_file() and p.suffix in ('.sh', '.bash'))
+    if isdir(legacy_prompt):
+        hooks = sorted(p for p in legacy_prompt.iterdir() if isfile(p) and p.suffix in ('.sh', '.bash'))
         for hook in hooks:
             (override / 'prompt.d').mkdir(exist_ok=True)
             shutil.copy2(hook, override / 'prompt.d' / hook.name)
@@ -465,14 +526,17 @@ def prepare(args):
                               'checkout (target-ref or later) or the copied prompt hooks will not run')
     for filename, parts in sections.items():
         (override / filename).write_text(headers.get(filename, '') + ''.join(parts))
-    if (home / '.rc').exists():
+    if present(home / '.rc'):
         review.append('Review existing .rc entries for old loaders or conflicting tier names')
     if deleted:
         review.append('Review intentionally deleted v3 files listed in manifest; v4 may reintroduce them')
+    for path, reason in sorted(UNREADABLE.items()):
+        review.append('Unreadable, so not backed up or analyzed: {} ({})'.format(path, reason))
     manifest = dict(home=str(home), bare=str(bare), target=str(target), commit=commit,
                     target_ref=args.target_ref, baseline=args.baseline, roots=sorted(roots), fingerprints=before,
                     bare_fingerprint=bare_before, overrides=sorted(set(overrides)),
-                    deleted=deleted, stock_scripts=stock_scripts, review=review, applied=False)
+                    deleted=deleted, stock_scripts=stock_scripts, review=review, unreadable=dict(sorted(UNREADABLE.items())),
+                    applied=False)
     (session / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     (session / 'REVIEW.md').write_text(
         '# Migration review\n\n' +
@@ -482,6 +546,8 @@ def prepare(args):
         'Apply requires --accept-review when this list is nonempty.\n'
         'Backup/home and backup/bare-repo are recovery copies; symlinks are preserved as links.\n'
     )
+    if UNREADABLE:
+        print('Skipped {} unreadable path(s); listed in REVIEW.md'.format(len(UNREADABLE)))
     print('Prepared (HOME configuration unchanged): ' + str(session))
     print('Review ' + str(session / 'REVIEW.md'))
     return session
@@ -492,6 +558,9 @@ def apply(args):
     data = json.loads((session / 'manifest.json').read_text())
     if data['applied']:
         raise ValueError('Migration already applied')
+    if data.get('unreadable'):
+        raise ValueError('Preparation skipped unreadable paths, so the backup is incomplete and recovery would be '
+                         'unsafe; fix the permissions and prepare again (see REVIEW.md)')
     if data['review'] and not args.accept_review:
         raise ValueError('Review REVIEW.md and edit overrides, then use --accept-review')
     home, target, bare = map(Path, (data['home'], data['target'], data['bare']))

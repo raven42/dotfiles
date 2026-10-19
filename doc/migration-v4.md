@@ -126,3 +126,10 @@ a migration for another user's checkout (for example a copy of their home mounte
 and `--bare` at it and `--output` somewhere you own. The output directory must not overlap the home's managed
 paths, the legacy repository or the target checkout. `--apply` always modifies the home recorded in the
 manifest, so do not run it against a rehearsal copy you want to keep pristine.
+
+Paths that cannot be read (for example another user's `~/.config` with mode 700) do not stop preparation.
+They are skipped, listed in `REVIEW.md` and under `unreadable` in `manifest.json`, and counted in the summary
+line. Skipped paths are neither backed up nor analyzed, and a tracked file inside an unreadable directory is not
+reported as deleted. If git cannot read a work-tree file, `unstaged.patch` or `baseline.patch` is flagged as
+incomplete. Because the backup would then be incomplete, `--apply` refuses to run on such a preparation: fix the
+permissions and prepare again.

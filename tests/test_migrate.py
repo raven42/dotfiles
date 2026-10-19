@@ -1,4 +1,5 @@
 """Migration integration tests: isolated fake homes and local repositories only."""
+import json
 import os
 from pathlib import Path
 import shutil
@@ -233,6 +234,31 @@ class MigrationTests(unittest.TestCase):
         for output in (self.home / 'sbin/out', self.home / '.cfg/out', self.target / 'out'):
             result = self.run_migration('--home', self.home, '--output', output, '--target', self.target, ok=False)
             self.assertIn('overlaps', result.stderr)
+
+    def test_unreadable_paths_are_reported_not_fatal(self):
+        if os.getuid() == 0:
+            self.skipTest('root can read everything')
+        (self.home / '.config/app').mkdir(parents=True)
+        (self.home / '.config/app/file').write_text('x')
+        (self.home / 'sbin/secret').write_text('x')
+        blocked = [self.home / '.config', self.home / '.tmux.conf', self.home / 'sbin/secret']
+        for path in blocked:
+            path.chmod(0)
+            self.addCleanup(path.chmod, 0o755)
+        result = self.run_migration('--home', self.home, '--output', self.output, '--target', self.target)
+        self.assertIn('unreadable', result.stdout)
+        session = next(self.output.iterdir())
+        review = (session / 'REVIEW.md').read_text()
+        for path in blocked:
+            self.assertIn('Unreadable, so not backed up or analyzed: ' + str(path), review)
+        manifest = json.loads((session / 'manifest.json').read_text())
+        self.assertEqual(sorted(k for k in manifest['unreadable'] if k.startswith('/')), sorted(map(str, blocked)))
+        # git cannot hash the unreadable tracked file, so the unstaged/baseline patches are flagged incomplete.
+        self.assertIn('git diff (unstaged)', manifest['unreadable'])
+        self.assertNotIn('.tmux.conf', manifest['deleted'])
+        self.assertEqual((session / 'backup/home/sbin/untracked').read_text(), 'personal tool\n')
+        result = self.run_migration('--apply', session, '--accept-review', ok=False)
+        self.assertIn('unreadable', result.stderr)
 
     def test_baseline_autodetected_from_nearest_tag(self):
         self.git(*self.legacy, 'tag', 'v3.1')
