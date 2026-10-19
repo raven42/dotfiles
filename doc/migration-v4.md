@@ -8,8 +8,8 @@ code while inspecting it, pulls Git updates, or changes the old bare repository.
 
 ## Prepare
 
-First create a separate, clean destination checkout at the existing `v4.0` tag,
-including its submodules. Do not check out that tag through the old bare repo:
+First create a separate, clean destination checkout at the existing `v4.0` tag (or any
+later commit descended from it), including its submodules. Do not check out that tag through the old bare repo:
 that would overwrite HOME before backing it up.
 
 ```bash

@@ -77,8 +77,12 @@ def tree(repo, ref):
 def target_check(target, ref):
     head = subprocess.check_output(['git', '-C', str(target), 'rev-parse', 'HEAD']).strip()
     tag = subprocess.check_output(['git', '-C', str(target), 'rev-parse', ref + '^{commit}']).strip()
-    if head != tag:
-        raise ValueError('Target checkout must be at ' + ref)
+    # HEAD may equal the ref or be any descendant of it (is-ancestor is true for equal commits).
+    ancestor = subprocess.run(['git', '-C', str(target), 'merge-base', '--is-ancestor', tag.decode(), head.decode()])
+    if ancestor.returncode == 1:
+        raise ValueError('Target checkout must be at or later than ' + ref)
+    if ancestor.returncode != 0:
+        raise subprocess.CalledProcessError(ancestor.returncode, ancestor.args)
     dirty = subprocess.check_output(['git', '-C', str(target), 'status', '--porcelain', '--untracked-files=all'])
     untracked = subprocess.check_output(
         ['git', '-C', str(target), 'ls-files', '--others', '-z'])
@@ -344,7 +348,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--bare', type=Path, help='legacy Git directory (default HOME/.cfg)')
-    parser.add_argument('--target', type=Path, help='clean standard checkout at target tag')
+    parser.add_argument('--target', type=Path, help='clean standard checkout at or after the target ref')
     parser.add_argument('--baseline', default='v3.0')
     parser.add_argument('--target-ref', default='v4.0')
     parser.add_argument('--include', action='append', default=[], help='additional HOME-relative backup path')

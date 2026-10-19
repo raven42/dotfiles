@@ -1,6 +1,4 @@
 """Migration integration tests: isolated fake homes and local repositories only."""
-import importlib.util
-import json
 import os
 from pathlib import Path
 import shutil
@@ -122,6 +120,22 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual((self.home / '.config/app/user').read_bytes(), b'personal\x00binary')
         self.assertEqual((self.home / '.config/app/new').read_text(), 'new default')
         self.assertFalse((self.target / '.config/app/user').exists())
+
+    def test_target_after_ref_accepted(self):
+        (self.target / 'later').write_text('later')
+        self.git('-C', str(self.target), 'add', '.')
+        self.git('-C', str(self.target), 'commit', '-m', 'later')
+        session = self.prepare()
+        self.run_migration('--apply', session, '--accept-review')
+
+    def test_target_before_ref_rejected(self):
+        (self.target / 'later').write_text('later')
+        self.git('-C', str(self.target), 'add', '.')
+        self.git('-C', str(self.target), 'commit', '-m', 'later')
+        self.git('-C', str(self.target), 'tag', '-f', 'v4.0')
+        self.git('-C', str(self.target), 'checkout', '-q', 'HEAD~1')
+        self.run_migration('--home', self.home, '--target', self.target, ok=False)
+        self.assertFalse((self.home / '.dotfiles-migration').exists())
 
     def test_wrong_target_ref_rejected(self):
         self.git('-C', str(self.target), 'tag', '-d', 'v4.0')
