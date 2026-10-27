@@ -26,7 +26,7 @@ __pycache__/
 
 # raven42/binfiles (private) owns everything under ~/bin, wherever it physically lives (rc/, private/, and
 # the flat work-tier scripts alike) -- this repo must never track any of it.
-/bin/
+# /bin/
 # ~/.rc/20-team, 30-user, and prompt.d are symlinks into ~/bin/rc/... (see the dotfiles reorg plan). /bin/
 # above already covers their real content; these cover the symlinks themselves, which live directly under
 # $HOME outside of ~/bin. No trailing slash: git doesn't treat a symlink-to-a-directory as a directory for

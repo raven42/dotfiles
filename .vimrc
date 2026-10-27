@@ -479,64 +479,64 @@ if v:version >= 800
 	let g:lightline#bufferline#unnamed = 'No Name'
 	let g:lightline#bufferline#number_separator = ' '
 
-	" ---- NERDTree Configuration {{{2
-	let NERDTreeMouseMode = 2			" --- Open/Close dirs on single mouse click
-	let NERDTreeNaturalSort = 1			" --- Sort order of files more natural
-	let NERDTreeShowHidden = 1			" --- Show hidden files/folders by default
-	let NERDTreeIgnore = [
-				\ '\.o$', '\.d$', '\~$', '\.pyc$',
-				\ '\.swp$', '\.swo$', '\.swn$',
-				\ '\.swm$', '\.swl$', '\.swk$', ]
-	let g:NERDTreeDirArrowExpandable = g:charmap['arrow-right']
-	let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-down']
-	if $GIT_ROOT !=# ''
-		let BookmarksFile = $GIT_ROOT . '/.rc/NERDTreeBookmarks'
-		if filereadable(BookmarksFile)
-			let NERDTreeBookmarksFile = BookmarksFile
-			let NERDTreeShowBookmarks = 1		" --- Show bookmarks on startup
-		elseif filereadable('~/.NERDTreeBookmarks')
-			let NERDTreeShowBookmarks = 1		" --- Show bookmarks on startup
-		endif
-	endif
+	" " ---- NERDTree Configuration {{{2
+	" let NERDTreeMouseMode = 2			" --- Open/Close dirs on single mouse click
+	" let NERDTreeNaturalSort = 1			" --- Sort order of files more natural
+	" let NERDTreeShowHidden = 1			" --- Show hidden files/folders by default
+	" let NERDTreeIgnore = [
+	" 			\ '\.o$', '\.d$', '\~$', '\.pyc$',
+	" 			\ '\.swp$', '\.swo$', '\.swn$',
+	" 			\ '\.swm$', '\.swl$', '\.swk$', ]
+	" let g:NERDTreeDirArrowExpandable = g:charmap['arrow-right']
+	" let g:NERDTreeDirArrowCollapsible = g:charmap['arrow-down']
+	" if $GIT_ROOT !=# ''
+	" 	let BookmarksFile = $GIT_ROOT . '/.rc/NERDTreeBookmarks'
+	" 	if filereadable(BookmarksFile)
+	" 		let NERDTreeBookmarksFile = BookmarksFile
+	" 		let NERDTreeShowBookmarks = 1		" --- Show bookmarks on startup
+	" 	elseif filereadable('~/.NERDTreeBookmarks')
+	" 		let NERDTreeShowBookmarks = 1		" --- Show bookmarks on startup
+	" 	endif
+	" endif
 
-	" ---- NERDTree Git Configuration {{{2
-	let g:NERDTreeGitStatusShowClean = 0
-	let g:NERDTreeGitStatusConcealBrackets = 1
-	let g:NERDTreeStatusUpdateOnCursorHold = 0
-	let g:NERDTreeGitStatusIndicatorMapCustom = {
-				\ 'Modified'  : g:charmap['modified'],
-				\ 'Staged'    : g:charmap['staged'],
-				\ 'Untracked' : g:charmap['untracked'],
-				\ 'Renamed'   : g:charmap['renamed'],
-				\ 'Unmerged'  : g:charmap['unmerged'],
-				\ 'Deleted'   : g:charmap['deleted'],
-				\ 'Dirty'     : g:charmap['dirty'],
-				\ 'Ignored'   : g:charmap['ignored'],
-				\ 'Clean'     : g:charmap['clean'],
-				\ 'Unknown'   : g:charmap['unknown']
-				\ }
+	" " ---- NERDTree Git Configuration {{{2
+	" let g:NERDTreeGitStatusShowClean = 0
+	" let g:NERDTreeGitStatusConcealBrackets = 1
+	" let g:NERDTreeStatusUpdateOnCursorHold = 0
+	" let g:NERDTreeGitStatusIndicatorMapCustom = {
+	" 			\ 'Modified'  : g:charmap['modified'],
+	" 			\ 'Staged'    : g:charmap['staged'],
+	" 			\ 'Untracked' : g:charmap['untracked'],
+	" 			\ 'Renamed'   : g:charmap['renamed'],
+	" 			\ 'Unmerged'  : g:charmap['unmerged'],
+	" 			\ 'Deleted'   : g:charmap['deleted'],
+	" 			\ 'Dirty'     : g:charmap['dirty'],
+	" 			\ 'Ignored'   : g:charmap['ignored'],
+	" 			\ 'Clean'     : g:charmap['clean'],
+	" 			\ 'Unknown'   : g:charmap['unknown']
+	" 			\ }
 
-	" ---- NERDCommenter Configuration {{{2
-	let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
-	let g:NERDSpaceDelims = 1				" --- add space after delimiter
-	let g:NERDCompactSexyComs = 1			" --- use compact syntax for multi-line
-	let g:NERDDefaultAlign = 'left'			" --- align line-wise comments to left
-	let g:NERDAltDelims_java = 1			" --- set language to use alternate delims
-	let g:NERDCommentEmptyLines = 1			" --- allow empty lines to be commented
-	let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
-	let g:NERDToggleCheckAllLines = 1		" --- check all lines for comment or not
-	let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
-	let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
+	" " ---- NERDCommenter Configuration {{{2
+	" let g:NERDCustomDelimiters = { 'c': { 'left': '/***','right': '***/' } }
+	" let g:NERDSpaceDelims = 1				" --- add space after delimiter
+	" let g:NERDCompactSexyComs = 1			" --- use compact syntax for multi-line
+	" let g:NERDDefaultAlign = 'left'			" --- align line-wise comments to left
+	" let g:NERDAltDelims_java = 1			" --- set language to use alternate delims
+	" let g:NERDCommentEmptyLines = 1			" --- allow empty lines to be commented
+	" let g:NERDTrimTrailingWhitespace = 1	" --- trim whitespace when uncommenting
+	" let g:NERDToggleCheckAllLines = 1		" --- check all lines for comment or not
+	" let g:NERDCommentWholeLinesInVMode = 1	" --- Comment entire line in visual
+	" let g:NERDCreateDefaultMappings = 0		" --- Don't use default mappings
 
-	" ---- GitGutter Configuration {{{2
-	let g:gitgutter_highlight_lines = 1
-	let g:gitgutter_preview_win_location = 'rightbelow'
-	let g:gitgutter_sign_added = g:charmap['line-added']
-	let g:gitgutter_sign_modified = g:charmap['line-modified']
-	let g:gitgutter_sign_removed = g:charmap['line-removed']
-	let g:gitgutter_sign_removed_first_line = g:charmap['line-removed-above']
-	let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
-	let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
+	" " ---- GitGutter Configuration {{{2
+	" let g:gitgutter_highlight_lines = 1
+	" let g:gitgutter_preview_win_location = 'rightbelow'
+	" let g:gitgutter_sign_added = g:charmap['line-added']
+	" let g:gitgutter_sign_modified = g:charmap['line-modified']
+	" let g:gitgutter_sign_removed = g:charmap['line-removed']
+	" let g:gitgutter_sign_removed_first_line = g:charmap['line-removed-above']
+	" let g:gitgutter_sign_remove_above_and_below = g:charmap['line-modified-removed']
+	" let g:gitgutter_sign_modified_removed = g:charmap['line-modified-removed']
 
 	" ---- Tagbar Configuration {{{2
 	let g:tagbar_no_status_line = 1
@@ -676,66 +676,66 @@ if v:version >= 800
 	" Tagbar Debug Options:
 	" Note: when using the logfile, don't VI the file or it will overwrite what is there
 	" let g:tagbar_ctags_bin = '/usr/bin/ctags' " XXX: To test with exhuberant ctags
-	let g:tagbar_logfile = $HOME . '/tagbar.log'
+	" let g:tagbar_logfile = $HOME . '/tagbar.log'
 	" let g:tagbar_no_autocmds = 1
 	" let g:tagbar_ignore_anonymous = 1
 	" let g:tagbar_width = max([25, winwidth(0) / 5])
 	" let g:tagbar_wrap = 2
 
-	" ---- Syntastic Configuration {{{2
-	let g:syntastic_always_populate_loc_list = 1
-	let g:syntastic_auto_loc_list = 1
-	let g:syntastic_check_on_open = 1
-	let g:syntastic_check_on_wq = 0
+	" " ---- Syntastic Configuration {{{2
+	" let g:syntastic_always_populate_loc_list = 1
+	" let g:syntastic_auto_loc_list = 1
+	" let g:syntastic_check_on_open = 1
+	" let g:syntastic_check_on_wq = 0
 
-	" ---- AnyFold Configuration {{{2
-	let g:anyfold_fold_comments=1
-	let g:anyfold_fold_display=1
+	" " ---- AnyFold Configuration {{{2
+	" let g:anyfold_fold_comments=1
+	" let g:anyfold_fold_display=1
 
-	" ---- Flake8 Configuration {{{2
-	let g:flake8_show_quickfix = 1
-	let g:flake8_show_in_gutter = 1
-	let g:flake8_show_in_file = 0
-	let g:flake8_quickfix_height = 10
-	let g:flake8_always_visible = 1
-	let g:flake8_auto_update = 0
+	" " ---- Flake8 Configuration {{{2
+	" let g:flake8_show_quickfix = 1
+	" let g:flake8_show_in_gutter = 1
+	" let g:flake8_show_in_file = 0
+	" let g:flake8_quickfix_height = 10
+	" let g:flake8_always_visible = 1
+	" let g:flake8_auto_update = 0
 
-	" ---- Auto-pairs Configuration {{{2
-	let g:AutoPairsShortcutToggle = ''
-	let g:AutoPairsShortcutFastWrap = '<Leader>)'
+	" " ---- Auto-pairs Configuration {{{2
+	" let g:AutoPairsShortcutToggle = ''
+	" let g:AutoPairsShortcutFastWrap = '<Leader>)'
 
-	" ---- UndoTree Configuration {{{2
-	let g:undotree_WindowLayout = 3
-	let g:undotree_SplitWidth = 30
-	let g:undotree_DiffpanelHeight = 20
-	let g:undotree_HighlightChangedText = 0
-	let g:undotree_HighlightChangedWithSign = 0
-	let g:undotree_DiffAutoOpen = 0
+	" " ---- UndoTree Configuration {{{2
+	" let g:undotree_WindowLayout = 3
+	" let g:undotree_SplitWidth = 30
+	" let g:undotree_DiffpanelHeight = 20
+	" let g:undotree_HighlightChangedText = 0
+	" let g:undotree_HighlightChangedWithSign = 0
+	" let g:undotree_DiffAutoOpen = 0
 
-	" ---- AutoSave Configuration {{{2
-	let g:auto_save = $AUTOSAVE
+	" " ---- AutoSave Configuration {{{2
+	" let g:auto_save = $AUTOSAVE
 
-	" ---- Minimap Configuration {{{2
-	let g:minimap_block_filetypes = ['fugitive', 'nerdtree', 'tagbar', 'qf', 'preview', 'diff']
+	" " ---- Minimap Configuration {{{2
+	" let g:minimap_block_filetypes = ['fugitive', 'nerdtree', 'tagbar', 'qf', 'preview', 'diff']
 
-	" ---- DevPanel Configuration {{{2
-	if $USE_DEVPANEL !=# ''
-		let g:use_devpanel = $USE_DEVPANEL
-	else
-		let g:use_devpanel = 1
-	endif
-	if g:use_devpanel
-		let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc,*.sh'
-	else
-		let g:devpanel_auto_open_files = 'no_files'
-	endif
-	let g:devpanel_panel_min = 40
-	let g:devpanel_panel_max = 45
-	let g:devpanel_open_min_width = 120
-	let g:devpanel_use_nerdtree = 1
-	let g:devpanel_use_tagbar = 1
-	let g:devpanel_use_minimap = 0
-	let g:devpanel_use_flake8 = 1
+	" " ---- DevPanel Configuration {{{2
+	" if $USE_DEVPANEL !=# ''
+	" 	let g:use_devpanel = $USE_DEVPANEL
+	" else
+	" 	let g:use_devpanel = 1
+	" endif
+	" if g:use_devpanel
+	" 	let g:devpanel_auto_open_files = '*.c,*.cpp,*.h,*.py,*.vim,Makefile,*.make,.vimrc,.bashrc,*.sh'
+	" else
+	" 	let g:devpanel_auto_open_files = 'no_files'
+	" endif
+	" let g:devpanel_panel_min = 40
+	" let g:devpanel_panel_max = 45
+	" let g:devpanel_open_min_width = 120
+	" let g:devpanel_use_nerdtree = 1
+	" let g:devpanel_use_tagbar = 1
+	" let g:devpanel_use_minimap = 0
+	" let g:devpanel_use_flake8 = 1
 
 	" ---- rhysd/vim-clang-format configuration {{{2
 	" let g:clang_format#command = '/projects/bsnswtools/clang-format-20.0.0/clang-format'
@@ -814,6 +814,9 @@ if v:version >= 800
 
     " ---- LightlineGitgutterHunks() {{{2
 	function! LightlineGitgutterHunks()
+		if !g:have_gitgutter
+			return ''
+		endif
 		let [a, m, r] = GitGutterGetHunkSummary()
 		return printf('+%d ~%d -%d', a, m, r)
 	endfunction
@@ -1014,15 +1017,15 @@ if v:version >= 800
 	endfunction
 
 
-	" ---- Key Mappings for all plugins {{{2
-	nmap <Leader>cc <plug>NERDCommenterToggle
-	vmap <Leader>cc <plug>NERDCommenterToggle
-	nmap <Leader>cm <plug>NERDCommenterMinimal
-	vmap <Leader>cm <plug>NERDCommenterMinimal
-	nmap <Leader>ci <plug>NERDCommenterInvert
-	vmap <Leader>ci <plug>NERDCommenterInvert
-	nmap <Leader>cy <plug>NERDCommenterYank
-	vmap <Leader>cy <plug>NERDCommenterYank
+	" " ---- Key Mappings for all plugins {{{2
+	" nmap <Leader>cc <plug>NERDCommenterToggle
+	" vmap <Leader>cc <plug>NERDCommenterToggle
+	" nmap <Leader>cm <plug>NERDCommenterMinimal
+	" vmap <Leader>cm <plug>NERDCommenterMinimal
+	" nmap <Leader>ci <plug>NERDCommenterInvert
+	" vmap <Leader>ci <plug>NERDCommenterInvert
+	" nmap <Leader>cy <plug>NERDCommenterYank
+	" vmap <Leader>cy <plug>NERDCommenterYank
 
 	nmap <silent> <Leader>1 :call BufActivateNth(0)<CR>
 	nmap <silent> <Leader>2 :call BufActivateNth(1)<CR>
@@ -1037,21 +1040,21 @@ if v:version >= 800
 	nmap <silent> <Leader>n :bn<CR>
 	nmap <silent> <Leader>p :bp<CR>
 
-	nnoremap <silent> <Leader>x :NERDTreeToggle <CR>
+	" nnoremap <silent> <Leader>x :NERDTreeToggle <CR>
 	nnoremap <silent> <Leader>t :TagbarToggle <CR>
-	nnoremap <silent> <Leader>d :DevPanelToggle<CR>
+	" nnoremap <silent> <Leader>d :DevPanelToggle<CR>
 	nnoremap <silent> <Leader>q :call BufClose()<CR>
-	nnoremap <silent> <Leader>u :UndotreeToggle<CR>
-	nnoremap <silent> <Leader>m :MinimapToggle<CR>
+	" nnoremap <silent> <Leader>u :UndotreeToggle<CR>
+	" nnoremap <silent> <Leader>m :MinimapToggle<CR>
 
-	nnoremap g] :GitGutterNextHunk<CR>
-	nnoremap g. :GitGutterNextHunk<CR>:GitGutterPreviewHunk<CR>
-	nnoremap g[ :GitGutterPrevHunk<CR>
-	nnoremap g, :GitGutterPrevHunk<CR>:GitGutterPreviewHunk<CR>
-	nnoremap gs :GitGutterStageHunk<CR>
-	nnoremap gu :GitGutterUndoHunk<CR>
-	nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
-	nnoremap <silent> gq :call ToggleGitQuickFix()<CR>
+	" nnoremap g] :GitGutterNextHunk<CR>
+	" nnoremap g. :GitGutterNextHunk<CR>:GitGutterPreviewHunk<CR>
+	" nnoremap g[ :GitGutterPrevHunk<CR>
+	" nnoremap g, :GitGutterPrevHunk<CR>:GitGutterPreviewHunk<CR>
+	" nnoremap gs :GitGutterStageHunk<CR>
+	" nnoremap gu :GitGutterUndoHunk<CR>
+	" nnoremap <silent> gp :call ToggleGitHunkPreview()<CR>
+	" nnoremap <silent> gq :call ToggleGitQuickFix()<CR>
 
 	nnoremap <silent> t[ :TagbarJumpPrev<CR>
 	nnoremap <silent> t] :TagbarJumpNext<CR>
@@ -1097,7 +1100,9 @@ if v:version >= 800
 		autocmd ColorScheme * call LightlineColorScheme()
 
 		autocmd BufEnter * call UpdateTitle()
-		autocmd BufWritePost *.py call Flake8Update()
+		if g:have_flake8
+			autocmd BufWritePost *.py call Flake8Update()
+		endif
 	augroup END
 
 	augroup quickfixclose
